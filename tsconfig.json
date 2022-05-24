@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es2019",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "declaration": true,
+    "baseUrl": ".",
+    "rootDir": "./src",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "/usr/local/lib/node_modules/*"
+      ]
+    },
+    "plugins": [
+      { "transform": "ts-reflection/transformer" }
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+  ]
+}
