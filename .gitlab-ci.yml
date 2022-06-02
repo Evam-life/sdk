@@ -20,8 +20,11 @@ test:
 
 deploy:
   stage: deploy
+  only:
+    - tags
   variables:
     REPO_ID: 36450111
   script:
+    - npm version "$CI_COMMIT_TAG"
     - npm config set @evam:registry "https://gitlab.com/api/v4/projects/$REPO_ID/packages/npm"
     - npm config set -- "//gitlab.com/api/v4/projects/$REPO_ID/packages/npm/:_authToken" "$GITLAB_COM_AUTH_TOKEN"
