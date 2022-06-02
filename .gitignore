@@ -1,3 +1,4 @@
 dist
 sdk
 node_modules
+coverage
