@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "sdk",
     "declaration": true,
     "baseUrl": ".",
     "rootDir": "./src",

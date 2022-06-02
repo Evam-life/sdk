@@ -1,0 +1,27 @@
+image: node:16-buster
+
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  tags:
+    - docker
+  only:
+    - tags
+    - merge_requests
+  script:
+    - npm install
+    - npm test
+  artifacts:
+    reports:
+      cobertura: coverage/cobertura-coverage.xml
+
+deploy:
+  stage: deploy
+  variables:
+    REPO_ID: 36450111
+  script:
+    - npm config set @evam:registry "https://gitlab.com/api/v4/projects/$REPO_ID/packages/npm"
+    - npm config set -- "//gitlab.com/api/v4/projects/$REPO_ID/packages/npm/:_authToken" "$GITLAB_COM_AUTH_TOKEN"

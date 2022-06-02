@@ -1,11 +1,14 @@
 {
   "name": "@evam/vehicle-services-sdk",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "SDK for Evam platform",
   "main": "index.ts",
+  "files": [
+    "sdk/*"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && tsc --project tsconfig.json && minify-all-js ./dist -j -m -M -p"
+    "build": "rm -rf dist && tsc --project tsconfig.json && minify-all-js ./sdk -j -m -M -p"
   },
   "dependencies": {
     "rxjs": "~7.5.5",

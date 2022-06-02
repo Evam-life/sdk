@@ -1,7 +1,7 @@
 import { timer } from 'rxjs';
 import { Observables, observe } from 'rxjs-observe';
 
-export class EvamLib {
+export class EvamApiV1 {
     evamData: EvamData
     observables: Observables<EvamData, object>
     proxy: EvamData & object
@@ -9,49 +9,54 @@ export class EvamLib {
     /**
      * True if Vehicle Services environment is detected, False otherwise (for instance, a web browser)
      */
-    readonly isRunninginVehicleServices: Boolean
+    readonly isRunningInVehicleServices: Boolean
 
     // Singleton instance
-    private static instance: EvamLib
+    private static instance: EvamApiV1
 
     /**
      * Gets the EvamLib instance
      * @returns The EvamLib instance
      */
-    public static getInstance(): EvamLib {
-        if (!EvamLib.instance) {
-            EvamLib.instance = new EvamLib()
+    public static getInstance(): EvamApiV1 {
+        if (!EvamApiV1.instance) {
+            EvamApiV1.instance = new EvamApiV1()
         }
-        return EvamLib.instance
+        return EvamApiV1.instance
     }
 
     /**
      * Constructor, private because singleton
      */
     private constructor() {
-        this.evamData = new EvamData(undefined)
+        this.evamData = new EvamData(undefined, undefined)
         const { observables, proxy } = observe(this.evamData)
         this.observables = observables
         this.proxy = proxy
 
         let previousCaseCache: Object = {}
+        let previousSettingsCache: Object = {}
 
         try {
             // @ts-ignore
             let and = Android
-            this.isRunninginVehicleServices = true
+            this.isRunningInVehicleServices = true
         } catch (e) {
             console.log("Running in development mode outside of Vehicle Services")
-            this.isRunninginVehicleServices = false
+            this.isRunningInVehicleServices = false
         }
 
-        if (this.isRunninginVehicleServices) {
+        if (this.isRunningInVehicleServices) {
             const source = timer(1000, 2000)
             source.subscribe(
                 (time) => {
                     // @ts-ignore
                     let rawCase = Android.operationGetActiveCase()
+                    // @ts-ignore
+                    let rawSettings = Android.webAppGetSettings()
+
                     let activeCase = JSON.parse(rawCase)
+                    let settings = JSON.parse(rawSettings)
                     if (previousCaseCache === rawCase) {
                         // Do nothing
                     } else {
@@ -59,6 +64,17 @@ export class EvamLib {
                         let upCase = ActiveCase.fromJson(activeCase)
                         proxy.activeCase = upCase
                         console.log("Running thread to get case! " + JSON.stringify(ActiveCase.fromJson(activeCase)))
+                    }
+                    if (previousSettingsCache === settings){
+                        // Do nothing
+                    } else {
+                        let out: any = {}
+                        for (let setting of settings){
+                            let value = setting.value["value"] ? setting.value["value"] : setting.value.default
+                            out[setting.id] = value
+                        }
+                        previousSettingsCache = out
+                        proxy.settings = out
                     }
                 }
             )
@@ -68,13 +84,26 @@ export class EvamLib {
     /**
      * Injects the Active Operation manually. This will trigger onNewOrUpdatedOperation(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.  
-     * @param activeCase The active case to be injected for devlopment purposes.
+     * @param activeCase The active case to be injected for development purposes.
      */
     injectOperation(activeCase: ActiveCase|undefined) {
-        if (!this.isRunninginVehicleServices) {
+        if (!this.isRunningInVehicleServices) {
             this.proxy.activeCase = activeCase
         } else {
             throw Error("Injecting an Operation is not allowed in the Vehicle Services environment, use the Vehicle Services Demo tool instead.")
+        }
+    }
+
+    /**
+     * Injects the settings manually. This will trigger onNewOrUpdatedSettings(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.  
+     * @param settings The settings to be injected for development purposes.
+     */
+    injectSettings(settings: Object) {
+        if (!this.isRunningInVehicleServices) {
+            this.proxy.settings = settings
+        } else {
+            throw Error("Injecting settings is not allowed in the Vehicle Services environment, use a web browser instead.")
         }
     }
 
@@ -86,14 +115,22 @@ export class EvamLib {
     onNewOrUpdatedOperation(callback: (activeCase: ActiveCase | undefined) => void) {
         this.observables.activeCase.subscribe((c) => callback(c as ActiveCase))
     }
+
+    onNewOrUpdatedSettings(callback: (settings: Object | undefined) => void) {
+        this.observables.settings.subscribe((c) => callback(c))
+    }
 }
 
 export class EvamData {
     activeCase: ActiveCase | undefined
+    settings: Object | undefined
+
     constructor(
-        activeCase: ActiveCase | undefined
+        activeCase: ActiveCase | undefined,
+        settings: Object | undefined
     ) {
         this.activeCase = activeCase
+        this.settings = settings
     }
 }
 
