@@ -1,6 +1,6 @@
 {
   "name": "@evam/vehicle-services-sdk",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "SDK for Evam platform",
   "main": "index.ts",
   "files": [
