@@ -1,5 +1,5 @@
 {
-  "name": "@evam/vehicle-services-sdk",
+  "name": "@evam/sdk",
   "version": "1.0.0",
   "description": "SDK for Evam platform",
   "main": "index.ts",
