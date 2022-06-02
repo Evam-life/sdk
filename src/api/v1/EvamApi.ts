@@ -1,7 +1,7 @@
 import { timer } from 'rxjs';
 import { Observables, observe } from 'rxjs-observe';
 
-export class EvamApiV1 {
+export class EvamApi {
     evamData: EvamData
     observables: Observables<EvamData, object>
     proxy: EvamData & object
@@ -12,17 +12,17 @@ export class EvamApiV1 {
     readonly isRunningInVehicleServices: Boolean
 
     // Singleton instance
-    private static instance: EvamApiV1
+    private static instance: EvamApi
 
     /**
      * Gets the EvamLib instance
      * @returns The EvamLib instance
      */
-    public static getInstance(): EvamApiV1 {
-        if (!EvamApiV1.instance) {
-            EvamApiV1.instance = new EvamApiV1()
+    public static getInstance(): EvamApi {
+        if (!EvamApi.instance) {
+            EvamApi.instance = new EvamApi()
         }
-        return EvamApiV1.instance
+        return EvamApi.instance
     }
 
     /**
