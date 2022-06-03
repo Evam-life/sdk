@@ -33,4 +33,4 @@ deploy:
     - cat .npmrc
     - npm install
     - npm run build
-    - npm publish --userconfig=.npmrc
+    -  node node_modules/publish-flatten --flatten sdk --userconfig=.npmrc
