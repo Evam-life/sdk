@@ -17,10 +17,10 @@
   "dependencies": {
     "publish-flatten": "^1.1.0",
     "rxjs": "~7.5.5",
-    "rxjs-observe": "~2.1.6"
+    "rxjs-observe": "~2.1.6",
+    "@devicefarmer/adbkit": "^3.2.3"
   },
   "devDependencies": {
-    "@devicefarmer/adbkit": "^3.2.3",
     "@types/bluebird": "^3.5.36",
     "@types/jest": "^28.1.0",
     "@types/node-forge": "^1.0.2",
