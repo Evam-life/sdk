@@ -1,6 +1,7 @@
 import Adb from '@devicefarmer/adbkit';
 import Bluebird, {reject} from 'bluebird';
 import fs from 'fs'
+import glob from 'glob'
 
 const client = Adb.createClient();
 const run = async () => {
@@ -33,27 +34,37 @@ const run = async () => {
                 console.error("No build directory found, make sure to run 'npm run build'.")
                 return
             }
-            const comPush = await (await dev.syncService()).push('build/.', '/data/local/tmp/life.evam.hydras/dev/')
-            await new Bluebird((resolve, reject) => {
-                comPush.on('end', () => {
-                    console.log("Build push task complete")
-                    resolve()
-                })
-                comPush.on('error', (e) => {
-                    console.error("Failed pushing build to Evam")
-                    reject(e)
+            glob("build/**", (er, files) => {
+                files.forEach( async (file) => {
+                    if (fs.lstatSync(file).isDirectory()){
+                        const fileOnDevice = file.replace("build", "")
+                        console.log(`Pushing ${fileOnDevice}`)
+                        const comCreateDir = await dev.shell(`mkdir -p /data/local/tmp/life.evam.hydras/dev/${fileOnDevice}`)
+                        await new Bluebird((resolve, reject) => {
+                            comCreateDir.on('error', (e) => {
+                                console.error(`Failed to create ${file}`)
+                                reject(e)
+                            })
+                        })
+                    } else {
+                        const fileOnDevice = file.replace("build", "")
+                        console.log(`Pushing ${fileOnDevice}`)
+                        const comPush = await dev.push(file, `/data/local/tmp/life.evam.hydras/dev/${fileOnDevice}`)
+                        await new Bluebird((resolve, reject) => {
+                            comPush.on('error', (e) => {
+                                console.error(`Failed pushing ${file}`)
+                                reject(e)
+                            })
+                        })
+                    }
                 })
             })
 
             // Hot reload trigger
             const comHotReload = await dev.shell("echo r >> /data/local/tmp/.evam.stamp.txt")
             await new Bluebird((resolve, reject) => {
-                comHotReload.on('end', () => {
-                    console.log("Reloaded app")
-                    resolve()
-                })
                 comHotReload.on('error', (e) => {
-                    console.error("Failed to reload app")
+                    console.error("Failed to hot reload")
                     reject(e)
                 })
             })

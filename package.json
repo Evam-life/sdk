@@ -18,10 +18,12 @@
     "publish-flatten": "^1.1.0",
     "rxjs": "~7.5.5",
     "rxjs-observe": "~2.1.6",
-    "@devicefarmer/adbkit": "^3.2.3"
+    "@devicefarmer/adbkit": "^3.2.3",
+    "glob": "^8.0.3"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.36",
+    "@types/glob": "^7.2.0",
     "@types/jest": "^28.1.0",
     "@types/node-forge": "^1.0.2",
     "jest": "^28.1.0",
