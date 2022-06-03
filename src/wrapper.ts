@@ -33,10 +33,10 @@ const run = async () => {
                 console.error("No build directory found, make sure to run 'npm run build'.")
                 return
             }
-            const comPush = await dev.push('build/.', '/data/local/tmp/life.evam.hydras/dev/')
+            const comPush = await (await dev.syncService()).push('build/.', '/data/local/tmp/life.evam.hydras/dev/')
             await new Bluebird((resolve, reject) => {
                 comPush.on('end', () => {
-                    console.log("Pushed build to Evam")
+                    console.log("Build push task complete")
                     resolve()
                 })
                 comPush.on('error', (e) => {
@@ -49,11 +49,11 @@ const run = async () => {
             const comHotReload = await dev.shell("echo r >> /data/local/tmp/.evam.stamp.txt")
             await new Bluebird((resolve, reject) => {
                 comHotReload.on('end', () => {
-                    console.log("Created local dir")
+                    console.log("Reloaded app")
                     resolve()
                 })
                 comHotReload.on('error', (e) => {
-                    console.error("Failed to create local dir")
+                    console.error("Failed to reload app")
                     reject(e)
                 })
             })
