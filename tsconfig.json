@@ -6,6 +6,7 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
+    "jsx": "react-jsx",
     "outDir": "sdk",
     "declaration": true,
     "baseUrl": ".",
@@ -16,7 +17,6 @@
       ]
     },
     "plugins": [
-      { "transform": "ts-reflection/transformer" }
     ]
   },
   "include": [

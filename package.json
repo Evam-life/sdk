@@ -1,6 +1,6 @@
 {
   "name": "@evam/sdk",
-  "version": "1.0.0",
+  "version": "0.3.9",
   "description": "SDK for Evam platform",
   "main": "index.ts",
   "files": [
@@ -10,7 +10,7 @@
     "evamw": "sdk/wrapper.js"
   },
   "scripts": {
-    "test": "tsc && jest --no-cache --coverage",
+    "test": "tsc && jest --no-cache --collect-coverage",
     "build": "rm -rf dist && tsc --project tsconfig.json && minify-all-js ./sdk -j -m -M -p",
     "pub": "node node_modules/publish-flatten --flatten sdk"
   },
@@ -19,20 +19,89 @@
     "rxjs": "~7.5.5",
     "rxjs-observe": "~2.1.6",
     "@devicefarmer/adbkit": "^3.2.3",
-    "glob": "^8.0.3"
+    "glob": "^8.0.3",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.6.2",
+    "@mui/material": "^5.7.0",
+    "@reduxjs/toolkit": "^1.8.1",
+    "@types/node": "^16.11.34",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.3",
+    "@types/react-redux": "^7.1.24",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-redux": "^8.0.1",
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.36",
+    "eslint": "8.22.0",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^28.1.0",
+    "@types/jest": "28.1.0",
+    "jest-environment-jsdom": "28.1.3",
     "@types/node-forge": "^1.0.2",
-    "jest": "^28.1.0",
+    "jest": "28.1.3",
+    "ts-jest": "^28.0.8",
     "minify-all-js": "~0.1.9",
-    "ts-jest": "^28.0.3",
-    "ts-reflection": "^0.3.0",
     "ttypescript": "^1.5.13",
-    "typescript": "~4.6.4"
+    "typescript": "~4.6.4",
+    "typedoc": "^0.23.14",
+    "typedoc-plugin-markdown": "^3.13.6",
+    "react-scripts": "^5.0.1",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.2.0",
+    "@testing-library/user-event": "^13.5.0"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "sdk/**/*.js"
+    ],
+    "globals": {
+      "ts-jest": {
+        "compiler": "ttypescript"
+      }
+    },
+    "roots": [
+      "./src", "./test", "./sdk"
+    ],
+    "setupFiles": [
+      "./test/setup.js"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
 }

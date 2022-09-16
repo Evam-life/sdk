@@ -1,9 +1,33 @@
+/**
+ * Main API
+ * @module EvamApi
+ */
 import { timer } from 'rxjs';
 import { Observables, observe } from 'rxjs-observe';
 
+/**
+ * Evam API singleton that exposes methods to interact with the Evam platform.
+ *
+ * @example
+ * ```ts
+ * // Get singleton instance
+ * const evamApi = EvamApi.getInstance();
+ *
+ * // Register a new callback on any operation update that simply logs it
+ * evamApi.onNewOrUpdatedOperation((activeOperation) => console.log(activeOperation));
+ *
+ * // Register a new callback on any application settings update that simply logs them
+ * evamApi.onNewOrUpdatedSettings((settings) => console.log(settings));
+ * ```
+ */
 export class EvamApi {
+    /** @hidden */
     evamData: EvamData
+
+    /** @hidden */
     observables: Observables<EvamData, object>
+
+    /** @hidden */
     proxy: EvamData & object
 
     /**
@@ -12,39 +36,48 @@ export class EvamApi {
     readonly isRunningInVehicleServices: Boolean
 
     // Singleton instance
+    /** @hidden */
     private static instance: EvamApi
 
     /**
-     * Gets the EvamLib instance
-     * @returns The EvamLib instance
+     * Gets the Evam API singleton instance
+     * @returns The Evam API instance
      */
     public static getInstance(): EvamApi {
         if (!EvamApi.instance) {
-            EvamApi.instance = new EvamApi()
+            let evamData = new EvamData(undefined, undefined)
+            const { observables, proxy } = observe(evamData)
+
+            let android = undefined
+            try {
+                // @ts-ignore
+                android = Android
+            } catch (e){
+                console.log("Running in development mode outside of Vehicle Services")
+            }
+
+            EvamApi.instance = new EvamApi(
+                evamData, observables, proxy, android
+            )
         }
         return EvamApi.instance
     }
 
     /**
      * Constructor, private because singleton
+     * @hidden
      */
-    private constructor() {
-        this.evamData = new EvamData(undefined, undefined)
-        const { observables, proxy } = observe(this.evamData)
+    protected constructor(evamData: EvamData,
+                        observables: Observables<EvamData&object>,
+                        proxy: EvamData&object, android: any) {
+        this.evamData = evamData
         this.observables = observables
         this.proxy = proxy
 
         let previousCaseCache: Object = {}
         let previousSettingsCache: Object = {}
 
-        try {
-            // @ts-ignore
-            let and = Android
-            this.isRunningInVehicleServices = true
-        } catch (e) {
-            console.log("Running in development mode outside of Vehicle Services")
-            this.isRunningInVehicleServices = false
-        }
+        this.isRunningInVehicleServices = (android != undefined)
 
         if (this.isRunningInVehicleServices) {
             const source = timer(1000, 2000)
@@ -116,11 +149,19 @@ export class EvamApi {
         this.observables.activeCase.subscribe((c) => callback(c as ActiveCase))
     }
 
+    /**
+     * Registers a callback to be run upon new application settings reception or settings update
+     * @param callback The callback to be executed
+     *
+     */
     onNewOrUpdatedSettings(callback: (settings: Object | undefined) => void) {
         this.observables.settings.subscribe((c) => callback(c))
     }
 }
 
+/**
+ * @hidden
+ */
 export class EvamData {
     activeCase: ActiveCase | undefined
     settings: Object | undefined
@@ -134,7 +175,42 @@ export class EvamData {
     }
 }
 
+
+/* istanbul ignore next */
 export class ActiveCase {
+    /**
+     *
+     * @param operationID The operation ID
+     * @param name The operation name
+     * @param sendTime The time at which the operation was sent
+     * @param createdTime The time at which the operation was created
+     * @param endTime The time at which the operation ended, `undefined` still ongoing
+     * @param callCenterId The Call Center ID
+     * @param caseFolderId The Case folder ID
+     * @param transmitterCode The transmitter code
+     * @param alarmCategory The alarm category
+     * @param alarmEventCode The alarm event code
+     * @param medicalCommander The medical commander of this operation
+     * @param medicalIncidentOfficer The medical incident office of this operation
+     * @param attachedCustomerObject The attached customer Object
+     * @param alarmEventText The alarm event text
+     * @param additionalInfo The additional information attached to this operation
+     * @param keyNumber The key number
+     * @param electronicKey The electronic key
+     * @param radioGroupMain The main radio group associated with this operation
+     * @param radioGroupSecondary The secondary radio group associated with this operation
+     * @param additionalCoordinationInformation Additional coordination information
+     * @param prio The priority of this operation
+     * @param patientName The name of the patient if any
+     * @param patientUID The personal number of the patient if any
+     * @param vehicleStatus The current vehicle status in this operation
+     * @param siteLocation The location of the destination site
+     * @param breakpointLocation The location of the breakpoint if any
+     * @param header1 The case index 2
+     * @param header2 The case index 3
+     * @param eventInfo The event description
+     * @param caseInfo The case info comment
+     */
     constructor(
         // Metadata
         public operationID: String,
@@ -186,17 +262,20 @@ export class ActiveCase {
     ) { }
 
     /**
-     * Gets the full operation ID, e.g. '1:18:6546'
+     * Gets the full operation ID, e.g. '1:18:6546', composed by 'callCenterId:caseFolderId:operationID'.
      * @returns The full operation ID
      */
     getFullId(){
         return `${this.callCenterId}:${this.caseFolderId}:${this.operationID}`
     }
 
+    /**
+     * Creates a new operation from JSON object
+     * @param op The JSON object
+     */
     static fromJson(op: any): ActiveCase | undefined {
         if (!op) return undefined
 
-        console.log(`Using op=${JSON.stringify(op)}`)
         return new ActiveCase(
             op.operationID,
             op.name,
@@ -232,7 +311,18 @@ export class ActiveCase {
     }
 }
 
+/* istanbul ignore next */
 export class VehicleStatus {
+    /**
+     * Vehicle status
+     * @param name The name of the vehicle status
+     * @param event The event associated to this status, if any
+     * @param successorName The name of a typical successor to this status based on vehicle configuration
+     * @param isStartStatus true if this status is engaged at the start of a new operation
+     * @param isEndStatus true of this status closes the current operation
+     * @param categoryType Type of status: 'mission' or 'other'
+     * @param categoryName The name of the category as defined by the vehicle user
+     */
     constructor(
         public name: String,
         public event: String | undefined,
@@ -243,6 +333,10 @@ export class VehicleStatus {
         public categoryName: String
     ) { }
 
+    /**
+     * Creates from JSON
+     * @param status JSON object
+     */
     static fromJson(status: any): VehicleStatus {
         return new VehicleStatus(
             status.name,
@@ -256,7 +350,18 @@ export class VehicleStatus {
     }
 }
 
+/* istanbul ignore next */
 export class DestinationSiteLocation {
+    /**
+     * Location of a destination site
+     * @param latitude Latitude in decimal degrees
+     * @param longitude Longitude in decimal degrees
+     * @param street The street name if available
+     * @param locality The locality name if available
+     * @param municipality The municipality name if available
+     * @param routeDirections The route directions text if available
+     * @param pickupTime The pickup time text if available
+     */
     constructor(
         public latitude: Number,
         public longitude: Number,
@@ -267,6 +372,10 @@ export class DestinationSiteLocation {
         public pickupTime: String | undefined
     ) { }
 
+    /**
+     * Create from JSON
+     * @param loc JSON object
+     */
     static fromJson(loc: any): DestinationSiteLocation {
         return new DestinationSiteLocation(
             loc.latitude,
@@ -280,7 +389,15 @@ export class DestinationSiteLocation {
     }
 }
 
+/* istanbul ignore next */
 export class DestinationControlPointLocation {
+    /**
+     * Location of a breakpoint
+     * @param latitude Latitude in decimal degrees
+     * @param longitude Longitude in decimal degrees
+     * @param name Breakpoint name if available
+     * @param additionalInfo Additional information if available
+     */
     constructor(
         public latitude: Number,
         public longitude: Number,
@@ -288,6 +405,10 @@ export class DestinationControlPointLocation {
         public additionalInfo: String | undefined
     ) { }
 
+    /**
+     * Create from JSON
+     * @param loc JSON object
+     */
     static fromJson(loc: any): DestinationControlPointLocation {
         return new DestinationControlPointLocation(
             loc.latitude,
