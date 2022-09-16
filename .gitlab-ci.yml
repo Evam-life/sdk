@@ -21,7 +21,7 @@ test:
         path: coverage/cobertura-coverage.xml
 
 deploy:
-  stage: test
+  stage: deploy
   only:
     - tags
   variables:
