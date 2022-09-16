@@ -16,7 +16,9 @@ test:
     - npm test
   artifacts:
     reports:
-      cobertura: coverage/cobertura-coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
 
 deploy:
   stage: test
