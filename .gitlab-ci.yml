@@ -26,12 +26,13 @@ deploy:
     - tags
   variables:
     REPO_ID: 4
+    AUTH_TOKEN: $DEV_PORTAL_BOT_AUTH_TOKEN
   script:
     - git config --global user.email "info@evam.life"
     - git config --global user.name "Evam Bot"
     - npm version "$CI_COMMIT_TAG"
     - echo "@evam:registry=https://www.developers.evam.life/api/v4/projects/$REPO_ID/packages/npm/" > ~/.npmrc
-    - echo "//www.developers.evam.life/api/v4/projects/$REPO_ID/packages/npm/:_authToken=${DEV_PORTAL_BOT_AUTH_TOKEN}" >> ~/.npmrc
+    - echo "//www.developers.evam.life/api/v4/projects/$REPO_ID/packages/npm/:_authToken=$AUTH_TOKEN" >> ~/.npmrc
     - head -c 160 ~/.npmrc
     - npm install
     - npm run build
