@@ -114,6 +114,40 @@ export class EvamApi {
         }
     }
 
+    setHospital(){
+
+        //this.injectOperation()
+    }
+
+    setPrio(){
+
+        //this.injectOperation()
+    }
+
+    injectLocation(){
+
+    }
+
+    injectVehicleState(){
+
+    }
+
+    injectOperations(){
+
+    }
+
+    injectTrip(){
+
+    }
+
+    injectDeviceRole(){
+
+    }
+
+    injectInternetState(){
+
+    }
+
     /**
      * Injects the Active Operation manually. This will trigger onNewOrUpdatedOperation(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.  
