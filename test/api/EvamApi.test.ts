@@ -1,53 +1,68 @@
-import {TestScheduler} from 'rxjs/testing';
-import {Observable, throttleTime} from 'rxjs'
-import {EvamApi, EvamData} from "../../sdk/api/EvamApi";
-import {Observables, observe} from "rxjs-observe";
+import {EvamApi, EvamData} from "../../src/api/EvamApi";
+import {Operation} from "../../src/classes/Operation";
 
 
 class TestEvamApi extends EvamApi {
-    public constructor(evamData: EvamData,
-                       observables: Observables<EvamData & object>,
-                       proxy: EvamData & object, android: any) {
-        super(evamData, observables, proxy, android);
+    public constructor() {
+        super();
     }
 }
 
 beforeEach(() => {
-    jest.resetAllMocks()
-})
-
-it('onNewOrUpdatedSettings subscribes to the observable', function () {
-    let evamData = new EvamData(undefined, undefined)
-    const { observables, proxy } = observe(evamData)
-
-    let spy = jest.spyOn(Observable.prototype, "subscribe")
-
-    let evamApi = new TestEvamApi(
-        new EvamData(undefined, undefined),
-        observables, proxy, undefined
-    )
-
-    expect(spy).not.toHaveBeenCalled()
-
-    evamApi.onNewOrUpdatedSettings(() => {})
-
-    expect(spy).toHaveBeenCalled()
+    jest.resetAllMocks();
 });
 
-it('onNewOrUpdatedSettings subscribes to the observable', function () {
-    let evamData = new EvamData(undefined, undefined)
-    const { observables, proxy } = observe(evamData)
 
-    let spy = jest.spyOn(Observable.prototype, "subscribe")
+it("onNewOrUpdatedSettings triggers the callback after subscription to the event", () => {
+    const settings = {test: "test"};
+    const listener = jest.fn();
 
-    let evamApi = new TestEvamApi(
-        new EvamData(undefined, undefined),
-        observables, proxy, undefined
-    )
+    let evamApi = new TestEvamApi()
 
-    expect(spy).not.toHaveBeenCalled()
+    evamApi.injectSettings(settings);
+    expect(listener).not.toHaveBeenCalled();
 
-    evamApi.onNewOrUpdatedOperation(() => {})
+    evamApi.onNewOrUpdatedSettings(listener);
+    evamApi.injectSettings(settings);
 
-    expect(spy).toHaveBeenCalled()
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
+});
+
+it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
+
+    const activeCase = Operation.fromJSON(
+        {
+            operationID: "56",
+            patientName: "Test Testkort",
+            patientUID: "900608-2381",
+            callCenterId: "18",
+            caseFolderId: "1",
+            prio: "PRIO 1",
+            vehicleStatus: {
+                name: "Kvittera"
+            },
+            destinationSiteLocation: {
+                latitude: 59.35393,
+                longitude: 17.973795,
+                street: "Vretenvägen 13"
+            },
+            name: "Brand i bilen",
+            sendTime: (new Date()).getTime() / 1000,
+            createdTime: (new Date()).getTime() / 1000,
+        }
+    );
+
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectOperation(activeCase);
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedOperation(listener);
+    evamApi.injectOperation(activeCase);
+
+    expect(listener).toHaveBeenCalledWith(
+        expect.objectContaining(activeCase)
+    );
 });

@@ -1,4 +1,4 @@
-# Class: EvamApi
+-# Class: EvamApi
 
 Evam API singleton that exposes methods to interact with the Evam platform.
 

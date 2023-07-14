@@ -1,0 +1,5 @@
+enum DeviceRole {
+    SINGLE_DEVICE,
+    RECIEVING_DEVICE,
+    MAIN_DEVICE
+}
