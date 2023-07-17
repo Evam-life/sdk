@@ -1,4 +1,3 @@
-import {Operation} from "../../src/classes/Operation";
 
 /*it("tests that fromJSON converts correctly for Operation class (even when certain non-required keys are not specified)", () => {
 
