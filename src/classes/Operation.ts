@@ -8,7 +8,7 @@ class Operation {
         // Metadata
         public operationID: String,
         public name: String,
-        public sendTime: Date,
+        public sendTime: Date | undefined,
         public createdTime: Date | undefined,
         public endTime: Date | undefined,
         // Rakel
@@ -51,12 +51,13 @@ class Operation {
     }
 
     static fromJSON(data: any) {
+        console.log(data.sendTime + 'here')
         return new Operation(
             data.operationID,
             data.name,
-            new Date(data.sendTime),
-            new Date(data.createdTime),
-            new Date(data.endTime),
+            data.sendTime === undefined ? new Date(data.sendTime) : undefined,
+            data.createdTime === undefined ? new Date(data.createdTime) : undefined,
+            data.endTime === undefined ? new Date(data.endTime) : undefined,
             data.callCenterId,
             data.caseFolderId,
             data.transmitterCode,
