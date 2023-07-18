@@ -3,3 +3,5 @@ enum DeviceRole {
     RECEIVING_DEVICE,
     MAIN_DEVICE
 }
+
+export {DeviceRole}

@@ -6,7 +6,7 @@ enum EvamEvents {
     NewOrUpdatedLocation = 'newOrUpdatedLocation',
     NewOrUpdatedVehicleState = 'newOrUpdatedVehicleState',
     NewOrUpdatedTripLocationHistory = 'newOrUpdatedTripLocationHistory',
-    _testEvent = 'testEvent'
+    _testEvent = '_testEvent'
 }
 
 export default EvamEvents

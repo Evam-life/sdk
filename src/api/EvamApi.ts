@@ -10,6 +10,7 @@ import {InternetState} from "../domain/InternetState";
 import {VehicleState} from "../domain/VehicleState";
 import {TripLocationHistory} from "../domain/TripLocationHistory";
 import {Location} from "../domain/Location";
+import {DeviceRole} from "../domain/DeviceRole";
 
 
 const getIsRunningInVehicleServices = (): boolean => {
@@ -177,7 +178,7 @@ export class EvamApi {
     injectVehicleState(vehicleState: VehicleState) {
         EvamApi.evamData.vehicleState = vehicleState;
         if (!EvamApi.isRunningInVehicleServices) {
-            publish(EvamEvents.NewOrUpdatedInternetState, vehicleState);
+            publish(EvamEvents.NewOrUpdatedVehicleState, vehicleState);
         } else {
             throw Error("Injecting an VehicleState is not allowed in the Vehicle Services environment.");
         }
@@ -186,7 +187,7 @@ export class EvamApi {
     injectTrip(tripLocationHistory:TripLocationHistory) {
         EvamApi.evamData.tripLocationHistory = tripLocationHistory;
         if (!EvamApi.isRunningInVehicleServices) {
-
+            publish(EvamEvents.NewOrUpdatedTripLocationHistory, tripLocationHistory)
         } else {
             throw Error("Injecting an TripLocationHistory is not allowed in the Vehicle Services environment.");
         }
