@@ -76,44 +76,46 @@ export class EvamApi {
         EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedOperation, callback);
-            EvamApi.newOrUpdatedOperationCallbacks = [];
         });
 
         EvamApi.newOrUpdatedSettingsCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedSettings, callback);
-            EvamApi.newOrUpdatedSettingsCallbacks = [];
         });
 
         EvamApi.newOrUpdatedLocationCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedLocation, callback);
-            EvamApi.newOrUpdatedLocationCallbacks = [];
         });
 
         EvamApi.newOrUpdatedDeviceRoleCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedDeviceRole, callback);
-            EvamApi.newOrUpdatedDeviceRoleCallbacks = [];
         });
 
         EvamApi.newOrUpdatedInternetStateCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedInternetState, callback);
-            EvamApi.newOrUpdatedInternetStateCallbacks = [];
         });
 
         EvamApi.newOrUpdatedVehicleStateCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedVehicleState, callback);
-            EvamApi.newOrUpdatedVehicleStateCallbacks = [];
         });
 
         EvamApi.newOrUpdatedTripLocationHistoryCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedTripLocationHistory, callback);
-            EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
         });
+
+        EvamApi.newOrUpdatedOperationCallbacks = [];
+        EvamApi.newOrUpdatedSettingsCallbacks = [];
+        EvamApi.newOrUpdatedLocationCallbacks = [];
+        EvamApi.newOrUpdatedDeviceRoleCallbacks = [];
+        EvamApi.newOrUpdatedInternetStateCallbacks = [];
+        EvamApi.newOrUpdatedVehicleStateCallbacks = [];
+        EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
+
 
     };
 
