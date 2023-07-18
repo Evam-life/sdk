@@ -107,7 +107,7 @@ it("onNewOrUpdatedLocation triggers the callback after subscription to the event
     evamApi.injectLocation(convertedLocation)
     expect(listener).not.toHaveBeenCalled();
 
-    evamApi.onNewOrUpdatedOperation(listener);
+    evamApi.onNewOrUpdatedLocation(listener);
     evamApi.injectLocation(convertedLocation);
 
     expect(listener).toHaveBeenCalledWith(
