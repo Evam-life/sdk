@@ -1,5 +1,3 @@
-
-import {Location} from "../../src/domain/Location";
 import * as _ from "lodash";
 import {DestinationSiteLocation} from "../../src/domain/DestinationSiteLocation";
 import {destinationSiteLocation} from "../../src/data/testdata";
