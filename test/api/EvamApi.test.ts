@@ -4,7 +4,7 @@ import {Location} from "../../src/domain/Location";
 import {location, vehicleState, operation, tripLocationHistory} from "../../src/data/testdata";
 import {InternetState} from "../../src/domain/InternetState";
 import {VehicleState} from "../../src/domain/VehicleState";
-import {TripLocationHistory} from "../../src/domain/Location";
+import {TripLocationHistory} from "../../src/domain/TripLocationHistory";
 import {DeviceRole} from "../../src/domain/DeviceRole";
 
 class TestEvamApi extends EvamApi {
