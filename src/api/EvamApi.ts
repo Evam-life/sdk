@@ -56,7 +56,13 @@ export class EvamData {
  */
 export class EvamApi {
 
+
     private static evamData: EvamData = new EvamData();
+
+    /**
+     * These arrays store references to every callback subscribed to certain events. We use these references to later unsubscribe from DOM events.
+     * @hidden
+     */
     private static newOrUpdatedOperationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
     private static newOrUpdatedSettingsCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
     private static newOrUpdatedLocationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
@@ -154,7 +160,7 @@ export class EvamApi {
                 }
             }
         } else {
-            throw Error("");
+            throw Error("Setting a prio is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -163,7 +169,7 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
             publish(EvamEvents.NewOrUpdatedLocation, location);
         } else {
-            throw Error("");
+            throw Error("Injecting an Location is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -172,7 +178,7 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
             publish(EvamEvents.NewOrUpdatedInternetState, vehicleState);
         } else {
-            throw Error("");
+            throw Error("Injecting an VehicleState is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -181,7 +187,7 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
 
         } else {
-            throw Error("");
+            throw Error("Injecting an TripLocationHistory is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -190,7 +196,7 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
             publish(EvamEvents.NewOrUpdatedDeviceRole, deviceRole);
         } else {
-            throw Error("");
+            throw Error("Injecting an DeviceRole is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -199,7 +205,7 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
             publish(EvamEvents.NewOrUpdatedInternetState, internetState);
         } else {
-            throw Error("");
+            throw Error("Injecting an internetState is not allowed in the Vehicle Services environment.");
         }
     }
 
