@@ -102,6 +102,19 @@ export class EvamApi {
             unsubscribe(EvamEvents.NewOrUpdatedInternetState, callback);
             EvamApi.newOrUpdatedInternetStateCallbacks = [];
         });
+
+        EvamApi.newOrUpdatedVehicleStateCallbacks.forEach((callback) => {
+            //@ts-ignore
+            unsubscribe(EvamEvents.NewOrUpdatedVehicleState, callback);
+            EvamApi.newOrUpdatedVehicleStateCallbacks = [];
+        });
+
+        EvamApi.newOrUpdatedTripLocationHistoryCallbacks.forEach((callback) => {
+            //@ts-ignore
+            unsubscribe(EvamEvents.NewOrUpdatedTripLocationHistory, callback);
+            EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
+        });
+
     };
 
     setHospital(id: number) {
