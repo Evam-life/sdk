@@ -1,5 +1,6 @@
 import {EvamApi} from "../../src/api/EvamApi";
 import {Operation} from "../../src/domain/Operation";
+import {operation} from "../../src/data/testdata";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -16,7 +17,7 @@ it("onNewOrUpdatedSettings triggers the callback after subscription to the event
     const settings = {test: "test"};
     const listener = jest.fn();
 
-    let evamApi = new TestEvamApi()
+    let evamApi = new TestEvamApi();
 
     evamApi.injectSettings(settings);
     expect(listener).not.toHaveBeenCalled();
@@ -27,11 +28,11 @@ it("onNewOrUpdatedSettings triggers the callback after subscription to the event
     expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
 });
 
-it("onNewOrUpdatedSettings triggers the callback after subscription to the event AND then doesn't trigger the callback after unsubscription from all events", () => {
+it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription from all events", () => {
     const settings = {test: "test"};
     const listener = jest.fn();
 
-    let evamApi = new TestEvamApi()
+    let evamApi = new TestEvamApi();
 
     evamApi.injectSettings(settings);
     expect(listener).not.toHaveBeenCalled();
@@ -42,78 +43,51 @@ it("onNewOrUpdatedSettings triggers the callback after subscription to the event
 
     evamApi.unsubscribeFromAllCallbacks();
     evamApi.injectSettings(settings);
-    expect(listener).toHaveBeenCalledTimes(1)
+    expect(listener).toHaveBeenCalledTimes(1);
 
 });
 
-it('onNewOrUpdatedSettings triggers multiple set callbacks',()=>{
-    const settings = {test:'test'};
-    const listeners = [jest.fn(),jest.fn()];
+it("onNewOrUpdatedSettings triggers multiple set callbacks", () => {
+    const settings = {test: "test"};
+    const listeners = [jest.fn(), jest.fn()];
 
     let evamApi = new TestEvamApi();
 
-    evamApi.injectSettings(settings)
+    evamApi.injectSettings(settings);
 
-    listeners.forEach((listener)=>{
+    listeners.forEach((listener) => {
         expect(listener).not.toHaveBeenCalled();
-    })
+    });
 
-    listeners.forEach((listener)=>{
+    listeners.forEach((listener) => {
         evamApi.onNewOrUpdatedSettings(listener);
-    })
+    });
 
     evamApi.injectSettings(settings);
 
-    listeners.forEach((listener)=>{
+    listeners.forEach((listener) => {
         expect(listener).toHaveBeenCalledTimes(1);
-    })
-})
+    });
+});
 
 it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
 
-
-    const vehicleStatus = {
-        name: 59.3538975,
-        event: 17.9721877,
-        successorName: "test",
-        isStartStatus: true,
-        isEndStatus: true,
-        categoryType: "test",
-        categoryName: "test",
-    };
-
-    const activeCase = Operation.fromJSON(
-        {
-            operationID: "56",
-            patientName: "Test Testkort",
-            patientUID: "900608-2381",
-            callCenterId: "18",
-            caseFolderId: "1",
-            prio: "PRIO 1",
-            vehicleStatus,
-            destinationSiteLocation: {
-                latitude: 59.35393,
-                longitude: 17.973795,
-                street: "Vretenvägen 13"
-            },
-            name: "Brand i bilen",
-            sendTime: (new Date()).getTime() / 1000,
-            createdTime: (new Date()).getTime() / 1000,
-        }
+    const activeOperation = Operation.fromJSON(
+        operation
     );
 
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
 
-    evamApi.injectOperation(activeCase);
+    evamApi.injectOperation(activeOperation);
     expect(listener).not.toHaveBeenCalled();
 
     evamApi.onNewOrUpdatedOperation(listener);
-    evamApi.injectOperation(activeCase);
+    evamApi.injectOperation(activeOperation);
 
     expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining(activeCase)
+        expect.objectContaining(activeOperation)
     );
 
 });
