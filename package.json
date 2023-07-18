@@ -60,7 +60,13 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "ignorePatterns": [
+      "sdk"
+    ],
+    "rules": {
+      "import/no-unresolved": ["error", { "ignore": ["sdk"] }]
+    }
   },
   "browserslist": {
     "production": [

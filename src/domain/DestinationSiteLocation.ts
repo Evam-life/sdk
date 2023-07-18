@@ -11,13 +11,13 @@ class DestinationSiteLocation {
      * @param pickupTime The pickup time text if available
      */
     constructor(
-        public latitude: Number,
-        public longitude: Number,
-        public street: String | undefined,
-        public locality: String | undefined,
-        public municipality: String | undefined,
-        public routeDirections: String | undefined,
-        public pickupTime: String | undefined
+        public latitude: number,
+        public longitude: number,
+        public street: string | undefined,
+        public locality: string | undefined,
+        public municipality: string | undefined,
+        public routeDirections: string | undefined,
+        public pickupTime: string | undefined
     ) { }
 
     /**
@@ -25,6 +25,9 @@ class DestinationSiteLocation {
      * @param loc JSON object
      */
     static fromJSON(loc: any): DestinationSiteLocation {
+        if (loc.latitude === undefined || loc.longitude === undefined){
+            throw Error('latitude and longitude must be defined for DestinationSiteLocation')
+        }
         return new DestinationSiteLocation(
             loc.latitude,
             loc.longitude,

@@ -1,5 +1,6 @@
-import {EvamApi, EvamData} from "../../src/api/EvamApi";
-import {Operation} from "../../src/classes/Operation";
+import {EvamApi} from "../../src/api/EvamApi";
+import {Operation} from "../../src/domain/Operation";
+import EvamEvents from "../../src/domain/EvamEvents";
 
 
 class TestEvamApi extends EvamApi {
@@ -27,6 +28,48 @@ it("onNewOrUpdatedSettings triggers the callback after subscription to the event
 
     expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
 });
+
+it("onNewOrUpdatedSettings triggers the callback after subscription to the event AND then doesn't trigger the callback after unsubscription from all events", () => {
+    const settings = {test: "test"};
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi()
+
+    evamApi.injectSettings(settings);
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedSettings(listener);
+    evamApi.injectSettings(settings);
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
+
+    evamApi.unsubscribeFromAllCallbacks();
+    evamApi.injectSettings(settings);
+    expect(listener).toHaveBeenCalledTimes(1)
+
+});
+
+it('onNewOrUpdatedSettings triggers multiple set callbacks',()=>{
+    const settings = {test:'test'};
+    const listeners = [jest.fn(),jest.fn()];
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectSettings(settings)
+
+    listeners.forEach((listener)=>{
+        expect(listener).not.toHaveBeenCalled();
+    })
+
+    listeners.forEach((listener)=>{
+        evamApi.onNewOrUpdatedSettings(listener);
+    })
+
+    evamApi.injectSettings(settings);
+
+    listeners.forEach((listener)=>{
+        expect(listener).toHaveBeenCalledTimes(1);
+    })
+})
 
 it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
 
@@ -65,4 +108,5 @@ it("onNewOrUpdatedOperation triggers the callback after subscription to the even
     expect(listener).toHaveBeenCalledWith(
         expect.objectContaining(activeCase)
     );
+
 });

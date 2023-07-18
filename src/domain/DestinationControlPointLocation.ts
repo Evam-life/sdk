@@ -7,10 +7,10 @@ class DestinationControlPointLocation {
      * @param additionalInfo Additional information if available
      */
     constructor(
-        public latitude: Number,
-        public longitude: Number,
-        public name: String | undefined,
-        public additionalInfo: String | undefined
+        public latitude: number,
+        public longitude: number,
+        public name: string | undefined,
+        public additionalInfo: string | undefined
     ) {
     }
 
@@ -19,6 +19,9 @@ class DestinationControlPointLocation {
      * @param loc JSON object
      */
     static fromJSON(loc: any): DestinationControlPointLocation {
+        if (loc.latitude === undefined || loc.longitude === undefined){
+            throw Error('latitude and longitude must be defined for DestinationControlPointLocation')
+        }
         return new DestinationControlPointLocation(
             loc.latitude,
             loc.longitude,

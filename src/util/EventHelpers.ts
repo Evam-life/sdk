@@ -1,4 +1,4 @@
-import EvamEvents from "../types/EvamEvents";
+import EvamEvents from "../domain/EvamEvents";
 
 function subscribe(eventName:EvamEvents, listener:EventListenerOrEventListenerObject) {
     document.addEventListener(eventName.toString(), listener);

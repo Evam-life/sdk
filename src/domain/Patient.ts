@@ -6,6 +6,9 @@ class Patient {
     static fromJSON(
         patient:any
     ){
+        if(patient.name === undefined || patient.uid === undefined){
+            throw Error('name and uid must be declared in Patient')
+        }
         return new Patient(patient.name,
             patient.uid)
     }

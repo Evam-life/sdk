@@ -11,13 +11,13 @@ class VehicleStatus {
      * @param categoryName The name of the category as defined by the vehicle user
      */
     constructor(
-        public name: String,
-        public event: String | undefined,
-        public successorName: String | undefined,
-        public isStartStatus: Boolean,
-        public isEndStatus: Boolean,
-        public categoryType: String,
-        public categoryName: String
+        public name: string,
+        public event: string | undefined,
+        public successorName: string | undefined,
+        public isStartStatus: boolean,
+        public isEndStatus: boolean,
+        public categoryType: string,
+        public categoryName: string
     ) {
     }
 
@@ -26,6 +26,9 @@ class VehicleStatus {
      * @param status JSON object
      */
     static fromJSON(status: any): VehicleStatus {
+        if(status.name===undefined){
+            throw Error('Name must be defined for VehicleStatus')
+        }
         return new VehicleStatus(
             status.name,
             status.event,

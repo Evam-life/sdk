@@ -8,6 +8,9 @@ class SystemHealth {
     }
 
     static fromJSON(systemHealth:any){
+        if (systemHealth.isHealthy === undefined){
+            throw Error('isHealthy must be defined for SystemHealth')
+        }
         return new SystemHealth(
             systemHealth.isHealthy,
             systemHealth.message,
