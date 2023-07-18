@@ -27,6 +27,7 @@
     "@types/react-dom": "^18.0.3",
     "@types/react-redux": "^7.1.24",
     "glob": "^8.0.3",
+    "lodash": "^4.17.21",
     "publish-flatten": "^1.1.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
@@ -42,6 +43,7 @@
     "@types/bluebird": "^3.5.36",
     "@types/glob": "^7.2.0",
     "@types/jest": "28.1.0",
+    "@types/lodash": "^4.14.195",
     "@types/node-forge": "^1.0.2",
     "eslint": "8.22.0",
     "jest": "28.1.3",
@@ -65,7 +67,14 @@
       "sdk"
     ],
     "rules": {
-      "import/no-unresolved": ["error", { "ignore": ["sdk"] }]
+      "import/no-unresolved": [
+        "error",
+        {
+          "ignore": [
+            "sdk"
+          ]
+        }
+      ]
     }
   },
   "browserslist": {

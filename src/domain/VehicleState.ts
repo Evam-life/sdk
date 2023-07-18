@@ -3,9 +3,9 @@ import {VehicleStatus} from "./VehicleStatus";
 
 class VehicleState {
     constructor(
+        public timestamp:Date,
         public vehicleStatus: VehicleStatus | undefined,
         public activeCaseFullId: string | undefined,
-        public timestamp:Date,
         public vehicleLocation: Location | undefined
     ) {
     }
@@ -15,9 +15,9 @@ class VehicleState {
             throw Error('Timestamp must be declared in VehicleState')
         }
         return new VehicleState(
+            new Date(vehicleState.timestamp),
             vehicleState.vehicleStatus,
             vehicleState.activeCaseFullId,
-            vehicleState.timestamp,
             vehicleState.vehicleLocation
         )
     }

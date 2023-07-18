@@ -1,4 +1,3 @@
-
 class SystemHealth {
     constructor(
         public isHealthy:boolean,
@@ -14,9 +13,9 @@ class SystemHealth {
         return new SystemHealth(
             systemHealth.isHealthy,
             systemHealth.message,
-            systemHealth.timestamp
+            systemHealth.timestamp !== undefined ? new Date(systemHealth.timestamp) : undefined
         )
     }
 }
 
-export {SystemHealth}
+export {SystemHealth};

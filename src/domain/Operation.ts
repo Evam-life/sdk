@@ -38,7 +38,7 @@ class Operation {
         public patientUID: string | undefined,
         // status, destinations
         public vehicleStatus: VehicleStatus | undefined,
-        public siteLocation: DestinationSiteLocation | undefined,
+        public destinationSiteLocation: DestinationSiteLocation | undefined,
         public breakpointLocation: DestinationControlPointLocation | undefined,
         public availableHospitalLocations: Array<HospitalLocation> | undefined,
         // Case index 2, 3, event description, comment

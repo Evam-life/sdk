@@ -1,43 +1,34 @@
 import {Location} from "../../src/domain/Location";
+import * as _ from "lodash"
+import {location} from "../../src/data/testdata";
+
 
 it('tests that Location fromJSON correctly assigns right values',()=>{
-    const loc = {
-        latitude: 59.3538975,
-        longitude: 17.9721877,
-        timestamp: new Date(0).getTime()
-    }
 
+    const convertedLocation = Location.fromJSON(location);
 
-    const convertedLocation = Location.fromJSON(loc);
+    expect(convertedLocation.latitude).not.toBeUndefined()
+    expect(convertedLocation.longitude).not.toBeUndefined()
+    expect(convertedLocation.timestamp).not.toBeUndefined()
 
-    expect(loc.latitude).toEqual(convertedLocation.latitude)
-    expect(loc.longitude).toEqual(convertedLocation.longitude)
-    expect(new Date(loc.timestamp)).toEqual(convertedLocation.timestamp)
+    expect(location.latitude).toEqual(convertedLocation.latitude)
+    expect(location.longitude).toEqual(convertedLocation.longitude)
+    expect(new Date(location.timestamp)).toEqual(convertedLocation.timestamp)
 })
 
 it('tests that Location fromJSON throws error when latitude or longitude are not present in JSON',()=>{
-    const locWithoutLat = {
-        longitude: 17.9721877,
-        timestamp: new Date(0).getTime()
-    }
-
-    const locWithoutLong = {
-        latitude: 59.3538975,
-        timestamp: new Date(0).getTime()
-    }
-
-    const locWithoutLatAndLong = {
-        timestamp: new Date(0).getTime()
-    }
+    const locWithoutLatitude = _.omit(location,'latitude')
+    const locWithoutLongitude = _.omit(location,'longitude')
+    const locWithoutLatitudeAndLongitude = _.omit(location,['latitude','longitude'])
 
     expect(()=> {
-        Location.fromJSON(locWithoutLat);
+        Location.fromJSON(locWithoutLatitude);
     }).toThrow()
     expect(()=> {
-        Location.fromJSON(locWithoutLong);
+        Location.fromJSON(locWithoutLongitude);
     }).toThrow()
     expect(()=> {
-        Location.fromJSON(locWithoutLatAndLong);
+        Location.fromJSON(locWithoutLatitudeAndLongitude);
     }).toThrow()
 
 })

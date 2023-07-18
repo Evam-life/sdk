@@ -8,6 +8,7 @@ import EvamEvents from "../domain/EvamEvents";
 import {Operation} from "../domain/Operation";
 import {InternetState} from "../domain/InternetState";
 
+
 const getIsRunningInVehicleServices = (): boolean => {
     try {
         //@ts-ignore

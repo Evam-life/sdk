@@ -71,6 +71,17 @@ it('onNewOrUpdatedSettings triggers multiple set callbacks',()=>{
 
 it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
 
+
+    const vehicleStatus = {
+        name: 59.3538975,
+        event: 17.9721877,
+        successorName: "test",
+        isStartStatus: true,
+        isEndStatus: true,
+        categoryType: "test",
+        categoryName: "test",
+    };
+
     const activeCase = Operation.fromJSON(
         {
             operationID: "56",
@@ -79,9 +90,7 @@ it("onNewOrUpdatedOperation triggers the callback after subscription to the even
             callCenterId: "18",
             caseFolderId: "1",
             prio: "PRIO 1",
-            vehicleStatus: {
-                name: "Kvittera"
-            },
+            vehicleStatus,
             destinationSiteLocation: {
                 latitude: 59.35393,
                 longitude: 17.973795,

@@ -17,6 +17,7 @@ class HospitalLocation {
             throw Error('id, latitude and longitude must be defined for HospitalLocation')
         }
             return new HospitalLocation(
+                hospitalLocation.id,
                 hospitalLocation.latitude,
                 hospitalLocation.longitude,
                 hospitalLocation.name,
@@ -24,7 +25,6 @@ class HospitalLocation {
                 hospitalLocation.city,
                 hospitalLocation.region,
                 hospitalLocation.postalCode,
-                hospitalLocation.id
             );
     }
 }
