@@ -1,6 +1,8 @@
 import {EvamApi} from "../../src/api/EvamApi";
 import {Operation} from "../../src/domain/Operation";
 import {operation} from "../../src/data/testdata";
+import {Location} from "../../src/domain/Location";
+import {location} from "../../sdk/data/testdata";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -72,7 +74,7 @@ it("onNewOrUpdatedSettings triggers multiple set callbacks", () => {
 
 it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
 
-    const activeOperation = Operation.fromJSON(
+    const convertedOperation = Operation.fromJSON(
         operation
     );
 
@@ -80,14 +82,36 @@ it("onNewOrUpdatedOperation triggers the callback after subscription to the even
 
     let evamApi = new TestEvamApi();
 
-    evamApi.injectOperation(activeOperation);
+    evamApi.injectOperation(convertedOperation);
     expect(listener).not.toHaveBeenCalled();
 
     evamApi.onNewOrUpdatedOperation(listener);
-    evamApi.injectOperation(activeOperation);
+    evamApi.injectOperation(convertedOperation);
 
     expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining(activeOperation)
+        expect.objectContaining(convertedOperation)
+    );
+
+});
+
+it("onNewOrUpdatedLocation triggers the callback after subscription to the event", () => {
+
+    const convertedLocation = Location.fromJSON(
+        location
+    );
+
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectLocation(convertedLocation)
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedOperation(listener);
+    evamApi.injectLocation(convertedLocation);
+
+    expect(listener).toHaveBeenCalledWith(
+        expect.objectContaining(convertedLocation)
     );
 
 });
