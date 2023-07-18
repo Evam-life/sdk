@@ -1,8 +1,6 @@
 import {EvamAppBarLayout} from "../../src/component/appbar/EvamAppBarLayout";
 import {
-    act,
     fireEvent,
-    getByText,
     render,
     screen
 } from '@testing-library/react';
@@ -14,9 +12,6 @@ import {EvamTabPanel} from "../../src/component/appbar/EvamTabPanel";
 import * as React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import {clickButton} from "../testutils/clickButton";
-import {
-    EvamSearchInput
-} from "../../src/component/appbar/header/EvamSearchInput";
 import {EvamTabSearch} from "../../src/component/appbar/EvamTabSearch";
 
 // A basic test application with Search
