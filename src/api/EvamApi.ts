@@ -9,6 +9,7 @@ import {Operation} from "../domain/Operation";
 import {InternetState} from "../domain/InternetState";
 import {VehicleState} from "../domain/VehicleState";
 import {TripLocationHistory} from "../domain/TripLocationHistory";
+import {Location} from "../domain/Location";
 
 
 const getIsRunningInVehicleServices = (): boolean => {
