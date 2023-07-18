@@ -7,6 +7,8 @@ import {publish, unsubscribe} from "../util/EventHelpers";
 import EvamEvents from "../domain/EvamEvents";
 import {Operation} from "../domain/Operation";
 import {InternetState} from "../domain/InternetState";
+import {VehicleState} from "../domain/VehicleState";
+import {TripLocationHistory} from "../domain/TripLocationHistory";
 
 
 const getIsRunningInVehicleServices = (): boolean => {
@@ -29,7 +31,9 @@ export class EvamData {
         public settings?: object | undefined,
         public internetState?: InternetState | undefined,
         public deviceRole?: DeviceRole | undefined,
-        public location?: Location | undefined
+        public location?: Location | undefined,
+        public vehicleState?: VehicleState | undefined,
+        public tripLocationHistory?: TripLocationHistory | undefined
     ) {
 
     }
@@ -53,11 +57,13 @@ export class EvamData {
 export class EvamApi {
 
     private static evamData: EvamData = new EvamData();
-    private static handleNewOrUpdatedOperation: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static handleNewOrUpdatedSettings: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static handleNewOrUpdatedLocation: Array<((location: Location | undefined) => void)> = new Array<(location: (Location | undefined)) => void>();
-    private static handleNewOrUpdatedDeviceRole: Array<((deviceRole: DeviceRole | undefined) => void)> = new Array<(deviceRole: (DeviceRole | undefined)) => void>();
-    private static handleNewOrUpdatedInternetState: Array<((internetState: InternetState | undefined) => void)> = new Array<(internetState: (InternetState | undefined)) => void>();
+    private static newOrUpdatedOperationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedSettingsCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedLocationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedDeviceRoleCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedInternetStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedVehicleStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedTripLocationHistoryCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
 
     /**
      * True if Vehicle Services environment is detected, False otherwise (for instance, a web
@@ -67,34 +73,34 @@ export class EvamApi {
     public static readonly isRunningInVehicleServices: boolean = getIsRunningInVehicleServices();
 
     unsubscribeFromAllCallbacks = () => {
-        EvamApi.handleNewOrUpdatedOperation.forEach((callback) => {
+        EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedOperation, callback);
-            EvamApi.handleNewOrUpdatedOperation = [];
+            EvamApi.newOrUpdatedOperationCallbacks = [];
         });
 
-        EvamApi.handleNewOrUpdatedSettings.forEach((callback) => {
+        EvamApi.newOrUpdatedSettingsCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedSettings, callback);
-            EvamApi.handleNewOrUpdatedSettings = [];
+            EvamApi.newOrUpdatedSettingsCallbacks = [];
         });
 
-        EvamApi.handleNewOrUpdatedLocation.forEach((callback) => {
+        EvamApi.newOrUpdatedLocationCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedLocation, callback);
-            EvamApi.handleNewOrUpdatedLocation = [];
+            EvamApi.newOrUpdatedLocationCallbacks = [];
         });
 
-        EvamApi.handleNewOrUpdatedDeviceRole.forEach((callback) => {
+        EvamApi.newOrUpdatedDeviceRoleCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedDeviceRole, callback);
-            EvamApi.handleNewOrUpdatedDeviceRole = [];
+            EvamApi.newOrUpdatedDeviceRoleCallbacks = [];
         });
 
-        EvamApi.handleNewOrUpdatedInternetState.forEach((callback) => {
+        EvamApi.newOrUpdatedInternetStateCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedInternetState, callback);
-            EvamApi.handleNewOrUpdatedInternetState = [];
+            EvamApi.newOrUpdatedInternetStateCallbacks = [];
         });
     };
 
@@ -137,25 +143,26 @@ export class EvamApi {
         }
     }
 
-    injectLocation() {
+    injectLocation(location: Location) {
+        EvamApi.evamData.location = location;
         if (!EvamApi.isRunningInVehicleServices) {
-
+            publish(EvamEvents.NewOrUpdatedLocation, location);
         } else {
             throw Error("");
         }
     }
 
-    injectVehicleState() {
+    injectVehicleState(vehicleState: VehicleState) {
+        EvamApi.evamData.vehicleState = vehicleState;
         if (!EvamApi.isRunningInVehicleServices) {
-            if (EvamApi.evamData.activeCase === undefined) {
-            } else {
-            }
+            publish(EvamEvents.NewOrUpdatedInternetState, vehicleState);
         } else {
             throw Error("");
         }
     }
 
-    injectTrip() {
+    injectTrip(tripLocationHistory:TripLocationHistory) {
+        EvamApi.evamData.tripLocationHistory = tripLocationHistory;
         if (!EvamApi.isRunningInVehicleServices) {
 
         } else {
@@ -164,16 +171,18 @@ export class EvamApi {
     }
 
     injectDeviceRole(deviceRole: DeviceRole) {
+        EvamApi.evamData.deviceRole = deviceRole;
         if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.deviceRole = deviceRole;
+            publish(EvamEvents.NewOrUpdatedDeviceRole, deviceRole);
         } else {
             throw Error("");
         }
     }
 
     injectInternetState(internetState: InternetState) {
+        EvamApi.evamData.internetState = internetState;
         if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.internetState = internetState;
+            publish(EvamEvents.NewOrUpdatedInternetState, internetState);
         } else {
             throw Error("");
         }
@@ -188,7 +197,6 @@ export class EvamApi {
     injectOperation(activeCase: Operation | undefined) {
         EvamApi.evamData.activeCase = activeCase;
         if (!EvamApi.isRunningInVehicleServices) {
-            //EvamApi.proxy.activeCase = activeCase
             publish(EvamEvents.NewOrUpdatedOperation, activeCase);
         } else {
             throw Error("Injecting an Operation is not allowed in the Vehicle Services environment, use the Vehicle Services Demo tool instead.");
@@ -221,7 +229,7 @@ export class EvamApi {
             const c = (e: Event) => {
                 callback((<CustomEvent>e).detail as Operation);
             };
-            EvamApi.handleNewOrUpdatedOperation.push(c);
+            EvamApi.newOrUpdatedOperationCallbacks.push(c);
             EventHelpers.subscribe(EvamEvents.NewOrUpdatedOperation, c);
         }
     }
@@ -234,16 +242,19 @@ export class EvamApi {
     onNewOrUpdatedSettings(callback: (settings: object | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail);
+                callback((<CustomEvent>e).detail as object);
             };
-            EvamApi.handleNewOrUpdatedSettings.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedSettings,c);
+            EvamApi.newOrUpdatedSettingsCallbacks.push(c);
+            EventHelpers.subscribe(EvamEvents.NewOrUpdatedSettings, c);
         }
     }
 
     onNewOrUpdatedDeviceRole(callback: (deviceRole: DeviceRole | undefined) => void) {
         if (callback) {
-            EvamApi.handleNewOrUpdatedDeviceRole.push(callback);
+            const c = (e: Event) => {
+                callback((<CustomEvent>e).detail as DeviceRole);
+            };
+            EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
             EventHelpers.subscribe(EvamEvents.NewOrUpdatedDeviceRole, (e) => {
                 callback((<CustomEvent>e).detail);
             });
@@ -252,7 +263,10 @@ export class EvamApi {
 
     onNewOrUpdatedLocation(callback: (location: Location | undefined) => void) {
         if (callback) {
-            EvamApi.handleNewOrUpdatedLocation.push(callback);
+            const c = (e: Event) => {
+                callback((<CustomEvent>e).detail as Location);
+            };
+            EvamApi.newOrUpdatedLocationCallbacks.push(c);
             EventHelpers.subscribe(EvamEvents.NewOrUpdatedLocation, (e) => {
                 callback((<CustomEvent>e).detail);
             });
@@ -261,8 +275,35 @@ export class EvamApi {
 
     onNewOrUpdatedInternetState(callback: (internetState: InternetState | undefined) => void) {
         if (callback) {
-            EvamApi.handleNewOrUpdatedInternetState.push(callback);
+            const c = (e: Event) => {
+                callback((<CustomEvent>e).detail as InternetState);
+            };
+            EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
             EventHelpers.subscribe(EvamEvents.NewOrUpdatedInternetState, (e) => {
+                callback((<CustomEvent>e).detail);
+            });
+        }
+    }
+
+    onNewOrUpdatedVehicleState(callback: (vehicleState: VehicleState | undefined) => void) {
+        if (callback) {
+            const c = (e: Event) => {
+                callback((<CustomEvent>e).detail as VehicleState);
+            };
+            EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
+            EventHelpers.subscribe(EvamEvents.NewOrUpdatedVehicleState, (e) => {
+                callback((<CustomEvent>e).detail);
+            });
+        }
+    }
+
+    onNewOrUpdatedTripLocationHistory(callback: (tripLocationHistory: TripLocationHistory | undefined) => void) {
+        if (callback) {
+            const c = (e: Event) => {
+                callback((<CustomEvent>e).detail as TripLocationHistory);
+            };
+            EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
+            EventHelpers.subscribe(EvamEvents.NewOrUpdatedTripLocationHistory, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
