@@ -1,5 +1,3 @@
-import {Operation} from "../../src/domain/Operation";
-import {OperationPriority} from "../../src/domain/OperationPriority";
 import {Location} from "../../src/domain/Location";
 
 it('tests that Location fromJSON correctly assigns right values',()=>{

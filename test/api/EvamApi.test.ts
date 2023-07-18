@@ -1,7 +1,5 @@
 import {EvamApi} from "../../src/api/EvamApi";
 import {Operation} from "../../src/domain/Operation";
-import EvamEvents from "../../src/domain/EvamEvents";
-
 
 class TestEvamApi extends EvamApi {
     public constructor() {
