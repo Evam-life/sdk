@@ -1,10 +1,10 @@
 import {Operation} from "../../src/domain/Operation";
 import * as _ from "lodash";
-import {op} from "../../src/data/testdata";
+import {operation} from "../../src/data/testdata";
 
 it("tests that Operation fromJSON correctly assigns right values", () => {
 
-    const convertedOperation = Operation.fromJSON(op);
+    const convertedOperation = Operation.fromJSON(operation);
 
     expect(convertedOperation.operationID).not.toBeUndefined();
     expect(convertedOperation.patientName).not.toBeUndefined();
@@ -15,21 +15,21 @@ it("tests that Operation fromJSON correctly assigns right values", () => {
     expect(convertedOperation.sendTime).not.toBeUndefined();
     expect(convertedOperation.createdTime).not.toBeUndefined();
 
-    expect(op.operationID).toEqual(convertedOperation.operationID);
-    expect(op.patientName).toEqual(convertedOperation.patientName);
-    expect(op.patientUID).toEqual(convertedOperation.patientUID);
-    expect(op.callCenterId).toEqual(convertedOperation.callCenterId);
-    expect(op.vehicleStatus).toEqual(convertedOperation.vehicleStatus);
-    expect(op.destinationSiteLocation).toEqual(convertedOperation.destinationSiteLocation);
-    expect(new Date(op.sendTime)).toEqual(convertedOperation.sendTime);
-    expect(new Date(op.createdTime)).toEqual(convertedOperation.createdTime);
+    expect(operation.operationID).toEqual(convertedOperation.operationID);
+    expect(operation.patientName).toEqual(convertedOperation.patientName);
+    expect(operation.patientUID).toEqual(convertedOperation.patientUID);
+    expect(operation.callCenterId).toEqual(convertedOperation.callCenterId);
+    expect(operation.vehicleStatus).toEqual(convertedOperation.vehicleStatus);
+    expect(operation.destinationSiteLocation).toEqual(convertedOperation.destinationSiteLocation);
+    expect(new Date(operation.sendTime)).toEqual(convertedOperation.sendTime);
+    expect(new Date(operation.createdTime)).toEqual(convertedOperation.createdTime);
 });
 
 it("tests that Location fromJSON throws error when either latitude or longitude are not present in JSON", () => {
 
-    const opWithoutName = _.omit(op, "name");
-    const opWithoutOperationId = _.omit(op, "operationID");
-    const opWithoutNameAndOperationId = _.omit(op, ["name", "operationID"]);
+    const opWithoutName = _.omit(operation, "name");
+    const opWithoutOperationId = _.omit(operation, "operationID");
+    const opWithoutNameAndOperationId = _.omit(operation, ["name", "operationID"]);
 
     expect(() => {
         Operation.fromJSON(opWithoutName);
