@@ -4,7 +4,7 @@ import {Location} from "../../src/domain/Location";
 import {location, vehicleState, operation, tripLocationHistory} from "../../src/data/testdata";
 import {InternetState} from "../../src/domain/InternetState";
 import {VehicleState} from "../../src/domain/VehicleState";
-import {TripLocationHistory} from "../../sdk/domain/Location";
+import {TripLocationHistory} from "../../src/domain/Location";
 import {DeviceRole} from "../../src/domain/DeviceRole";
 
 class TestEvamApi extends EvamApi {
@@ -140,7 +140,7 @@ it("onNewOrUpdatedInternetState triggers the callback after subscription to the 
 
 it("onNewOrUpdatedVehicleState triggers the callback after subscription to the event", () => {
 
-    const convertedVehicleState = VehicleState.fromJSON(vehicleState)
+    const convertedVehicleState = VehicleState.fromJSON(vehicleState);
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -159,7 +159,7 @@ it("onNewOrUpdatedVehicleState triggers the callback after subscription to the e
 
 it("onNewOrUpdatedTripLocationHistory triggers the callback after subscription to the event", () => {
 
-    const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory)
+    const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory);
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -192,5 +192,13 @@ it("onNewOrUpdatedDeviceRole triggers the callback after subscription to the eve
     expect(listener).toHaveBeenCalledWith(
         deviceRole
     );
+
+});
+
+it("setHospital correctly calls the injectOperation with the right data", () => {
+
+});
+
+it("setPrio correctly calls the injectOperation with the right data", () => {
 
 });
