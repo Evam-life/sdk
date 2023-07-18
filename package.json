@@ -12,6 +12,7 @@
   "scripts": {
     "test": "tsc && jest --no-cache --collect-coverage",
     "test-without-coverage": "jest --silent=false",
+    "clear-jest": "jest --clearCache",
     "build": "rm -rf dist && tsc --project tsconfig.json && minify-all-js ./sdk -j -m -M -p",
     "pub": "node node_modules/publish-flatten --flatten sdk"
   },
@@ -94,7 +95,8 @@
     "testEnvironment": "jsdom",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "sdk/**/*.js"
+      "src/**/*.ts",
+      "src/**/*.tsx"
     ],
     "globals": {
       "ts-jest": {
