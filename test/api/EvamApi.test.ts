@@ -1,13 +1,5 @@
 import {EvamApi} from "../../src/api/EvamApi";
-import {Operation} from "../../src/domain/Operation";
-import {Location} from "../../src/domain/Location";
 import {
-    location,
-    vehicleState,
-    operation,
-    tripLocationHistory,
-    operationWithAvailableHospitals,
-    operationWithAvailablePriorities,
     convertedOperation,
     convertedLocation,
     convertedVehicleState,
@@ -16,8 +8,6 @@ import {
     convertedOperationWithAvailablePriorities
 } from "../../src/data/testdata";
 import {InternetState} from "../../src/domain/InternetState";
-import {VehicleState} from "../../src/domain/VehicleState";
-import {TripLocationHistory} from "../../src/domain/TripLocationHistory";
 import {DeviceRole} from "../../src/domain/DeviceRole";
 
 class TestEvamApi extends EvamApi {
@@ -196,8 +186,6 @@ it("onNewOrUpdatedDeviceRole triggers the callback after subscription to the eve
 
 it("setHospital correctly calls the injectOperation with the right data", () => {
 
-    const listener = jest.fn();
-
     let evamApi = new TestEvamApi();
     const injectOperationSpy = jest.spyOn(evamApi, "injectOperation");
 
@@ -224,8 +212,6 @@ it("setHospital correctly calls the injectOperation with the right data", () => 
 });
 
 it("setPrio correctly calls the injectOperation with the right data", () => {
-
-    const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
     const injectOperationSpy = jest.spyOn(evamApi, "injectOperation");
