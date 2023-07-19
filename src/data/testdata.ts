@@ -1,4 +1,15 @@
 import _ from "lodash";
+import {Operation} from "../domain/Operation";
+import {VehicleState} from "../domain/VehicleState";
+import {Patient} from "../domain/Patient";
+import {TripLocationHistory} from "../domain/TripLocationHistory";
+import {Location} from "../domain/Location";
+import {HospitalLocation} from "../domain/HospitalLocation";
+import {DestinationSiteLocation} from "../domain/DestinationSiteLocation";
+import {VehicleStatus} from "../domain/VehicleStatus";
+import {OperationPriority} from "../domain/OperationPriority";
+import {DestinationControlPointLocation} from "../domain/DestinationControlPointLocation";
+import {SystemHealth} from "../domain/SystemHealth";
 
 export const vehicleStatus = {
     name: 59.3538975,
@@ -104,3 +115,18 @@ export const vehicleState = {
     activeCaseFullId: "test",
     vehicleLocation,
 };
+
+export const convertedOperation = Operation.fromJSON(operation);
+export const convertedVehicleState = VehicleState.fromJSON(vehicleState);
+export const convertedPatient = Patient.fromJSON(patient);
+export const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory);
+export const convertedLocation = Location.fromJSON(location);
+export const convertedHospitalLocation = HospitalLocation.fromJSON(hospitalLocation);
+export const convertedSiteLocation = DestinationSiteLocation.fromJSON(destinationSiteLocation);
+export const convertedVehicleStatus = VehicleStatus.fromJSON(vehicleStatus);
+export const convertedOperationPriority = OperationPriority.fromJSON(operationPriority);
+export const convertedDestinationControlPointLocation = DestinationControlPointLocation.fromJSON(destinationControlPointLocation);
+
+export const convertedOperationWithAvailablePriorities = Operation.fromJSON(operationWithAvailablePriorities);
+export const convertedOperationWithAvailableHospitals = Operation.fromJSON(operationWithAvailableHospitals);
+export const convertedSystemHealth = SystemHealth.fromJSON(systemHealth);

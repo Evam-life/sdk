@@ -1,10 +1,8 @@
 import * as _ from "lodash";
 import {VehicleStatus} from "../../src/domain/VehicleStatus";
-import {vehicleStatus} from "../../src/data/testdata";
+import {convertedVehicleStatus, vehicleStatus} from "../../src/data/testdata";
 
 it("tests that Location fromJSON correctly assigns right values", () => {
-    const convertedVehicleStatus = VehicleStatus.fromJSON(vehicleStatus);
-
     expect(convertedVehicleStatus.name).not.toBeUndefined();
     expect(convertedVehicleStatus.event).not.toBeUndefined();
     expect(convertedVehicleStatus.successorName).not.toBeUndefined();
@@ -23,29 +21,29 @@ it("tests that Location fromJSON correctly assigns right values", () => {
 });
 
 it("tests that Location fromJSON throws error when latitude or longitude are not present in JSON", () => {
-    const convertedVehicleStatusWithoutName = _.omit(vehicleStatus, "name");
-    const convertedVehicleStatusWithoutIsStartStatus = _.omit(vehicleStatus, "isStartStatus");
-    const convertedVehicleStatusWithoutIsEndStatus = _.omit(vehicleStatus, "isEndStatus");
-    const convertedVehicleStatusWithoutCategoryType = _.omit(vehicleStatus, "categoryType");
-    const convertedVehicleStatusWithoutCategoryName = _.omit(vehicleStatus, "categoryName");
-    const convertedVehicleStatusWithoutNameAndIsStartStatusAndIsEndStatusAndCategoryTypeAndCategoryName = _.omit(vehicleStatus, ['name','isStartStatus','isEndStatus','categoryType','categoryName']);
+    const vehicleStatusWithoutName = _.omit(vehicleStatus, "name");
+    const vehicleStatusWithoutIsStartStatus = _.omit(vehicleStatus, "isStartStatus");
+    const vehicleStatusWithoutIsEndStatus = _.omit(vehicleStatus, "isEndStatus");
+    const vehicleStatusWithoutCategoryType = _.omit(vehicleStatus, "categoryType");
+    const vehicleStatusWithoutCategoryName = _.omit(vehicleStatus, "categoryName");
+    const vehicleStatusWithoutNameAndIsStartStatusAndIsEndStatusAndCategoryTypeAndCategoryName = _.omit(vehicleStatus, ['name','isStartStatus','isEndStatus','categoryType','categoryName']);
 
     expect(() => {
-        VehicleStatus.fromJSON(convertedVehicleStatusWithoutName);
+        VehicleStatus.fromJSON(vehicleStatusWithoutName);
     }).toThrow();
     expect(() => {
-        VehicleStatus.fromJSON(convertedVehicleStatusWithoutIsStartStatus);
+        VehicleStatus.fromJSON(vehicleStatusWithoutIsStartStatus);
     }).toThrow();
     expect(() => {
-        VehicleStatus.fromJSON(convertedVehicleStatusWithoutIsEndStatus);
+        VehicleStatus.fromJSON(vehicleStatusWithoutIsEndStatus);
     }).toThrow();
     expect(() => {
-        VehicleStatus.fromJSON(convertedVehicleStatusWithoutCategoryType);
+        VehicleStatus.fromJSON(vehicleStatusWithoutCategoryType);
     }).toThrow();
     expect(() => {
-        VehicleStatus.fromJSON(convertedVehicleStatusWithoutCategoryName);
+        VehicleStatus.fromJSON(vehicleStatusWithoutCategoryName);
     }).toThrow();
     expect(() => {
-        VehicleStatus.fromJSON(convertedVehicleStatusWithoutNameAndIsStartStatusAndIsEndStatusAndCategoryTypeAndCategoryName);
+        VehicleStatus.fromJSON(vehicleStatusWithoutNameAndIsStartStatusAndIsEndStatusAndCategoryTypeAndCategoryName);
     }).toThrow();
 });

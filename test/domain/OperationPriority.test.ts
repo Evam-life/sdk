@@ -1,12 +1,9 @@
 import {OperationPriority} from "../../src/domain/OperationPriority";
 import * as _ from "lodash";
-import {operationPriority} from "../../src/data/testdata";
+import {convertedOperationPriority, operationPriority} from "../../src/data/testdata";
 
 
 it('tests that OperationPriority fromJSON correctly assigns right values',()=>{
-
-    const convertedOperationPriority = OperationPriority.fromJSON(operationPriority);
-
     expect(convertedOperationPriority.name).not.toBeUndefined()
     expect(convertedOperationPriority.id).not.toBeUndefined()
 

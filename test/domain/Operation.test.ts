@@ -1,10 +1,8 @@
 import {Operation} from "../../src/domain/Operation";
 import * as _ from "lodash";
-import {operation} from "../../src/data/testdata";
+import {convertedOperation, operation} from "../../src/data/testdata";
 
 it("tests that Operation fromJSON correctly assigns right values", () => {
-
-    const convertedOperation = Operation.fromJSON(operation);
 
     expect(convertedOperation.operationID).not.toBeUndefined();
     expect(convertedOperation.patientName).not.toBeUndefined();

@@ -1,11 +1,9 @@
 import {Patient} from "../../src/domain/Patient";
 import * as _ from "lodash";
-import {patient} from "../../src/data/testdata";
+import {convertedPatient, patient} from "../../src/data/testdata";
 
 
 it('tests that Patient fromJSON correctly assigns right values',()=>{
-
-    const convertedPatient = Patient.fromJSON(patient);
 
     expect(convertedPatient.name).not.toBeUndefined()
     expect(convertedPatient.uid).not.toBeUndefined()

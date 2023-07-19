@@ -1,13 +1,10 @@
 import {Location} from "../../src/domain/Location";
 import * as _ from "lodash"
-import {tripLocationHistory} from "../../src/data/testdata";
+import {convertedTripLocationHistory, tripLocationHistory} from "../../src/data/testdata";
 import {TripLocationHistory} from "../../src/domain/TripLocationHistory";
 
 
 it('tests that TripLocationHistory fromJSON correctly assigns right values',()=>{
-
-    const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory);
-
     expect(convertedTripLocationHistory.locationHistory).not.toBeUndefined()
     expect(convertedTripLocationHistory.etaSeconds).not.toBeUndefined()
 

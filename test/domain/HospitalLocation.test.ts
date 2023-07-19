@@ -1,10 +1,8 @@
 import {HospitalLocation} from "../../src/domain/HospitalLocation";
 import * as _ from "lodash";
-import {hospitalLocation} from "../../src/data/testdata";
+import {convertedHospitalLocation, hospitalLocation} from "../../src/data/testdata";
 
 it('tests that Location fromJSON correctly assigns right values',()=>{
-
-    const convertedHospitalLocation = HospitalLocation.fromJSON(hospitalLocation);
 
     expect(convertedHospitalLocation.latitude).not.toBeUndefined()
     expect(convertedHospitalLocation.longitude).not.toBeUndefined()

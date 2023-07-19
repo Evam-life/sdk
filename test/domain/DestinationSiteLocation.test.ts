@@ -1,11 +1,8 @@
 import * as _ from "lodash";
 import {DestinationSiteLocation} from "../../src/domain/DestinationSiteLocation";
-import {destinationSiteLocation} from "../../src/data/testdata";
+import {convertedSiteLocation, destinationSiteLocation} from "../../src/data/testdata";
 
 it('tests that DestinationControlPointLocation fromJSON correctly assigns right values',()=>{
-
-    const convertedSiteLocation = DestinationSiteLocation.fromJSON(destinationSiteLocation);
-
     expect(convertedSiteLocation.latitude).not.toBeUndefined()
     expect(convertedSiteLocation.longitude).not.toBeUndefined()
     expect(convertedSiteLocation.street).not.toBeUndefined()

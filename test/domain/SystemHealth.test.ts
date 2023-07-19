@@ -1,17 +1,15 @@
 import * as _ from "lodash";
 import {SystemHealth} from "../../src/domain/SystemHealth";
-import {systemHealth} from "../../src/data/testdata";
+import {convertedSystemHealth, systemHealth} from "../../src/data/testdata";
 
 it('tests that DestinationControlPointLocation fromJSON correctly assigns right values',()=>{
-    const convertedSiteLocation = SystemHealth.fromJSON(systemHealth);
+    expect(convertedSystemHealth.isHealthy).not.toBeUndefined()
+    expect(convertedSystemHealth.message).not.toBeUndefined()
+    expect(convertedSystemHealth.timestamp).not.toBeUndefined()
 
-    expect(convertedSiteLocation.isHealthy).not.toBeUndefined()
-    expect(convertedSiteLocation.message).not.toBeUndefined()
-    expect(convertedSiteLocation.timestamp).not.toBeUndefined()
-
-    expect(systemHealth.isHealthy).toEqual(convertedSiteLocation.isHealthy)
-    expect(systemHealth.message).toEqual(convertedSiteLocation.message)
-    expect(new Date(systemHealth.timestamp)).toEqual(convertedSiteLocation.timestamp)
+    expect(systemHealth.isHealthy).toEqual(convertedSystemHealth.isHealthy)
+    expect(systemHealth.message).toEqual(convertedSystemHealth.message)
+    expect(new Date(systemHealth.timestamp)).toEqual(convertedSystemHealth.timestamp)
 })
 
 it('tests that Location fromJSON throws error when latitude or longitude are not present in JSON',()=>{

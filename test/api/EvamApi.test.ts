@@ -6,7 +6,14 @@ import {
     vehicleState,
     operation,
     tripLocationHistory,
-    operationWithAvailableHospitals, operationWithAvailablePriorities
+    operationWithAvailableHospitals,
+    operationWithAvailablePriorities,
+    convertedOperation,
+    convertedLocation,
+    convertedVehicleState,
+    convertedTripLocationHistory,
+    convertedOperationWithAvailableHospitals,
+    convertedOperationWithAvailablePriorities
 } from "../../src/data/testdata";
 import {InternetState} from "../../src/domain/InternetState";
 import {VehicleState} from "../../src/domain/VehicleState";
@@ -82,11 +89,6 @@ it("onNewOrUpdatedSettings triggers multiple set callbacks", () => {
 });
 
 it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
-
-    const convertedOperation = Operation.fromJSON(
-        operation
-    );
-
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -104,11 +106,6 @@ it("onNewOrUpdatedOperation triggers the callback after subscription to the even
 });
 
 it("onNewOrUpdatedLocation triggers the callback after subscription to the event", () => {
-
-    const convertedLocation = Location.fromJSON(
-        location
-    );
-
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -145,8 +142,6 @@ it("onNewOrUpdatedInternetState triggers the callback after subscription to the 
 });
 
 it("onNewOrUpdatedVehicleState triggers the callback after subscription to the event", () => {
-
-    const convertedVehicleState = VehicleState.fromJSON(vehicleState);
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -164,8 +159,6 @@ it("onNewOrUpdatedVehicleState triggers the callback after subscription to the e
 });
 
 it("onNewOrUpdatedTripLocationHistory triggers the callback after subscription to the event", () => {
-
-    const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory);
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -203,7 +196,6 @@ it("onNewOrUpdatedDeviceRole triggers the callback after subscription to the eve
 
 it("setHospital correctly calls the injectOperation with the right data", () => {
 
-    const convertedOperationWithAvailableHospitals = Operation.fromJSON(operationWithAvailableHospitals);
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -233,7 +225,6 @@ it("setHospital correctly calls the injectOperation with the right data", () => 
 
 it("setPrio correctly calls the injectOperation with the right data", () => {
 
-    const convertedOperationWithAvailablePriorities = Operation.fromJSON(operationWithAvailablePriorities);
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
