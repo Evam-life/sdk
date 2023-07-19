@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 export const vehicleStatus = {
     name: 59.3538975,
     event: 17.9721877,
@@ -25,6 +27,28 @@ export const operation = {
     sendTime: (new Date()).getTime() / 1000,
     createdTime: (new Date()).getTime() / 1000,
 };
+export const hospitalLocation = {
+    latitude: 59.3538975,
+    longitude: 17.9721877,
+    id: 0,
+    name: "test",
+    street1: "test",
+    city: "test",
+    region: "test",
+    postalCode: "test"
+};
+export const operationPriority = {
+    name: "test",
+    id: 44,
+};
+export const operationWithAvailablePriorities = {
+    ..._.clone(operation),
+    availablePriorities: [operationPriority]
+};
+export const operationWithAvailableHospitals = {
+    ..._.clone(operation),
+    availableHospitalLocations: [hospitalLocation]
+};
 
 export const destinationControlPointLocation = {
     latitude: 59.3538975,
@@ -43,16 +67,6 @@ export const destinationSiteLocation = {
     pickupTime: "test"
 };
 
-export const hospitalLocation = {
-    latitude: 59.3538975,
-    longitude: 17.9721877,
-    id: "test",
-    name: "test",
-    street1: "test",
-    city: "test",
-    region: "test",
-    postalCode: "test"
-};
 
 export const location = {
     latitude: 59.3538975,
@@ -64,12 +78,7 @@ export const tripLocationHistory = {
     locationHistory: [
         location
     ],
-    etaSeconds:0
-};
-
-export const operationPriority = {
-    name: "test",
-    id: "test",
+    etaSeconds: 0
 };
 
 export const patient = {

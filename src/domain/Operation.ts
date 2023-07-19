@@ -32,7 +32,7 @@ class Operation {
         // Extra
         public additionalCoordinationInformation: string | undefined,
         // PRIO
-        public availablePriorities: Array<string> | undefined,
+        public availablePriorities: Array<OperationPriority> | undefined,
         // Patient
         public patientName: string | undefined,
         public patientUID: string | undefined,
@@ -52,8 +52,8 @@ class Operation {
     }
 
     static fromJSON(data: any) {
-        if(data.operationID === undefined || data.name === undefined){
-            throw Error('Operation Id and Operation Name must be specified for Operation')
+        if (data.operationID === undefined || data.name === undefined) {
+            throw Error("Operation Id and Operation Name must be specified for Operation");
         }
         return new Operation(
             data.operationID,
@@ -76,20 +76,22 @@ class Operation {
             data.radioGroupMain,
             data.radioGroupSecondary,
             data.additionalCoordinationInformation,
-            data.availablePriorities,
+            (data.availablePriorities !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.map((ap: object) => (OperationPriority.fromJSON(ap))) : undefined,
             data.patientName,
             data.patientUID,
             data.vehicleStatus !== undefined ? VehicleStatus.fromJSON(data.vehicleStatus) : undefined,
             data.destinationSiteLocation !== undefined ? DestinationSiteLocation.fromJSON(data.destinationSiteLocation) : undefined,
             data.destinationControlPointLocation !== undefined ? DestinationControlPointLocation.fromJSON(data.destinationControlPointLocation) : undefined,
-            data.availableHospitalLocations !== undefined ? data.map((hl: HospitalLocation) => HospitalLocation.fromJSON(hl)) : undefined,
+            (data.availableHospitalLocations !== undefined && Array.isArray(data.availableHospitalLocations)) ? data.availableHospitalLocations.map((hl: object) => HospitalLocation.fromJSON(hl)) : undefined,
             data.header1,
             data.header2,
             data.eventInfo,
             data.caseInfo,
-            data.selectedHospital,
-            (data.selectedPriority !== undefined && data.availablePriorities !== undefined) ? data.availablePriorities.find((prio: OperationPriority) => {
-                return(prio.id === data.selectedPriority)
+            (data.selectedHospital !== undefined && Array.isArray(data.availableHospitalLocations)) ? data.availableHospitalLocations.find((ahl: any) => {
+                return (ahl === data.selectedHospital);
+            }) : undefined,
+            (data.selectedPriority !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.find((prio: any) => {
+                return (prio.id === data.selectedPriority);
             }) : undefined);
     }
 

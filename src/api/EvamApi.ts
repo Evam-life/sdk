@@ -11,6 +11,7 @@ import {VehicleState} from "../domain/VehicleState";
 import {TripLocationHistory} from "../domain/TripLocationHistory";
 import {Location} from "../domain/Location";
 import {DeviceRole} from "../domain/DeviceRole";
+import _ from "lodash";
 
 
 const getIsRunningInVehicleServices = (): boolean => {
@@ -129,14 +130,17 @@ export class EvamApi {
 
     setHospital(id: number) {
         if (!EvamApi.isRunningInVehicleServices) {
+            if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
+                throw Error("Current Operation has no available hospitals.");
+            }
             const hl = EvamApi.evamData.activeCase.availableHospitalLocations.find((loc) => {
                 return loc.id === id;
             });
             if (hl) {
-                const newActiveOperation = Operation.fromJSON({
-                    selectedHospital: id,
-                    ...EvamApi.evamData.activeCase
-                });
+
+                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+                newActiveOperation.selectedHospital = hl.id;
+
                 this.injectOperation(newActiveOperation);
             } else {
                 throw Error("Hospital id not located within available hospitals");
@@ -146,16 +150,17 @@ export class EvamApi {
         }
     }
 
-    setPrio(prio: string) {
+    setPrio(prio: number) {
         if (!EvamApi.isRunningInVehicleServices) {
             if (EvamApi.evamData.activeCase === undefined) {
                 throw Error("Can't set prio when there is no active case.");
             } else {
-                if (EvamApi.evamData.activeCase.availablePriorities.includes(prio)) {
-                    const newActiveOperation = Operation.fromJSON({
-                        prio,
-                        ...EvamApi.evamData.activeCase
-                    });
+                const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
+                    return p.id === prio;
+                });
+                if (p) {
+                    const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+                    newActiveOperation.selectedPriority = p.id;
                     this.injectOperation(newActiveOperation);
                 } else {
                     throw Error("Cant set prio when prio is not an available prio");
@@ -184,10 +189,10 @@ export class EvamApi {
         }
     }
 
-    injectTrip(tripLocationHistory:TripLocationHistory) {
+    injectTrip(tripLocationHistory: TripLocationHistory) {
         EvamApi.evamData.tripLocationHistory = tripLocationHistory;
         if (!EvamApi.isRunningInVehicleServices) {
-            publish(EvamEvents.NewOrUpdatedTripLocationHistory, tripLocationHistory)
+            publish(EvamEvents.NewOrUpdatedTripLocationHistory, tripLocationHistory);
         } else {
             throw Error("Injecting an TripLocationHistory is not allowed in the Vehicle Services environment.");
         }
