@@ -19,7 +19,7 @@ const run = async () => {
             const dev = await client.getDevice(device.id)
 
             // Create development directory on device
-            const comCreateDir = await dev.shell("mkdir -p /data/local/tmp/life.evam.hydras/dev/")
+            const comCreateDir = await dev.shell("mkdir -p /data/local/tmp/life.evam.hydras/component/")
             await new Bluebird((resolve, reject) => {
                 comCreateDir.on('end', () => {
                     console.log("Created local dir")

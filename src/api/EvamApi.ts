@@ -10,19 +10,8 @@ import {InternetState} from "../domain/InternetState";
 import {VehicleState} from "../domain/VehicleState";
 import {TripLocationHistory} from "../domain/TripLocationHistory";
 import {Location} from "../domain/Location";
-import {DeviceRole} from "../domain/DeviceRole";
 import _ from "lodash";
-
-
-const getIsRunningInVehicleServices = (): boolean => {
-    try {
-        //@ts-ignore
-        const android = Android;
-        return (android !== undefined);
-    } catch {
-        return false;
-    }
-};
+import {DeviceRole} from "../domain/DeviceRole";
 
 
 /**
@@ -60,6 +49,10 @@ export class EvamData {
 export class EvamApi {
 
 
+    /**
+     * EvamData instance for storing data regard Vehcile Services.
+     * @private
+     */
     private static evamData: EvamData = new EvamData();
 
     /**
@@ -79,8 +72,19 @@ export class EvamApi {
      * We have to ignore this because the Android item causes an error.
      */
         //@ts-ignore
-    public static readonly isRunningInVehicleServices: boolean = getIsRunningInVehicleServices();
+    public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
+        try {
+            //@ts-ignore
+            const android = Android;
+            return (android !== undefined);
+        } catch {
+            return false;
+        }
+    })();
 
+    /**
+     * Unsubscribes all registered callbacks from Vehicle Service events.
+     */
     unsubscribeFromAllCallbacks = () => {
         EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
             //@ts-ignore
@@ -125,9 +129,12 @@ export class EvamApi {
         EvamApi.newOrUpdatedVehicleStateCallbacks = [];
         EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
 
-
     };
 
+    /**
+     * Sets the selected hospital id for the current active operation. The id must be present inside the available hospitals
+     * @param id the id of the hospital to be set
+     */
     setHospital(id: number) {
         if (!EvamApi.isRunningInVehicleServices) {
             if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
@@ -150,6 +157,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
+     * @param id the id of the prio to be set
+     */
     setPrio(prio: number) {
         if (!EvamApi.isRunningInVehicleServices) {
             if (EvamApi.evamData.activeCase === undefined) {
@@ -171,6 +182,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Manually inject location to EvamApi (Only available in development.)
+     * @param location the location to inject.
+     */
     injectLocation(location: Location) {
         EvamApi.evamData.location = location;
         if (!EvamApi.isRunningInVehicleServices) {
@@ -180,6 +195,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Manually inject vehicleState to EvamApi (Only available in development.)
+     * @param vehicleState the vehicleState to inject.
+     */
     injectVehicleState(vehicleState: VehicleState) {
         EvamApi.evamData.vehicleState = vehicleState;
         if (!EvamApi.isRunningInVehicleServices) {
@@ -189,6 +208,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Manually inject tripLocationHistory to EvamApi (Only available in development.)
+     * @param tripLocationHistory the tripLocationHistory to inject.
+     */
     injectTrip(tripLocationHistory: TripLocationHistory) {
         EvamApi.evamData.tripLocationHistory = tripLocationHistory;
         if (!EvamApi.isRunningInVehicleServices) {
@@ -198,6 +221,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Manually inject deviceRole to EvamApi (Only available in development.)
+     * @param deviceRole the deviceRole to inject.
+     */
     injectDeviceRole(deviceRole: DeviceRole) {
         EvamApi.evamData.deviceRole = deviceRole;
         if (!EvamApi.isRunningInVehicleServices) {
@@ -207,6 +234,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Manually inject internetState to EvamApi (Only available in development.)
+     * @param internetState the internetState to inject.
+     */
     injectInternetState(internetState: InternetState) {
         EvamApi.evamData.internetState = internetState;
         if (!EvamApi.isRunningInVehicleServices) {
@@ -264,8 +295,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new application settings reception or settings update
-     * @param callback The callback to be executed
-     *
+     * @param callback The callback to be executed.
      */
     onNewOrUpdatedSettings(callback: (settings: object | undefined) => void) {
         if (callback) {
@@ -277,6 +307,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Registers a callback to be run upon new device role or device role update
+     * @param callback The callback to be executed.
+     */
     onNewOrUpdatedDeviceRole(callback: (deviceRole: DeviceRole | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
@@ -289,6 +323,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Registers a callback to be run upon new location or location update
+     * @param callback The callback to be executed.
+     */
     onNewOrUpdatedLocation(callback: (location: Location | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
@@ -301,6 +339,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Registers a callback to be run upon new internetState or internetState update
+     * @param callback The callback to be executed.
+     */
     onNewOrUpdatedInternetState(callback: (internetState: InternetState | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
@@ -313,6 +355,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Used to assign a callback when the vehicle state is created or updated.
+     * @param callback The callback with (optional) argument vehicleState. Use this to access the vehicle state.
+     */
     onNewOrUpdatedVehicleState(callback: (vehicleState: VehicleState | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
@@ -324,6 +370,7 @@ export class EvamApi {
             });
         }
     }
+
 
     onNewOrUpdatedTripLocationHistory(callback: (tripLocationHistory: TripLocationHistory | undefined) => void) {
         if (callback) {

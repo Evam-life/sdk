@@ -1,8 +1,17 @@
 class Patient {
+    /**
+     * A patient
+     * @param name name of the patient
+     * @param uid unique identifier of the patient
+     */
     constructor(public name: string,
                 public uid: string) {
     }
 
+    /**
+     * Create from JSON
+     * @param patient JSON object
+     */
     static fromJSON(
         patient:any
     ){

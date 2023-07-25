@@ -1,3 +1,6 @@
+/**
+ * Event names for events specific to Vehicle Services.
+ */
 enum EvamEvents {
     NewOrUpdatedOperation ='newOrUpdatedOperation',
     NewOrUpdatedSettings = 'newOrUpdatedSettings',

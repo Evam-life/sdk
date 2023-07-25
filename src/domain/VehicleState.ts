@@ -2,6 +2,14 @@ import {Location} from "./Location";
 import {VehicleStatus} from "./VehicleStatus";
 
 class VehicleState {
+    /**
+     * State of the vehicle, location, status, id
+     * @param timestamp timestamp of when state received
+     * @param vehicleStatus status of the vehicle
+     * @see VehicleStatus
+     * @param activeCaseFullId id of the current active operation
+     * @param vehicleLocation current vehicle location
+     */
     constructor(
         public timestamp:Date,
         public vehicleStatus: VehicleStatus | undefined,
@@ -10,6 +18,10 @@ class VehicleState {
     ) {
     }
 
+    /**
+     * Create from JSON
+     * @param vehicleState JSON object
+     */
     static fromJSON (vehicleState:any){
         if(vehicleState.timestamp === undefined){
             throw Error('Timestamp must be declared in VehicleState')

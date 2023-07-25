@@ -1,14 +1,13 @@
 import {EvamApi} from "../../src/api/EvamApi";
-import {
-    convertedOperation,
-    convertedLocation,
-    convertedVehicleState,
-    convertedTripLocationHistory,
-    convertedOperationWithAvailableHospitals,
-    convertedOperationWithAvailablePriorities
-} from "../../src/data/testdata";
 import {InternetState} from "../../src/domain/InternetState";
 import {DeviceRole} from "../../src/domain/DeviceRole";
+import {
+    convertedLocation,
+    convertedOperation,
+    convertedOperationWithAvailableHospitals, convertedOperationWithAvailablePriorities,
+    convertedTripLocationHistory,
+    convertedVehicleState
+} from "../testdata";
 
 class TestEvamApi extends EvamApi {
     public constructor() {

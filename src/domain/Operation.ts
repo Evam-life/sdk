@@ -5,6 +5,42 @@ import {HospitalLocation} from "./HospitalLocation";
 import {OperationPriority} from "./OperationPriority";
 
 class Operation {
+
+    /**
+     * @param operationID The operation ID
+     * @param name The operation name
+     * @param sendTime The time at which the operation was sent
+     * @param createdTime The time at which the operation was created
+     * @param endTime The time at which the operation ended, `undefined` still ongoing
+     * @param callCenterId The Call Center ID
+     * @param caseFolderId The Case folder ID
+     * @param transmitterCode The transmitter code
+     * @param alarmCategory The alarm category
+     * @param alarmEventCode The alarm event code
+     * @param medicalCommander The medical commander of this operation
+     * @param medicalIncidentOfficer The medical incident office of this operation
+     * @param attachedCustomerObject The attached customer Object
+     * @param alarmEventText The alarm event text
+     * @param additionalInfo The additional information attached to this operation
+     * @param keyNumber The key number
+     * @param electronicKey The electronic key
+     * @param radioGroupMain The main radio group associated with this operation
+     * @param radioGroupSecondary The secondary radio group associated with this operation
+     * @param additionalCoordinationInformation Additional coordination information
+     * @param availablePriorities The list of available priorities to select from
+     * @param patientName The name of the patient if any
+     * @param patientUID The personal number of the patient if any
+     * @param vehicleStatus The current vehicle status in this operation
+     * @param destinationSiteLocation The location of the destination
+     * @param breakpointLocation The location of the breakpoint if any
+     * @param availableHospitalLocations The list of available hospitals to select from
+     * @param header1 The case index 2
+     * @param header2 The case index 3
+     * @param eventInfo The event description
+     * @param caseInfo The case info comment
+     * @param selectedHospital The id of the selected hospital [inside available hospitals]
+     * @param selectedPriority The id of the selected priority [inside available priority]
+     */
     constructor(
         // Metadata
         public operationID: string,
@@ -51,6 +87,10 @@ class Operation {
     ) {
     }
 
+    /**
+     * Create from JSON
+     * @param data JSON object
+     */
     static fromJSON(data: any) {
         if (data.operationID === undefined || data.name === undefined) {
             throw Error("Operation Id and Operation Name must be specified for Operation");

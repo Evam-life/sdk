@@ -1,3 +1,6 @@
+/**
+ * Represent the state of the internet connection
+ */
 enum InternetState {
     NO_INTERNET,
     CONNECTED_2G,

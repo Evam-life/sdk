@@ -33,9 +33,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-redux": "^8.0.1",
-    "react-router-dom": "^6.3.0",
-    "rxjs": "~7.5.5",
-    "rxjs-observe": "~2.1.6"
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
