@@ -159,15 +159,15 @@ export class EvamApi {
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
-     * @param id the id of the prio to be set
+     * @param id of the prio to be set
      */
-    setPrio(prio: number) {
+    setPrio(id: number) {
         if (!EvamApi.isRunningInVehicleServices) {
             if (EvamApi.evamData.activeCase === undefined) {
                 throw Error("Can't set prio when there is no active case.");
             } else {
                 const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
-                    return p.id === prio;
+                    return p.id === id;
                 });
                 if (p) {
                     const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
