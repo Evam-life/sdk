@@ -372,6 +372,10 @@ export class EvamApi {
     }
 
 
+    /**
+     * Used to assign a callback when the trip location history is created or updated.
+     * @param callback The callback with (optional) argument tripLocationHistory. Use this to access the trip location history.
+     */
     onNewOrUpdatedTripLocationHistory(callback: (tripLocationHistory: TripLocationHistory | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
