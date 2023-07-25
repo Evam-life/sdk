@@ -1,23 +1,18 @@
-import {EvamAppBarLayout} from "../../sdk/component/appbar/EvamAppBarLayout";
+import {EvamAppBarLayout} from "../../src/component/appbar/EvamAppBarLayout";
 import {
-    act,
     fireEvent,
-    getByText,
     render,
     screen
 } from '@testing-library/react';
-import {EvamTabs} from "../../sdk/component/appbar/EvamTabs";
-import {EvamTab} from "../../sdk/component/appbar/EvamTab";
+import {EvamTabs} from "../../src/component/appbar/EvamTabs";
+import {EvamTab} from "../../src/component/appbar/EvamTab";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import {Home} from "@mui/icons-material";
-import {EvamTabPanel} from "../../sdk/component/appbar/EvamTabPanel";
+import {EvamTabPanel} from "../../src/component/appbar/EvamTabPanel";
 import * as React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import {clickButton} from "../testutils/clickButton";
-import {
-    EvamSearchInput
-} from "../../sdk/component/appbar/header/EvamSearchInput";
-import {EvamTabSearch} from "../../sdk/component/appbar/EvamTabSearch";
+import {EvamTabSearch} from "../../src/component/appbar/EvamTabSearch";
 
 // A basic test application with Search
 function TestApp() {
