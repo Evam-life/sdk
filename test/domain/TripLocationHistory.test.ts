@@ -1,6 +1,6 @@
 import {Location} from "../../src/domain/Location";
 import * as _ from "lodash"
-import {convertedTripLocationHistory, tripLocationHistory} from "../../src/data/testdata";
+import {convertedTripLocationHistory, tripLocationHistory} from "../testdata";
 
 it('tests that TripLocationHistory fromJSON correctly assigns right values',()=>{
     expect(convertedTripLocationHistory.locationHistory).not.toBeUndefined()

@@ -1,15 +1,15 @@
 import _ from "lodash";
-import {Operation} from "../domain/Operation";
-import {VehicleState} from "../domain/VehicleState";
-import {Patient} from "../domain/Patient";
-import {TripLocationHistory} from "../domain/TripLocationHistory";
-import {Location} from "../domain/Location";
-import {HospitalLocation} from "../domain/HospitalLocation";
-import {DestinationSiteLocation} from "../domain/DestinationSiteLocation";
-import {VehicleStatus} from "../domain/VehicleStatus";
-import {OperationPriority} from "../domain/OperationPriority";
-import {DestinationControlPointLocation} from "../domain/DestinationControlPointLocation";
-import {SystemHealth} from "../domain/SystemHealth";
+import {Operation} from "../src/domain/Operation";
+import {VehicleState} from "../src/domain/VehicleState";
+import {Patient} from "../src/domain/Patient";
+import {TripLocationHistory} from "../src/domain/TripLocationHistory";
+import {Location} from "../src/domain/Location";
+import {HospitalLocation} from "../src/domain/HospitalLocation";
+import {DestinationSiteLocation} from "../src/domain/DestinationSiteLocation";
+import {VehicleStatus} from "../src/domain/VehicleStatus";
+import {OperationPriority} from "../src/domain/OperationPriority";
+import {DestinationControlPointLocation} from "../src/domain/DestinationControlPointLocation";
+import {SystemHealth} from "../src/domain/SystemHealth";
 
 export const vehicleStatus = {
     name: 59.3538975,

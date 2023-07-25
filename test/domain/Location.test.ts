@@ -1,6 +1,6 @@
 import {Location} from "../../src/domain/Location";
 import * as _ from "lodash"
-import {convertedLocation, location} from "../../src/data/testdata";
+import {convertedLocation, location} from "../testdata";
 
 
 it('tests that Location fromJSON correctly assigns right values',()=>{

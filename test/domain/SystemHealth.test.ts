@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import {SystemHealth} from "../../src/domain/SystemHealth";
-import {convertedSystemHealth, systemHealth} from "../../src/data/testdata";
+import {convertedSystemHealth, systemHealth} from "../testdata";
 
 it('tests that DestinationControlPointLocation fromJSON correctly assigns right values',()=>{
     expect(convertedSystemHealth.isHealthy).not.toBeUndefined()

@@ -1,6 +1,6 @@
 import {Operation} from "../../src/domain/Operation";
 import * as _ from "lodash";
-import {convertedOperation, operation} from "../../src/data/testdata";
+import {convertedOperation, operation} from "../testdata";
 
 it("tests that Operation fromJSON correctly assigns right values", () => {
 

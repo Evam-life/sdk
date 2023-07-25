@@ -1,6 +1,6 @@
 import {OperationPriority} from "../../src/domain/OperationPriority";
 import * as _ from "lodash";
-import {convertedOperationPriority, operationPriority} from "../../src/data/testdata";
+import {convertedOperationPriority, operationPriority} from "../testdata";
 
 
 it('tests that OperationPriority fromJSON correctly assigns right values',()=>{
