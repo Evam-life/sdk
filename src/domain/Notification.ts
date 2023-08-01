@@ -40,11 +40,11 @@ class Notification {
 
     /**
      * Notification to appear in vehicle services
-     * @param heading
-     * @param description
-     * @param primaryButton
-     * @param secondaryButton
-     * @param notificationType
+     * @param heading the main title of the notification
+     * @param description extra detail regarding the notification
+     * @param notificationType how the notification is displayed
+     * @param primaryButton primary button label and optional callback
+     * @param secondaryButton optional secondary button label and optional callback
      */
     constructor(
         public heading: string,
