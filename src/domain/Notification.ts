@@ -15,6 +15,7 @@
  */
 import NotificationType from "./NotificationType";
 import notificationType from "./NotificationType";
+import {EvamApi} from "../api/EvamApi";
 
 class NotificationButton {
     constructor(

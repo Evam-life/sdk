@@ -38,15 +38,16 @@ export class EvamData {
  *
  * @example
  * ```ts
- * // Get singleton instance
- * const evamApi = EvamApi.getInstance();
+ * // Get instance (don't be afraid to copy them around or create more, as they're simply a lightweight reference to a shared data container)
+ * const evamApi = new EvamApi();
  *
  * // Register a new callback on any operation update that simply logs it
  * evamApi.onNewOrUpdatedOperation((activeOperation) => console.log(activeOperation));
  *
  * // Register a new callback on any application settings update that simply logs them
  * evamApi.onNewOrUpdatedSettings((settings) => console.log(settings));
- * ```
+ *
+ *
  */
 export class EvamApi {
 
@@ -58,7 +59,7 @@ export class EvamApi {
     }
 
     /**
-     * EvamData instance for storing data regard Vehcile Services.
+     * EvamData instance for storing data regard Vehicle Services.
      * @private
      */
     private static evamData: EvamData = new EvamData();
@@ -79,7 +80,7 @@ export class EvamApi {
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
     /**
-     * True if Vehicle Services environment is detected, False otherwise (for instance, a web
+     * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
      * We have to ignore this because the Android item causes an error.
      */
         //@ts-ignore
@@ -148,7 +149,6 @@ export class EvamApi {
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
-        if (!EvamApi.isRunningInVehicleServices) {
             if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
                 throw Error("Current Operation has no available hospitals.");
             }
@@ -160,13 +160,10 @@ export class EvamApi {
                 const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                 newActiveOperation.selectedHospital = hl.id;
 
-                this.injectOperation(newActiveOperation);
+
             } else {
                 throw Error("Hospital id not located within available hospitals");
             }
-        } else {
-            throw Error("Can not manually inject while running in vehicle services");
-        }
     }
 
     /**
@@ -174,7 +171,6 @@ export class EvamApi {
      * @param id of the prio to be set
      */
     setPrio(id: number) {
-        if (!EvamApi.isRunningInVehicleServices) {
             if (EvamApi.evamData.activeCase === undefined) {
                 throw Error("Can't set prio when there is no active case.");
             } else {
@@ -189,9 +185,6 @@ export class EvamApi {
                     throw Error("Cant set prio when prio is not an available prio");
                 }
             }
-        } else {
-            throw Error("Setting a prio is not allowed in the Vehicle Services environment.");
-        }
     }
 
     /**
