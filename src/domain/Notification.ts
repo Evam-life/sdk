@@ -14,14 +14,26 @@
  * }
  */
 import NotificationType from "./NotificationType";
+import notificationType from "./NotificationType";
 
 class NotificationButton {
     constructor(
         public label: string,
-        public callback: () => void
+        public callback: (() => any) | undefined
     ) {
     }
+
+    static fromJSON(notificationButton: any) {
+        if(notificationButton.label === undefined){
+            throw Error('label must be defined in fromJSON for notificationButton')
+        }
+        return new NotificationButton(
+            notificationButton.label,
+            notificationButton.callback
+        )
+    }
 }
+
 
 class Notification {
 
@@ -29,17 +41,41 @@ class Notification {
      * Notification to appear in vehicle services
      * @param heading
      * @param description
-     * @param primaryButtonText
-     * @param secondaryButtonText
+     * @param primaryButton
+     * @param secondaryButton
      * @param notificationType
      */
     constructor(
         public heading: string,
         public description: string,
-        public primaryButtonText: string,
-        public secondaryButtonText: string | undefined,
-        public notificationType: NotificationType
+        public notificationType: NotificationType,
+        public primaryButton: NotificationButton,
+        public secondaryButton: NotificationButton | undefined
     ) {
     }
+
+    static fromJSON(notification: any) {
+        if (notification.heading === undefined || notification.description === undefined || notification.notificationType === undefined) {
+            throw Error("heading, description and notificationType must be specified in notification fromJSON");
+        }
+        let convertedNotificationType: NotificationType;
+
+        try {
+            convertedNotificationType = NotificationType[notification.notificationType as keyof typeof NotificationType];
+        } catch {
+            throw Error("Invalid notification type in fromJSON for notification");
+        }
+
+        return new Notification(
+            notification.heading,
+            notification.description,
+            convertedNotificationType,
+            NotificationButton.fromJSON(notification.primaryButton),
+            notification.secondaryButton ? NotificationButton.fromJSON(notification.secondaryButton) : undefined
+        );
+
+    }
+
 }
 
+export default Notification;

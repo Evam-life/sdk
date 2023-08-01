@@ -12,6 +12,8 @@ import {TripLocationHistory} from "../domain/TripLocationHistory";
 import {Location} from "../domain/Location";
 import _ from "lodash";
 import {DeviceRole} from "../domain/DeviceRole";
+import {v4 as uuidV4} from "uuid";
+import Notification from "../domain/Notification";
 
 
 /**
@@ -49,6 +51,12 @@ export class EvamData {
 export class EvamApi {
 
 
+    constructor() {
+        if (!EvamApi.isListeningForNotificationCallbacks) {
+            EvamApi.subscribeToVehicleServiceNotifications();
+        }
+    }
+
     /**
      * EvamData instance for storing data regard Vehcile Services.
      * @private
@@ -66,6 +74,9 @@ export class EvamApi {
     private static newOrUpdatedInternetStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
     private static newOrUpdatedVehicleStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
     private static newOrUpdatedTripLocationHistoryCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+
+    private static isListeningForNotificationCallbacks = false;
+    private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
     /**
      * True if Vehicle Services environment is detected, False otherwise (for instance, a web
@@ -86,6 +97,7 @@ export class EvamApi {
      * Unsubscribes all registered callbacks from Vehicle Service events.
      */
     unsubscribeFromAllCallbacks = () => {
+
         EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedOperation, callback);
@@ -128,7 +140,7 @@ export class EvamApi {
         EvamApi.newOrUpdatedInternetStateCallbacks = [];
         EvamApi.newOrUpdatedVehicleStateCallbacks = [];
         EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
-
+        EvamApi.notificationCallbacks = new Map([]);
     };
 
     /**
@@ -387,6 +399,69 @@ export class EvamApi {
             });
         }
     }
+
+    /**
+     * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
+     * @param notification
+     */
+    sendNotification(notification: Notification) {
+        const {
+            heading,
+            description,
+            notificationType,
+            primaryButton,
+            secondaryButton,
+        } = notification;
+
+        let primaryButtonCallbackUUID: string | undefined = undefined;
+        let secondaryButtonCallbackUUID: string | undefined = undefined;
+
+        if (primaryButton.callback) {
+            //Store the primary button callback in the callbacks Map with a uuid
+            primaryButtonCallbackUUID = uuidV4();
+            EvamApi.notificationCallbacks.set(primaryButtonCallbackUUID, primaryButton.callback);
+        }
+
+        //Store the secondary button callback in the callbacks Map with a uuid IF the secondary button is defined
+        if ((secondaryButton !== undefined) && (secondaryButton.callback !== undefined)) {
+            secondaryButtonCallbackUUID = uuidV4();
+            EvamApi.notificationCallbacks.set(secondaryButtonCallbackUUID, secondaryButton.callback);
+        }
+
+        const vehicleServicesNotificationToSend = {
+            heading,
+            description,
+            notificationType,
+            primaryButton: {
+                label: primaryButton.label,
+                callback: primaryButtonCallbackUUID
+            },
+            secondaryButton: secondaryButton ? {
+                label: secondaryButton.label,
+                callback: secondaryButtonCallbackUUID
+            } : undefined
+        };
+
+        EventHelpers.publish(EvamEvents.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
+    }
+
+    private static triggerCallback = (uuid: string) => {
+        const callback = EvamApi.notificationCallbacks.get(uuid);
+        if (callback) {
+            callback();
+            EvamApi.notificationCallbacks.delete(uuid);
+        }
+    };
+
+    private static subscribeToVehicleServiceNotifications = () => {
+        if (!EvamApi.isListeningForNotificationCallbacks) {
+            EventHelpers.subscribe(EvamEvents.VehicleServicesNotificationCallbackTriggered, (e) => {
+                const callbackId = (<CustomEvent>e).detail;
+                EvamApi.triggerCallback(callbackId);
+            });
+            EvamApi.isListeningForNotificationCallbacks = true;
+        }
+    };
 
 }
 

@@ -10,6 +10,8 @@ import {VehicleStatus} from "../src/domain/VehicleStatus";
 import {OperationPriority} from "../src/domain/OperationPriority";
 import {DestinationControlPointLocation} from "../src/domain/DestinationControlPointLocation";
 import {SystemHealth} from "../src/domain/SystemHealth";
+import NotificationType from "../src/domain/NotificationType";
+import Notification from "../src/domain/Notification";
 
 export const vehicleStatus = {
     name: 59.3538975,
@@ -116,6 +118,24 @@ export const vehicleState = {
     vehicleLocation,
 };
 
+export const notification = {
+    heading: "test notification",
+    description: "this is a test notification",
+    notificationType: NotificationType.ACTION_HUN,
+    primaryButton: {
+        label: "Primary Button",
+        callback: () => {
+            console.log('Primary Button clicked on test notification');
+        }
+    },
+    secondaryButton: {
+        label: "Secondary Button",
+        callback: () => {
+            console.log('Secondary Button clicked on test notification');
+        }
+    }
+};
+
 export const convertedOperation = Operation.fromJSON(operation);
 export const convertedVehicleState = VehicleState.fromJSON(vehicleState);
 export const convertedPatient = Patient.fromJSON(patient);
@@ -126,7 +146,7 @@ export const convertedSiteLocation = DestinationSiteLocation.fromJSON(destinatio
 export const convertedVehicleStatus = VehicleStatus.fromJSON(vehicleStatus);
 export const convertedOperationPriority = OperationPriority.fromJSON(operationPriority);
 export const convertedDestinationControlPointLocation = DestinationControlPointLocation.fromJSON(destinationControlPointLocation);
-
 export const convertedOperationWithAvailablePriorities = Operation.fromJSON(operationWithAvailablePriorities);
 export const convertedOperationWithAvailableHospitals = Operation.fromJSON(operationWithAvailableHospitals);
 export const convertedSystemHealth = SystemHealth.fromJSON(systemHealth);
+export const convertedNotification = Notification.fromJSON(notification);
