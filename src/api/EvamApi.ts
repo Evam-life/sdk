@@ -38,7 +38,7 @@ export class EvamData {
  *
  * @example
  * ```ts
- * // Get instance (don't be afraid to copy them around or create more, as they're simply a lightweight reference to a shared data container)
+ * // Get instance (don't be afraid to copy them around or create more, as they're simply a lightweight reference to shared static data)
  * const evamApi = new EvamApi();
  *
  * // Register a new callback on any operation update that simply logs it
@@ -46,6 +46,40 @@ export class EvamData {
  *
  * // Register a new callback on any application settings update that simply logs them
  * evamApi.onNewOrUpdatedSettings((settings) => console.log(settings));
+ *
+ * //Register a new callback to any specific application data update. Available register methods:
+ * evamApi.onNewOrUpdatedDeviceRole((deviceRole) => ...);
+ * evamApi.onNewOrUpdatedLocation((location) => ...);
+ * evamApi.onNewOrUpdatedInternetState((internetState) => ...);
+ * evamApi.onNewOrUpdatedVehicleState((vehicleState) => ...);
+ * evamApi.onNewOrUpdatedTripLocationHistory((tripLocationHistory) => ...);
+ *
+ * // Send a new notification to VS (this will also work for the developer environment)
+ * // This will display a notification with heading "example", description "lorem ipsum". It will have type 'QUICK_HUN' and a primary button
+ * // which is labelled 'primary button' that doesn't do anything when called. The secondary button is not defined, thus it will not display.
+ * evamApi.sendNotification(new Notification("example","lorem ipsum", NotificationType.QUICK_HUN, {label:'primary button', callback:()=>{}}, undefined))
+ *
+ * //Remove all callbacks from the SDK (this is useful for cleanup)
+ * evamApi.unsubscribeFromAllCallbacks()
+ *
+ * //Detect whether the certified app is currently running in Vehicle Services
+ * EvamApi.isRunningInVehicleServices
+ *
+ * //update the current hospital by id (be sure that the hospital is listed in available hospitals)
+ * evamApi.setHospital(1234)
+ *
+ * //update the current priority (be sure that the priority is listed in available priorities)
+ * evamApi.setPriority (1)
+ *
+ * //simulate Vehicle Services data inject (development + testing only)
+ * //DO NOT USE THESE METHODS IN PRODUCTION, While not breaking by any means they will not perform any function.
+ * evamApi.injectLocation(new Location(59.364, 18.012, new Date()))
+ * evamApi.injectVehicleState(new VehicleState(...))
+ * evamApi.injectTrip(new TripLocationHistory(...))
+ * evamApi.injectDeviceRole(new DeviceRole(...))
+ * evamApi.injectInternetState(new InternetState(...))
+ * evamApi.injectOperation(new Operation(...))
+ * evamApi.injectSettings(new Settings(...))
  *
  *
  */
@@ -159,6 +193,7 @@ export class EvamApi {
 
                 const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                 newActiveOperation.selectedHospital = hl.id;
+                this.injectOperation(newActiveOperation);
 
                 //TODO
                 //Android.setHospital
@@ -170,11 +205,11 @@ export class EvamApi {
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
-     * @param id of the prio to be set
+     * @param id of the priority to be set
      */
-    setPrio(id: number) {
+    setPriority (id: number) {
             if (EvamApi.evamData.activeCase === undefined) {
-                throw Error("Can't set prio when there is no active case.");
+                throw Error("Can't set priority when there is no active case.");
             } else {
                 const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
                     return p.id === id;
@@ -183,11 +218,12 @@ export class EvamApi {
                     const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                     newActiveOperation.selectedPriority = p.id;
 
+                    this.injectOperation(newActiveOperation);
                     //TODO
-                    //Android.setPrio
+                    //Android.setPriority
 
                 } else {
-                    throw Error("Cant set prio when prio is not an available prio");
+                    throw Error("Cant set priority when priority is not an available priority");
                 }
             }
     }
@@ -281,7 +317,6 @@ export class EvamApi {
         EvamApi.evamData.settings = settings;
 
         if (!EvamApi.isRunningInVehicleServices) {
-            //EvamApi.proxy.settings = settings
             publish(EvamEvents.NewOrUpdatedSettings, settings);
         } else {
             throw Error("Injecting settings is not allowed in the Vehicle Services environment, use a web browser instead.");
