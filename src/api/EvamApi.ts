@@ -160,6 +160,8 @@ export class EvamApi {
                 const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                 newActiveOperation.selectedHospital = hl.id;
 
+                //TODO
+                //Android.setHospital
 
             } else {
                 throw Error("Hospital id not located within available hospitals");
@@ -180,7 +182,10 @@ export class EvamApi {
                 if (p) {
                     const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                     newActiveOperation.selectedPriority = p.id;
-                    this.injectOperation(newActiveOperation);
+
+                    //TODO
+                    //Android.setPrio
+
                 } else {
                     throw Error("Cant set prio when prio is not an available prio");
                 }
