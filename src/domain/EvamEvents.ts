@@ -15,4 +15,4 @@ enum EvamEvents {
     _testEvent = '_testEvent'
 }
 
-export default EvamEvents
+export {EvamEvents}

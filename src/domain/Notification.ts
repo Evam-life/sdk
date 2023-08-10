@@ -13,9 +13,7 @@
  *
  * }
  */
-import NotificationType from "./NotificationType";
-import notificationType from "./NotificationType";
-import {EvamApi} from "../api/EvamApi";
+import {NotificationType} from "./NotificationType";
 
 class NotificationButton {
     constructor(
@@ -79,4 +77,4 @@ class Notification {
 
 }
 
-export default Notification;
+export {Notification};

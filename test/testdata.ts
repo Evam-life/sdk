@@ -1,17 +1,17 @@
 import _ from "lodash";
-import {Operation} from "../src/domain/Operation";
-import {VehicleState} from "../src/domain/VehicleState";
-import {Patient} from "../src/domain/Patient";
-import {TripLocationHistory} from "../src/domain/TripLocationHistory";
-import {Location} from "../src/domain/Location";
-import {HospitalLocation} from "../src/domain/HospitalLocation";
-import {DestinationSiteLocation} from "../src/domain/DestinationSiteLocation";
-import {VehicleStatus} from "../src/domain/VehicleStatus";
-import {OperationPriority} from "../src/domain/OperationPriority";
-import {DestinationControlPointLocation} from "../src/domain/DestinationControlPointLocation";
-import {SystemHealth} from "../src/domain/SystemHealth";
-import NotificationType from "../src/domain/NotificationType";
-import Notification from "../src/domain/Notification";
+import {Operation} from "../src";
+import {VehicleState} from "../src";
+import {Patient} from "../src";
+import {TripLocationHistory} from "../src";
+import {Location} from "../src";
+import {HospitalLocation} from "../src";
+import {DestinationSiteLocation} from "../src";
+import {VehicleStatus} from "../src";
+import {OperationPriority} from "../src";
+import {DestinationControlPointLocation} from "../src";
+import {SystemHealth} from "../src";
+import {NotificationType} from "../src";
+import {Notification} from "../src";
 
 export const vehicleStatus = {
     name: 59.3538975,

@@ -1,6 +1,6 @@
-import {EvamApi} from "../../src/api/EvamApi";
-import {InternetState} from "../../src/domain/InternetState";
-import {DeviceRole} from "../../src/domain/DeviceRole";
+import {EvamApi} from "../../src";
+import {InternetState} from "../../src";
+import {DeviceRole} from "../../src";
 import {
     convertedLocation,
     convertedOperation,

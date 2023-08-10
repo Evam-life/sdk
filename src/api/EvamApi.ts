@@ -4,22 +4,23 @@
  */
 import * as EventHelpers from "../util/EventHelpers";
 import {publish, unsubscribe} from "../util/EventHelpers";
-import EvamEvents from "../domain/EvamEvents";
-import {Operation} from "../domain/Operation";
-import {InternetState} from "../domain/InternetState";
-import {VehicleState} from "../domain/VehicleState";
-import {TripLocationHistory} from "../domain/TripLocationHistory";
-import {Location} from "../domain/Location";
+import {EvamEvents} from "../domain";
+import {Operation} from "../domain";
+import {InternetState} from "../domain";
+import {VehicleState} from "../domain";
+import {TripLocationHistory} from "../domain";
+import {Location} from "../domain";
 import _ from "lodash";
-import {DeviceRole} from "../domain/DeviceRole";
+import {DeviceRole} from "../domain";
 import {v4 as uuidV4} from "uuid";
-import Notification from "../domain/Notification";
+import {Notification} from "../domain";
+import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 
 
 /**
  * @hidden
  */
-export class EvamData {
+class EvamData {
     constructor(
         public activeCase?: Operation | undefined,
         public settings?: object | undefined,
@@ -183,49 +184,49 @@ export class EvamApi {
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
-            if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
-                throw Error("Current Operation has no available hospitals.");
-            }
-            const hl = EvamApi.evamData.activeCase.availableHospitalLocations.find((loc) => {
-                return loc.id === id;
-            });
-            if (hl) {
+        if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
+            throw Error("Current Operation has no available hospitals.");
+        }
+        const hl = EvamApi.evamData.activeCase.availableHospitalLocations.find((loc) => {
+            return loc.id === id;
+        });
+        if (hl) {
 
-                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
-                newActiveOperation.selectedHospital = hl.id;
-                this.injectOperation(newActiveOperation);
+            const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+            newActiveOperation.selectedHospital = hl.id;
+            this.injectOperation(newActiveOperation);
 
-                //TODO
-                //Android.setHospital
+            //TODO
+            //Android.setHospital
 
-            } else {
-                throw Error("Hospital id not located within available hospitals");
-            }
+        } else {
+            throw Error("Hospital id not located within available hospitals");
+        }
     }
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
      * @param id of the priority to be set
      */
-    setPriority (id: number) {
-            if (EvamApi.evamData.activeCase === undefined) {
-                throw Error("Can't set priority when there is no active case.");
+    setPriority(id: number) {
+        if (EvamApi.evamData.activeCase === undefined) {
+            throw Error("Can't set priority when there is no active case.");
+        } else {
+            const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
+                return p.id === id;
+            });
+            if (p) {
+                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+                newActiveOperation.selectedPriority = p.id;
+
+                this.injectOperation(newActiveOperation);
+                //TODO
+                //Android.setPriority
+
             } else {
-                const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
-                    return p.id === id;
-                });
-                if (p) {
-                    const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
-                    newActiveOperation.selectedPriority = p.id;
-
-                    this.injectOperation(newActiveOperation);
-                    //TODO
-                    //Android.setPriority
-
-                } else {
-                    throw Error("Cant set priority when priority is not an available priority");
-                }
+                throw Error("Cant set priority when priority is not an available priority");
             }
+        }
     }
 
     /**
@@ -461,7 +462,7 @@ export class EvamApi {
             EvamApi.notificationCallbacks.set(secondaryButtonCallbackUUID, secondaryButton.callback);
         }
 
-        const vehicleServicesNotificationToSend = {
+        const vehicleServicesNotificationToSend: _InternalVehicleServicesNotification = {
             heading,
             description,
             notificationType,
@@ -497,7 +498,5 @@ export class EvamApi {
     };
 
 }
-
-
 
 

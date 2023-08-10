@@ -4,13 +4,13 @@ import {
     tripLocationHistory
 } from "../testdata";
 
-import {EvamApi} from "../../src/api/EvamApi";
+import {EvamApi} from "../../src";
 import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
-import EvamEvents from "../../src/domain/EvamEvents";
+import {EvamEvents} from "../../src";
 import * as crypto from "crypto";
-import Notification from "../../src/domain/Notification";
+import {Notification} from "../../src";
 import * as _ from "lodash";
-import {Location} from "../../src/domain/Location";
+import {Location} from "../../src";
 
 class TestEvamApi extends EvamApi {
     public constructor() {

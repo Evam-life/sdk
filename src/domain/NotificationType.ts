@@ -6,4 +6,4 @@ enum NotificationType {
     ACTION_HUN
 }
 
-export default NotificationType
+export {NotificationType}
