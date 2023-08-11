@@ -141,4 +141,43 @@ describe("NotificationComponent", () => {
         });
     });
 
+    it('triggers the primary callback when the primary button is clicked', async () => {
+
+        /**
+         * This test doesn't utilise Jest's spyOn function because when EvamApi stores the callback it's a copy of the
+         * callback and not the original callback itself. Therefore, notification.primaryButton.callback is never actually called but a
+         * copy of it is. This test tests the result of that callback by changing a variable scoped to this test.
+         */
+
+        const button = screen.queryByRole("button", {
+            name: queryByRoleButtonText
+        });
+
+        let x = 1;
+
+        expect(x).toEqual(1);
+
+        const saveCallback = notification.primaryButton.callback;
+
+        notification.primaryButton.callback = () => {
+            x += 1;
+        }
+
+        expect(x).not.toEqual(2);
+        fireEvent.click(button);
+
+
+        await waitFor(() => {
+            const primaryButton = screen.queryByText(notification.primaryButton.label);
+            if (primaryButton !== null) {
+                fireEvent.click(primaryButton);
+            }
+        });
+
+        await waitFor(()=>{
+            expect(x).toEqual(2);
+        })
+
+        notification.primaryButton.callback = saveCallback; //<-- just incase I want to write more tests. The callback is restored.
+    })
 });
