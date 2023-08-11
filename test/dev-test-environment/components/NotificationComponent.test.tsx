@@ -146,7 +146,7 @@ describe("NotificationComponent", () => {
         /**
          * This test doesn't utilise Jest's spyOn function because when EvamApi stores the callback it's a copy of the
          * callback and not the original callback itself. Therefore, notification.primaryButton.callback is never actually called but a
-         * copy of it is. This test tests the result of that callback by changing a variable scoped to this test.
+         * copy of it is. This unit test tests the result of that callback by changing a variable scoped to this test.
          */
 
         const button = screen.queryByRole("button", {
