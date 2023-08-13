@@ -1,4 +1,4 @@
-import {Operation} from "../../src/domain/Operation";
+import {Operation} from "@/domain/Operation";
 import * as _ from "lodash";
 import {convertedOperation, operation} from "../testdata";
 

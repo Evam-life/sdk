@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {DestinationControlPointLocation} from "../../src/domain/DestinationControlPointLocation";
+import {DestinationControlPointLocation} from "@/domain/DestinationControlPointLocation";
 import {convertedDestinationControlPointLocation, destinationControlPointLocation} from "../testdata";
 
 it('tests that DestinationControlPointLocation fromJSON correctly assigns right values',()=>{

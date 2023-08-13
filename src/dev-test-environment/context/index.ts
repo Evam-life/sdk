@@ -1,1 +1,3 @@
-export * from './VehicleServicesDevelopmentEnvironment'
+import {VehicleServicesDevelopmentEnvironment} from "./VehicleServicesDevelopmentEnvironment";
+
+export {VehicleServicesDevelopmentEnvironment};

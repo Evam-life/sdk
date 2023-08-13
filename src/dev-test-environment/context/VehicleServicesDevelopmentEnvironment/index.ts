@@ -1,1 +1,3 @@
-export {default as VehicleServicesDevelopmentEnvironment} from "./VehicleServicesDevelopmentEnvironment";
+import VehicleServicesDevelopmentEnvironment from "./VehicleServicesDevelopmentEnvironment";
+
+export {VehicleServicesDevelopmentEnvironment}

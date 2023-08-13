@@ -1,22 +1,22 @@
-import {EvamAppBarLayout} from "../../src/component/appbar/EvamAppBarLayout";
+import {EvamAppBarLayout} from "@/component/appbar/EvamAppBarLayout";
 import {
     render,
     screen
 } from '@testing-library/react';
-import {EvamTabs} from "../../src/component/appbar/EvamTabs";
-import {EvamTab} from "../../src/component/appbar/EvamTab";
+import {EvamTabs} from "@/component/appbar/EvamTabs";
+import {EvamTab} from "@/component/appbar/EvamTab";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import {Home} from "@mui/icons-material";
-import {EvamTabPanel} from "../../src/component/appbar/EvamTabPanel";
+import {EvamTabPanel} from "@/component/appbar/EvamTabPanel";
 import * as React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import {clickButton} from "../testutils/clickButton";
-import {EvamHamburgerMenu} from "../../src/component/appbar/EvamHamburgerMenu";
+import {EvamHamburgerMenu} from "@/component/appbar/EvamHamburgerMenu";
 import Box from "@mui/material/Box";
-import {EvamMenuItem} from "../../src/component/appbar/EvamMenuItem";
+import {EvamMenuItem} from "@/component/appbar/EvamMenuItem";
 import {
     formatRoutePathByMenuId
-} from "../../src/component/appbar/utils/formatRoutePathByMenuId";
+} from "@/component/appbar/utils/formatRoutePathByMenuId";
 
 // A basic test application with Search
 function TestApp() {

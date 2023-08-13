@@ -1,4 +1,4 @@
-import {OperationPriority} from "../../src/domain/OperationPriority";
+import {OperationPriority} from "@/domain/OperationPriority";
 import * as _ from "lodash";
 import {convertedOperationPriority, operationPriority} from "../testdata";
 

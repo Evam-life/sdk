@@ -9,15 +9,18 @@
     "jsx": "react-jsx",
     "outDir": "sdk",
     "declaration": true,
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
+      "@/*": [
+        "./src/*"
+      ],
       "*": [
         "node_modules/*",
         "/usr/local/lib/node_modules/*"
       ]
     },
     "plugins": [
-    ]
+    ],
   },
   "include": [
     "src/**/*"

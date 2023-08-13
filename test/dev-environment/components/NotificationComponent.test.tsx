@@ -1,10 +1,10 @@
-import {Notification, NotificationType} from "../../../src";
-import {EvamApi} from "../../../src";
-import {VehicleServicesDevelopmentEnvironment} from "../../../src/dev-test-environment/context";
+import {Notification, NotificationType} from "@/domain";
+import {EvamApi} from "@/api/EvamApi";
 import {Button} from "@chakra-ui/react";
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import crypto from "crypto";
+import {VehicleServicesDevelopmentEnvironment} from "@/dev-test-environment";
 
 class TestApi extends EvamApi {
     constructor() {

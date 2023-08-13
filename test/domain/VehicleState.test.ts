@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {VehicleState} from "../../src/domain/VehicleState";
+import {VehicleState} from "@/domain/VehicleState";
 import {convertedVehicleState, vehicleState} from "../testdata";
 
 
