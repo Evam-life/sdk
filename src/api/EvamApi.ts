@@ -2,8 +2,7 @@
  * Main API
  * @module EvamApi
  */
-import * as EventHelpers from "../util/EventHelpers";
-import {publish, unsubscribe} from "@/util/EventHelpers";
+import {publish, subscribe, unsubscribe} from "@/util/EventHelpers";
 import {EvamEvents} from "@/domain";
 import {Operation} from "@/domain";
 import {InternetState} from "@/domain";
@@ -15,7 +14,6 @@ import {DeviceRole} from "@/domain";
 import {v4 as uuidV4} from "uuid";
 import {Notification} from "@/domain";
 import {_InternalVehicleServicesNotification} from "@/domain/_InternalVehicleServicesNotification";
-
 
 /**
  * @hidden
@@ -335,7 +333,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Operation);
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedOperation, c);
+            subscribe(EvamEvents.NewOrUpdatedOperation, c);
         }
     }
 
@@ -349,7 +347,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as object);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedSettings, c);
+            subscribe(EvamEvents.NewOrUpdatedSettings, c);
         }
     }
 
@@ -363,7 +361,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedDeviceRole, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedDeviceRole, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -379,7 +377,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Location);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedLocation, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedLocation, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -395,7 +393,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedInternetState, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedInternetState, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -411,7 +409,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedVehicleState, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedVehicleState, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -428,7 +426,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as TripLocationHistory);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedTripLocationHistory, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedTripLocationHistory, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -476,7 +474,7 @@ export class EvamApi {
             } : undefined
         };
 
-        EventHelpers.publish(EvamEvents.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
+        publish(EvamEvents.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
     }
 
     private static triggerCallback = (uuid: string) => {
@@ -489,7 +487,7 @@ export class EvamApi {
 
     private static subscribeToVehicleServiceNotifications = () => {
         if (!EvamApi.isListeningForNotificationCallbacks) {
-            EventHelpers.subscribe(EvamEvents.VehicleServicesNotificationCallbackTriggered, (e) => {
+            subscribe(EvamEvents.VehicleServicesNotificationCallbackTriggered, (e) => {
                 const callbackId = (<CustomEvent>e).detail;
                 EvamApi.triggerCallback(callbackId);
             });
