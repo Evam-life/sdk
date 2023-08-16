@@ -1,6 +1,6 @@
 {
   "name": "@evam/sdk",
-  "version": "0.3.9",
+  "version": "0.0.15",
   "description": "SDK for Evam platform",
   "main": "sdk/index.js",
   "files": [
@@ -13,8 +13,7 @@
     "test": "tsc && jest --no-cache --collect-coverage",
     "test-without-coverage": "jest --silent=false",
     "clear-jest": "jest --clearCache",
-    "build": "tsc --project tsconfig.json && minify-all-js ./sdk -j -m -M -p",
-    "pub": "node node_modules/publish-flatten --flatten sdk"
+    "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
