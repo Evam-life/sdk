@@ -35,4 +35,4 @@ deploy:
     - echo "//www.developers.evam.life/api/v4/projects/$REPO_ID/packages/npm/:_authToken=$AUTH_TOKEN" >> ~/.npmrc
     - npm install
     - npm run build
-    - npm run pub
+    - npm publish

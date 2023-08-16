@@ -13,8 +13,7 @@
     "test": "tsc && jest --no-cache --collect-coverage",
     "test-without-coverage": "jest --silent=false",
     "clear-jest": "jest --clearCache",
-    "build": "tsc --project tsconfig.json",
-    "pub": "node node_modules/publish-flatten sdk"
+    "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
