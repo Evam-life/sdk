@@ -1,2 +1,4 @@
-export * from "./NotificationComponent";
-export * from "./util"
+import {NotificationComponent} from "./NotificationComponent";
+import {VehicleServicesNoRender} from "./util"
+
+export {NotificationComponent, VehicleServicesNoRender}

@@ -3,18 +3,18 @@
  * @module EvamApi
  */
 import * as EventHelpers from "../util/EventHelpers";
-import {publish, unsubscribe} from "../util/EventHelpers";
-import {EvamEvents} from "../domain";
-import {Operation} from "../domain";
-import {InternetState} from "../domain";
-import {VehicleState} from "../domain";
-import {TripLocationHistory} from "../domain";
-import {Location} from "../domain";
+import {publish, unsubscribe} from "@/util/EventHelpers";
+import {EvamEvents} from "@/domain";
+import {Operation} from "@/domain";
+import {InternetState} from "@/domain";
+import {VehicleState} from "@/domain";
+import {TripLocationHistory} from "@/domain";
+import {Location} from "@/domain";
 import _ from "lodash";
-import {DeviceRole} from "../domain";
+import {DeviceRole} from "@/domain";
 import {v4 as uuidV4} from "uuid";
-import {Notification} from "../domain";
-import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
+import {Notification} from "@/domain";
+import {_InternalVehicleServicesNotification} from "@/domain/_InternalVehicleServicesNotification";
 
 
 /**
