@@ -11,7 +11,7 @@ import {
     VehicleStatus,
     Location,
     Notification
-} from "@/domain";
+} from "../src";
 
 export const vehicleStatus = {
     name: 59.3538975,

@@ -1,4 +1,4 @@
-import {HospitalLocation} from "@/domain/HospitalLocation";
+import {HospitalLocation} from "../../src";
 import * as _ from "lodash";
 import {convertedHospitalLocation, hospitalLocation} from "../testdata";
 

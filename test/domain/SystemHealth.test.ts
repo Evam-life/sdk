@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {SystemHealth} from "@/domain/SystemHealth";
+import {SystemHealth} from "../../src";
 import {convertedSystemHealth, systemHealth} from "../testdata";
 
 it('tests that DestinationControlPointLocation fromJSON correctly assigns right values',()=>{

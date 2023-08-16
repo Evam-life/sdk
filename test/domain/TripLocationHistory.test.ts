@@ -1,4 +1,4 @@
-import {Location} from "@/domain";
+import {Location} from "../../src";
 import * as _ from "lodash"
 import {convertedTripLocationHistory, tripLocationHistory} from "../testdata";
 

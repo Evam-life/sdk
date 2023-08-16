@@ -1,4 +1,4 @@
-import {Patient} from "@/domain";
+import {Patient} from "../../src";
 import * as _ from "lodash";
 import {convertedPatient, patient} from "../testdata";
 

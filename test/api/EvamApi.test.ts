@@ -1,5 +1,4 @@
-import {EvamApi} from "@/api/EvamApi";
-import {DeviceRole, InternetState} from "@/domain";
+
 
 import {
     convertedLocation,
@@ -8,6 +7,7 @@ import {
     convertedTripLocationHistory,
     convertedVehicleState
 } from "../testdata";
+import {DeviceRole, EvamApi, InternetState} from "../../src";
 
 class TestEvamApi extends EvamApi {
     public constructor() {

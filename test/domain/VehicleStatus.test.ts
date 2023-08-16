@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {VehicleStatus} from "@/domain/VehicleStatus";
+import {VehicleStatus} from "../../src";
 import {convertedVehicleStatus, vehicleStatus} from "../testdata";
 
 it("tests that Location fromJSON correctly assigns right values", () => {

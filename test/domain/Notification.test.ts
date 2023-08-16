@@ -4,9 +4,9 @@ import {
     tripLocationHistory
 } from "../testdata";
 
-import {EvamApi} from "@/api/EvamApi";
-import {publish, subscribe, unsubscribe} from "@/util/EventHelpers";
-import {EvamEvents, Notification, Location} from "@/domain";
+import {EvamApi} from "../../src";
+import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
+import {EvamEvents, Notification, Location} from "../../src";
 import * as crypto from "crypto";
 import * as _ from "lodash";
 
