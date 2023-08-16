@@ -2,7 +2,7 @@
   "name": "@evam/sdk",
   "version": "0.3.9",
   "description": "SDK for Evam platform",
-  "main": "index.ts",
+  "main": "sdk/index.js",
   "files": [
     "sdk/"
   ],
