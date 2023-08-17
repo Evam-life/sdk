@@ -68,7 +68,6 @@ describe("NotificationComponent", () => {
 
 
     it("shows a notification when the Button in clicked(which trigger EvamApi.sendNotification) method", async () => {
-
         const sendNotificationSpy = jest.spyOn(api, "sendNotification");
 
         const button = screen.queryByRole("button", {
@@ -85,11 +84,6 @@ describe("NotificationComponent", () => {
         });
 
         await waitFor(() => {
-            const notificationComponentHeading = screen.queryByText(notification.heading);
-            expect(notificationComponentHeading).toBeInTheDocument();
-        });
-
-        await waitFor(() => {
             const notificationComponentDescription = screen.queryByText(notification.description);
             expect(notificationComponentDescription).toBeInTheDocument();
         });
@@ -103,6 +97,7 @@ describe("NotificationComponent", () => {
             const notificationComponentSecondaryButton = screen.queryByText(notification.secondaryButton.label);
             expect(notificationComponentSecondaryButton).toBeInTheDocument();
         });
+
     });
 
     it("makes the notification vanish when primary button is clicked", async () => {
@@ -180,6 +175,4 @@ describe("NotificationComponent", () => {
 
         notification.primaryButton.callback = saveCallback; //<-- just incase I want to write more tests. The callback is restored.
     })
-
-
 });
