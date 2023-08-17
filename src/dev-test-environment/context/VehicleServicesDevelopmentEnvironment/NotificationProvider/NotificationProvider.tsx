@@ -11,21 +11,6 @@ const NotificationProvider: React.FC<PropsWithChildren> = ({children}) => {
 
     const [notifications, setNotifications] = useState<_InternalVehicleServicesNotification[]>([]);
 
-    const dispatchCallback = (uuid: string) => {
-        publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, uuid);
-        const notificationsClone = _.clone(notifications);
-        const notificationToRemove = notificationsClone.find((notification) => {
-            return (uuid === notification.primaryButton.callback || (notification.secondaryButton !== undefined && uuid === notification.secondaryButton.callback));
-        });
-        if (notificationToRemove !== undefined) {
-            const indexOfNotificationToRemove = notificationsClone.indexOf(notificationToRemove);
-            if (indexOfNotificationToRemove !== undefined) {
-                notificationsClone.splice(indexOfNotificationToRemove, 1);
-                setNotifications(notificationsClone);
-            }
-        }
-    };
-
     useEffect(() => {
         const subscriptionFunctionSendNotification = (e: Event) => {
             //get the notification which has been sent
@@ -45,6 +30,31 @@ const NotificationProvider: React.FC<PropsWithChildren> = ({children}) => {
         };
     }, [notifications, setNotifications]);
 
+    const dispatchCallback = (uuid: string) => {
+        publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, uuid);
+        const notificationsClone = _.clone(notifications);
+        const notificationToRemove = notificationsClone.find((notification) => {
+            return (uuid === notification.primaryButton.callback || (notification.secondaryButton !== undefined && uuid === notification.secondaryButton.callback));
+        });
+        if (notificationToRemove !== undefined) {
+            const indexOfNotificationToRemove = notificationsClone.indexOf(notificationToRemove);
+            if (indexOfNotificationToRemove !== undefined) {
+                notificationsClone.splice(indexOfNotificationToRemove, 1);
+                setNotifications(notificationsClone);
+            }
+        }
+    };
+
+    const removeNotification = (notification: _InternalVehicleServicesNotification) => {
+        const notificationsClone = _.clone(notifications);
+        const notificationIndex = notificationsClone.indexOf(notification);
+
+        if (notificationIndex !== undefined) {
+            notificationsClone.splice(notificationIndex, 1);
+            setNotifications(notificationsClone);
+        }
+    }
+
     return (
         <>
             <VehicleServicesNoRender>
@@ -52,7 +62,7 @@ const NotificationProvider: React.FC<PropsWithChildren> = ({children}) => {
                     <VStack left={"1%"} bottom={"1%"} position={"inherit"}>
                         {notifications.map((notification, index) => (
                             <SlideFade in={true} offsetY={"20px"} key={index}>
-                                <NotificationComponent notification={notification} onTrigger={dispatchCallback}/>
+                                <NotificationComponent notification={notification} onTrigger={dispatchCallback} onRemove={removeNotification}/>
                             </SlideFade>
                         ))}
                     </VStack>
