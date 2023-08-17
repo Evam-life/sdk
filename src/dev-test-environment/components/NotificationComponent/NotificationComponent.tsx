@@ -94,7 +94,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
                 }}>
                     <CardHeader>
                         <Heading size={"sm"}>
-                            {notification.heading}
+                            {notification.heading + ' ' + getFormattedTime()}
                         </Heading>
                     </CardHeader>
                     <CardBody>
