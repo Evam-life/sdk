@@ -3,7 +3,6 @@ import {Button, Card, Icon, CardBody, CardFooter, CardHeader, Heading, HStack, T
 import {VehicleServicesNoRender} from "../util";
 import {_InternalVehicleServicesNotification} from "../../../domain/_InternalVehicleServicesNotification";
 import {motion} from "framer-motion";
-import InfoIcon from '@mui/icons-material/info'
 
 interface NotificationComponentProps {
     notification: _InternalVehicleServicesNotification,
@@ -102,7 +101,10 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
                 }}>
                     <CardHeader>
                         <HStack>
-                            <Icon as={InfoIcon} color={"gray"}/>
+                            <Icon fill={"gray"} boxSize={6}>
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </Icon>
                             <Heading size={"sm"} color={"gray"} fontWeight={"none"}>
                                 {notification.heading + " - " + getFormattedTime()}
                             </Heading>
