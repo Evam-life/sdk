@@ -87,14 +87,21 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
         }} ref={constraintsRef}>
             {/*@ts-ignore*/}
             <motion.div {...dragMotionProps}>
-                <Card w={"500px"} backgroundColor={"black"} color={"white"} zIndex={9999} style={{
+                <Card
+                    _hover={{
+                        cursor: "grab"
+                    }}
+                    _active={{
+                        cursor: "grabbing"
+                    }}
+                    w={"500px"} backgroundColor={"black"} color={"white"} zIndex={9999} style={{
                     userSelect: "none",
                     opacity: willDelete ? 0.2 : 1,
                     filter: willDelete ? "blur(1px)" : "none",
                 }}>
                     <CardHeader>
                         <Heading size={"sm"}>
-                            {notification.heading + ' ' + getFormattedTime()}
+                            {notification.heading + " - " + getFormattedTime()}
                         </Heading>
                     </CardHeader>
                     <CardBody>
