@@ -1,8 +1,9 @@
 import React, {useRef, useState} from "react";
-import {Button, Card, CardBody, CardFooter, CardHeader, Heading, HStack, Text} from "@chakra-ui/react";
+import {Button, Card, Icon, CardBody, CardFooter, CardHeader, Heading, HStack, Text} from "@chakra-ui/react";
 import {VehicleServicesNoRender} from "../util";
 import {_InternalVehicleServicesNotification} from "../../../domain/_InternalVehicleServicesNotification";
 import {motion} from "framer-motion";
+import InfoIcon from '@mui/icons-material/info'
 
 interface NotificationComponentProps {
     notification: _InternalVehicleServicesNotification,
@@ -100,11 +101,17 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
                     filter: willDelete ? "blur(1px)" : "none",
                 }}>
                     <CardHeader>
-                        <Heading size={"sm"}>
-                            {notification.heading + " - " + getFormattedTime()}
-                        </Heading>
+                        <HStack>
+                            <Icon as={InfoIcon} color={"gray"}/>
+                            <Heading size={"sm"} color={"gray"} fontWeight={"none"}>
+                                {notification.heading + " - " + getFormattedTime()}
+                            </Heading>
+                        </HStack>
                     </CardHeader>
-                    <CardBody>
+                    <CardBody pt={0}>
+                        <Heading size={"sm"} mb={5}>
+                            {notification.heading}
+                        </Heading>
                         <Text>
                             {notification.description}
                         </Text>
