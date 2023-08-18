@@ -1,4 +1,4 @@
-import {Location} from "../../src/domain/Location";
+import {Location} from "../../src";
 import * as _ from "lodash"
 import {convertedLocation, location} from "../testdata";
 

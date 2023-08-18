@@ -4,6 +4,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {alpha, styled} from '@mui/material/styles';
 import Menu, {MenuProps} from '@mui/material/Menu';
 import {EvamTabContext} from "./EvamTabContext";
+import {EvamApi} from "../../api/EvamApi";
 
 interface EvamHamburgerMenuProps {
     children: ReactNode;

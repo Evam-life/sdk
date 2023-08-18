@@ -1,4 +1,4 @@
-import EvamEvents from "../domain/EvamEvents";
+import {EvamEvents} from "../domain";
 
 /**
  * Low level method wrapper around document.addEventListener specifically for handling EvamEvents

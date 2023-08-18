@@ -18,6 +18,7 @@ import {
     formatRoutePathByMenuId
 } from "../../src/component/appbar/utils/formatRoutePathByMenuId";
 
+
 // A basic test application with Search
 function TestApp() {
     return (

@@ -1,6 +1,5 @@
-import {EvamApi} from "../../src/api/EvamApi";
-import {InternetState} from "../../src/domain/InternetState";
-import {DeviceRole} from "../../src/domain/DeviceRole";
+
+
 import {
     convertedLocation,
     convertedOperation,
@@ -8,6 +7,7 @@ import {
     convertedTripLocationHistory,
     convertedVehicleState
 } from "../testdata";
+import {DeviceRole, EvamApi, InternetState} from "../../src";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -210,28 +210,28 @@ it("setHospital correctly calls the injectOperation with the right data", () => 
 
 });
 
-it("setPrio correctly calls the injectOperation with the right data", () => {
+it("setPriority correctly calls the injectOperation with the right data", () => {
 
     let evamApi = new TestEvamApi();
     const injectOperationSpy = jest.spyOn(evamApi, "injectOperation");
 
-    const prioToSetId = convertedOperationWithAvailablePriorities.availablePriorities.at(0).id;
+    const priorityToSetId = convertedOperationWithAvailablePriorities.availablePriorities.at(0).id;
 
-    expect(prioToSetId).not.toBeUndefined();
+    expect(priorityToSetId).not.toBeUndefined();
 
-    if (prioToSetId !== undefined) {
+    if (priorityToSetId !== undefined) {
         expect(() => {
-            evamApi.setPrio(prioToSetId);
+            evamApi.setPriority(priorityToSetId);
         }).toThrow();
 
         expect(injectOperationSpy).not.toHaveBeenCalled();
 
         expect(convertedOperationWithAvailablePriorities.selectedPriority).toEqual(undefined);
         evamApi.injectOperation(convertedOperationWithAvailablePriorities);
-        evamApi.setPrio(prioToSetId);
+        evamApi.setPriority(priorityToSetId);
 
         expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
-            selectedPriority: prioToSetId
+            selectedPriority: priorityToSetId
         }));
     }
 

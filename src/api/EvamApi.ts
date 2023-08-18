@@ -2,22 +2,17 @@
  * Main API
  * @module EvamApi
  */
-import * as EventHelpers from "../util/EventHelpers";
-import {publish, unsubscribe} from "../util/EventHelpers";
-import EvamEvents from "../domain/EvamEvents";
-import {Operation} from "../domain/Operation";
-import {InternetState} from "../domain/InternetState";
-import {VehicleState} from "../domain/VehicleState";
-import {TripLocationHistory} from "../domain/TripLocationHistory";
-import {Location} from "../domain/Location";
-import _ from "lodash";
-import {DeviceRole} from "../domain/DeviceRole";
 
+import {Operation, InternetState, DeviceRole, VehicleState, Location, TripLocationHistory, EvamEvents, Notification} from "../domain";
+import {subscribe, publish, unsubscribe} from "../util/EventHelpers";
+import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
+import {v4 as uuidV4} from 'uuid'
+import _ from "lodash";
 
 /**
  * @hidden
  */
-export class EvamData {
+class EvamData {
     constructor(
         public activeCase?: Operation | undefined,
         public settings?: object | undefined,
@@ -36,21 +31,62 @@ export class EvamData {
  *
  * @example
  * ```ts
- * // Get singleton instance
- * const evamApi = EvamApi.getInstance();
+ * // Get instance (don't be afraid to copy them around or create more, as they're simply a lightweight reference to shared static data)
+ * const evamApi = new EvamApi();
  *
  * // Register a new callback on any operation update that simply logs it
  * evamApi.onNewOrUpdatedOperation((activeOperation) => console.log(activeOperation));
  *
  * // Register a new callback on any application settings update that simply logs them
  * evamApi.onNewOrUpdatedSettings((settings) => console.log(settings));
- * ```
+ *
+ * //Register a new callback to any specific application data update. Available register methods:
+ * evamApi.onNewOrUpdatedDeviceRole((deviceRole) => ...);
+ * evamApi.onNewOrUpdatedLocation((location) => ...);
+ * evamApi.onNewOrUpdatedInternetState((internetState) => ...);
+ * evamApi.onNewOrUpdatedVehicleState((vehicleState) => ...);
+ * evamApi.onNewOrUpdatedTripLocationHistory((tripLocationHistory) => ...);
+ *
+ * // Send a new notification to VS (this will also work for the developer environment)
+ * // This will display a notification with heading "example", description "lorem ipsum". It will have type 'QUICK_HUN' and a primary button
+ * // which is labelled 'primary button' that doesn't do anything when called. The secondary button is not defined, thus it will not display.
+ * evamApi.sendNotification(new Notification("example","lorem ipsum", NotificationType.QUICK_HUN, {label:'primary button', callback:()=>{}}, undefined))
+ *
+ * //Remove all callbacks from the SDK (this is useful for cleanup)
+ * evamApi.unsubscribeFromAllCallbacks()
+ *
+ * //Detect whether the certified app is currently running in Vehicle Services
+ * EvamApi.isRunningInVehicleServices
+ *
+ * //update the current hospital by id (be sure that the hospital is listed in available hospitals)
+ * evamApi.setHospital(1234)
+ *
+ * //update the current priority (be sure that the priority is listed in available priorities)
+ * evamApi.setPriority (1)
+ *
+ * //simulate Vehicle Services data inject (development + testing only)
+ * //DO NOT USE THESE METHODS IN PRODUCTION, While not breaking by any means they will not perform any function.
+ * evamApi.injectLocation(new Location(59.364, 18.012, new Date()))
+ * evamApi.injectVehicleState(new VehicleState(...))
+ * evamApi.injectTrip(new TripLocationHistory(...))
+ * evamApi.injectDeviceRole(new DeviceRole(...))
+ * evamApi.injectInternetState(new InternetState(...))
+ * evamApi.injectOperation(new Operation(...))
+ * evamApi.injectSettings(new Settings(...))
+ *
+ *
  */
 export class EvamApi {
 
 
+    constructor() {
+        if (!EvamApi.isListeningForNotificationCallbacks) {
+            EvamApi.subscribeToVehicleServiceNotifications();
+        }
+    }
+
     /**
-     * EvamData instance for storing data regard Vehcile Services.
+     * EvamData instance for storing data regard Vehicle Services.
      * @private
      */
     private static evamData: EvamData = new EvamData();
@@ -67,8 +103,11 @@ export class EvamApi {
     private static newOrUpdatedVehicleStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
     private static newOrUpdatedTripLocationHistoryCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
 
+    private static isListeningForNotificationCallbacks = false;
+    private static notificationCallbacks: Map<string, () => any> = new Map([]);
+
     /**
-     * True if Vehicle Services environment is detected, False otherwise (for instance, a web
+     * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
      * We have to ignore this because the Android item causes an error.
      */
         //@ts-ignore
@@ -86,6 +125,7 @@ export class EvamApi {
      * Unsubscribes all registered callbacks from Vehicle Service events.
      */
     unsubscribeFromAllCallbacks = () => {
+
         EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
             //@ts-ignore
             unsubscribe(EvamEvents.NewOrUpdatedOperation, callback);
@@ -128,7 +168,7 @@ export class EvamApi {
         EvamApi.newOrUpdatedInternetStateCallbacks = [];
         EvamApi.newOrUpdatedVehicleStateCallbacks = [];
         EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
-
+        EvamApi.notificationCallbacks = new Map([]);
     };
 
     /**
@@ -136,49 +176,48 @@ export class EvamApi {
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
-                throw Error("Current Operation has no available hospitals.");
-            }
-            const hl = EvamApi.evamData.activeCase.availableHospitalLocations.find((loc) => {
-                return loc.id === id;
-            });
-            if (hl) {
+        if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
+            throw Error("Current Operation has no available hospitals.");
+        }
+        const hl = EvamApi.evamData.activeCase.availableHospitalLocations.find((loc) => {
+            return loc.id === id;
+        });
+        if (hl) {
 
-                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
-                newActiveOperation.selectedHospital = hl.id;
+            const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+            newActiveOperation.selectedHospital = hl.id;
+            this.injectOperation(newActiveOperation);
 
-                this.injectOperation(newActiveOperation);
-            } else {
-                throw Error("Hospital id not located within available hospitals");
-            }
+            //TODO
+            //Android.setHospital
+
         } else {
-            throw Error("Can not manually inject while running in vehicle services");
+            throw Error("Hospital id not located within available hospitals");
         }
     }
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
-     * @param id of the prio to be set
+     * @param id of the priority to be set
      */
-    setPrio(id: number) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            if (EvamApi.evamData.activeCase === undefined) {
-                throw Error("Can't set prio when there is no active case.");
-            } else {
-                const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
-                    return p.id === id;
-                });
-                if (p) {
-                    const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
-                    newActiveOperation.selectedPriority = p.id;
-                    this.injectOperation(newActiveOperation);
-                } else {
-                    throw Error("Cant set prio when prio is not an available prio");
-                }
-            }
+    setPriority(id: number) {
+        if (EvamApi.evamData.activeCase === undefined) {
+            throw Error("Can't set priority when there is no active case.");
         } else {
-            throw Error("Setting a prio is not allowed in the Vehicle Services environment.");
+            const p = EvamApi.evamData.activeCase.availablePriorities.find((p) => {
+                return p.id === id;
+            });
+            if (p) {
+                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+                newActiveOperation.selectedPriority = p.id;
+
+                this.injectOperation(newActiveOperation);
+                //TODO
+                //Android.setPriority
+
+            } else {
+                throw Error("Cant set priority when priority is not an available priority");
+            }
         }
     }
 
@@ -271,7 +310,6 @@ export class EvamApi {
         EvamApi.evamData.settings = settings;
 
         if (!EvamApi.isRunningInVehicleServices) {
-            //EvamApi.proxy.settings = settings
             publish(EvamEvents.NewOrUpdatedSettings, settings);
         } else {
             throw Error("Injecting settings is not allowed in the Vehicle Services environment, use a web browser instead.");
@@ -289,7 +327,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Operation);
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedOperation, c);
+            subscribe(EvamEvents.NewOrUpdatedOperation, c);
         }
     }
 
@@ -303,7 +341,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as object);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedSettings, c);
+            subscribe(EvamEvents.NewOrUpdatedSettings, c);
         }
     }
 
@@ -317,7 +355,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedDeviceRole, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedDeviceRole, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -333,7 +371,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Location);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedLocation, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedLocation, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -349,7 +387,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedInternetState, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedInternetState, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -365,7 +403,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedVehicleState, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedVehicleState, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -382,14 +420,75 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as TripLocationHistory);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            EventHelpers.subscribe(EvamEvents.NewOrUpdatedTripLocationHistory, (e) => {
+            subscribe(EvamEvents.NewOrUpdatedTripLocationHistory, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
     }
 
+    /**
+     * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
+     * @param notification
+     */
+    sendNotification(notification: Notification) {
+        const {
+            heading,
+            description,
+            notificationType,
+            primaryButton,
+            secondaryButton,
+        } = notification;
+
+        let primaryButtonCallbackUUID: string | undefined = undefined;
+        let secondaryButtonCallbackUUID: string | undefined = undefined;
+
+        if (primaryButton.callback) {
+            //Store the primary button callback in the callbacks Map with a uuid
+            primaryButtonCallbackUUID = uuidV4();
+            EvamApi.notificationCallbacks.set(primaryButtonCallbackUUID, primaryButton.callback);
+        }
+
+        //Store the secondary button callback in the callbacks Map with a uuid IF the secondary button is defined
+        if ((secondaryButton !== undefined) && (secondaryButton.callback !== undefined)) {
+            secondaryButtonCallbackUUID = uuidV4();
+            EvamApi.notificationCallbacks.set(secondaryButtonCallbackUUID, secondaryButton.callback);
+        }
+
+        const vehicleServicesNotificationToSend: _InternalVehicleServicesNotification = {
+            heading,
+            description,
+            notificationType,
+            primaryButton: {
+                label: primaryButton.label,
+                callback: primaryButtonCallbackUUID
+            },
+            secondaryButton: secondaryButton ? {
+                label: secondaryButton.label,
+                callback: secondaryButtonCallbackUUID
+            } : undefined
+        };
+
+        publish(EvamEvents.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
+    }
+
+    private static triggerCallback = (uuid: string) => {
+        const callback = EvamApi.notificationCallbacks.get(uuid);
+        if (callback) {
+            callback();
+            EvamApi.notificationCallbacks.delete(uuid);
+        }
+    };
+
+    private static subscribeToVehicleServiceNotifications = () => {
+        if (!EvamApi.isListeningForNotificationCallbacks) {
+            subscribe(EvamEvents.VehicleServicesNotificationCallbackTriggered, (e) => {
+                const callbackId = (<CustomEvent>e).detail;
+                EvamApi.triggerCallback(callbackId);
+            });
+            EvamApi.isListeningForNotificationCallbacks = true;
+        }
+    };
+
 }
-
-
 
 

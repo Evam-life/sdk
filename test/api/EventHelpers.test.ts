@@ -1,6 +1,6 @@
 //import the event.js file
 import {publish,unsubscribe,subscribe} from "../../src/util/EventHelpers";
-import EvamEvents from "../../src/domain/EvamEvents";
+import {EvamEvents} from "../../src";
 
 beforeEach(() => {
     jest.resetAllMocks()

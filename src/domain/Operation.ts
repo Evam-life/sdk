@@ -67,7 +67,7 @@ class Operation {
         public radioGroupSecondary: string | undefined,
         // Extra
         public additionalCoordinationInformation: string | undefined,
-        // PRIO
+        // Priority
         public availablePriorities: Array<OperationPriority> | undefined,
         // Patient
         public patientName: string | undefined,
@@ -130,8 +130,8 @@ class Operation {
             (data.selectedHospital !== undefined && Array.isArray(data.availableHospitalLocations)) ? data.availableHospitalLocations.find((ahl: any) => {
                 return (ahl === data.selectedHospital);
             }) : undefined,
-            (data.selectedPriority !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.find((prio: any) => {
-                return (prio.id === data.selectedPriority);
+            (data.selectedPriority !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.find((priority: any) => {
+                return (priority.id === data.selectedPriority);
             }) : undefined);
     }
 
