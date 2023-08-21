@@ -73,7 +73,7 @@ class EvamData {
  * evamApi.injectInternetState(new InternetState(...))
  * evamApi.injectOperation(new Operation(...))
  * evamApi.injectSettings(new Settings(...))
- *
+ * ```
  *
  */
 export class EvamApi {
