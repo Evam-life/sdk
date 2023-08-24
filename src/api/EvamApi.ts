@@ -444,7 +444,7 @@ export class EvamApi {
         }
     }
 
-    onNewOrUpdatedOperationList(callback: (operationList: Operation[]) => void) {
+    onNewOrUpdatedOperationList(callback: ((operationList: Operation[]) => void) | undefined) {
         if (callback) {
             const c = (e: Event) => {
                 callback((<CustomEvent>e).detail as Operation[]);
