@@ -9,7 +9,6 @@ import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
 import {EvamEvents, Notification, Location} from "../../src";
 import * as crypto from "crypto";
 import * as _ from "lodash";
-import {wait} from "@testing-library/user-event/dist/utils";
 import {waitFor} from "@testing-library/react";
 
 class TestEvamApi extends EvamApi {
@@ -59,7 +58,6 @@ it("should trigger notification callback when VehicleServicesNotificationCallbac
     let button2UUID: string;
 
     const primaryButtonCallbackSpy = jest.spyOn(notification.primaryButton, "callback");
-    const secondaryButtonCallbackSpy = jest.spyOn(notification.secondaryButton, "callback");
 
     currentCallbackForVehicleServicesNotificationSentEvent = (e) => {
         const notification = (<CustomEvent>e).detail;
