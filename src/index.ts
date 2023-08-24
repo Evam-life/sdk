@@ -18,6 +18,7 @@ import {
 } from "./domain";
 
 import {EvamApi} from "./api/EvamApi";
+import {VehicleServicesDevelopmentEnvironment} from "./dev-test-environment";
 
 export {
     DestinationControlPointLocation,
@@ -35,7 +36,8 @@ export {
     SystemHealth,
     TripLocationHistory,
     VehicleState,
-    VehicleStatus
+    VehicleStatus,
+    VehicleServicesDevelopmentEnvironment
 };
 
 export {EvamApi};

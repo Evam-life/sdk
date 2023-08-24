@@ -118,7 +118,7 @@ export const vehicleState = {
     vehicleLocation,
 };
 
-export const notification = {
+export const notification: Notification = {
     heading: "test notification",
     description: "this is a test notification",
     notificationType: NotificationType.ACTION_HUN,
