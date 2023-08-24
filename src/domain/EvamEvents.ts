@@ -12,6 +12,7 @@ enum EvamEvents {
     NewOrUpdatedTripLocationHistory = 'newOrUpdatedTripLocationHistory',
     VehicleServicesNotificationSent = 'vehicleServicesNotificationSent',
     VehicleServicesNotificationCallbackTriggered = 'vehicleServicesNotificationCallbackTriggered',
+    NewOrUpdatedOperationList = 'newOrUpdatedOperationList',
     _testEvent = '_testEvent'
 }
 

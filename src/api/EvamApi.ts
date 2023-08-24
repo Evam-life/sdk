@@ -4,16 +4,16 @@
  */
 
 import {
-    Operation,
-    InternetState,
     DeviceRole,
-    VehicleState,
-    Location,
-    TripLocationHistory,
     EvamEvents,
-    Notification
+    InternetState,
+    Location,
+    Notification,
+    Operation,
+    TripLocationHistory,
+    VehicleState
 } from "../domain";
-import {subscribe, publish, unsubscribe} from "../util/EventHelpers";
+import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
@@ -29,7 +29,8 @@ class EvamData {
         public deviceRole?: DeviceRole | undefined,
         public location?: Location | undefined,
         public vehicleState?: VehicleState | undefined,
-        public tripLocationHistory?: TripLocationHistory | undefined
+        public tripLocationHistory?: TripLocationHistory | undefined,
+        public operationList?: Operation[] | undefined
     ) {
 
     }
@@ -235,8 +236,8 @@ export class EvamApi {
      * @param location the location to inject.
      */
     injectLocation(location: Location) {
-        EvamApi.evamData.location = location;
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.location = location;
             publish(EvamEvents.NewOrUpdatedLocation, location);
         } else {
             throw Error("Injecting an Location is not allowed in the Vehicle Services environment.");
@@ -248,8 +249,8 @@ export class EvamApi {
      * @param vehicleState the vehicleState to inject.
      */
     injectVehicleState(vehicleState: VehicleState) {
-        EvamApi.evamData.vehicleState = vehicleState;
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.vehicleState = vehicleState;
             publish(EvamEvents.NewOrUpdatedVehicleState, vehicleState);
         } else {
             throw Error("Injecting an VehicleState is not allowed in the Vehicle Services environment.");
@@ -261,8 +262,8 @@ export class EvamApi {
      * @param tripLocationHistory the tripLocationHistory to inject.
      */
     injectTrip(tripLocationHistory: TripLocationHistory) {
-        EvamApi.evamData.tripLocationHistory = tripLocationHistory;
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.tripLocationHistory = tripLocationHistory;
             publish(EvamEvents.NewOrUpdatedTripLocationHistory, tripLocationHistory);
         } else {
             throw Error("Injecting an TripLocationHistory is not allowed in the Vehicle Services environment.");
@@ -274,8 +275,8 @@ export class EvamApi {
      * @param deviceRole the deviceRole to inject.
      */
     injectDeviceRole(deviceRole: DeviceRole) {
-        EvamApi.evamData.deviceRole = deviceRole;
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.deviceRole = deviceRole;
             publish(EvamEvents.NewOrUpdatedDeviceRole, deviceRole);
         } else {
             throw Error("Injecting an DeviceRole is not allowed in the Vehicle Services environment.");
@@ -287,8 +288,8 @@ export class EvamApi {
      * @param internetState the internetState to inject.
      */
     injectInternetState(internetState: InternetState) {
-        EvamApi.evamData.internetState = internetState;
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.internetState = internetState;
             publish(EvamEvents.NewOrUpdatedInternetState, internetState);
         } else {
             throw Error("Injecting an internetState is not allowed in the Vehicle Services environment.");
@@ -302,8 +303,8 @@ export class EvamApi {
      * @param activeCase The active case to be injected for development purposes.
      */
     injectOperation(activeCase: Operation | undefined) {
-        EvamApi.evamData.activeCase = activeCase;
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.activeCase = activeCase;
             publish(EvamEvents.NewOrUpdatedOperation, activeCase);
         } else {
             throw Error("Injecting an Operation is not allowed in the Vehicle Services environment, use the Vehicle Services Demo tool instead.");
@@ -316,12 +317,20 @@ export class EvamApi {
      * @param settings The settings to be injected for development purposes.
      */
     injectSettings(settings: object) {
-        EvamApi.evamData.settings = settings;
-
         if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.settings = settings;
             publish(EvamEvents.NewOrUpdatedSettings, settings);
         } else {
             throw Error("Injecting settings is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectOperationList(operationList: Operation[] | undefined) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.operationList = operationList;
+            publish(EvamEvents.NewOrUpdatedOperationList, operationList);
+        }else {
+            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.")
         }
     }
 
@@ -436,7 +445,15 @@ export class EvamApi {
     }
 
     onNewOrUpdatedOperationList(callback: (operationList: Operation[]) => void) {
-
+        if (callback) {
+            const c = (e: Event) => {
+                callback((<CustomEvent>e).detail as Operation[]);
+            };
+            EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
+            subscribe(EvamEvents.NewOrUpdatedOperationList, (e) => {
+                callback((<CustomEvent>e).detail);
+            });
+        }
     }
 
     /**

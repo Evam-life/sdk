@@ -12,6 +12,7 @@ import {
     Location,
     Notification
 } from "../src";
+import OperationState from "../src/domain/OperationState";
 
 export const vehicleStatus = {
     name: 59.3538975,
@@ -26,6 +27,7 @@ export const vehicleStatus = {
 export const operation = {
     operationID: "56",
     patientName: "Test Testkort",
+    operationState: OperationState.ACTIVE,
     patientUID: "900608-2381",
     callCenterId: "18",
     caseFolderId: "1",
@@ -40,6 +42,31 @@ export const operation = {
     sendTime: (new Date()).getTime() / 1000,
     createdTime: (new Date()).getTime() / 1000,
 };
+
+export const operation2 = {
+    operationID: "561",
+    patientName: "Test",
+    operationState: OperationState.AVAILABLE,
+    patientUID: "900608",
+    callCenterId: "18",
+    caseFolderId: "1",
+    prio: "PRIO 2",
+    vehicleStatus,
+    destinationSiteLocation: {
+        latitude: 59.35393,
+        longitude: 17.973795,
+        street: "Vretenvägen 13"
+    },
+    name: "Trafikolyka",
+    sendTime: (new Date()).getTime() / 1000,
+    createdTime: (new Date()).getTime() / 1000,
+};
+
+export const operationList = [
+    operation,
+    operation2
+];
+
 export const hospitalLocation = {
     latitude: 59.3538975,
     longitude: 17.9721877,
@@ -125,18 +152,19 @@ export const notification: Notification = {
     primaryButton: {
         label: "Primary Button",
         callback: () => {
-            console.log('Primary Button clicked on test notification');
+            console.log("Primary Button clicked on test notification");
         }
     },
     secondaryButton: {
         label: "Secondary Button",
         callback: () => {
-            console.log('Secondary Button clicked on test notification');
+            console.log("Secondary Button clicked on test notification");
         }
     }
 };
 
 export const convertedOperation = Operation.fromJSON(operation);
+export const convertedOperationList = [Operation.fromJSON(operation), Operation.fromJSON(operation2)];
 export const convertedVehicleState = VehicleState.fromJSON(vehicleState);
 export const convertedPatient = Patient.fromJSON(patient);
 export const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory);
