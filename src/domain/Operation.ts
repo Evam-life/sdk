@@ -3,6 +3,7 @@ import {DestinationSiteLocation} from "./DestinationSiteLocation";
 import {DestinationControlPointLocation} from "./DestinationControlPointLocation";
 import {HospitalLocation} from "./HospitalLocation";
 import {OperationPriority} from "./OperationPriority";
+import OperationState from "./OperationState";
 
 class Operation {
 
@@ -40,6 +41,7 @@ class Operation {
      * @param caseInfo The case info comment
      * @param selectedHospital The id of the selected hospital [inside available hospitals]
      * @param selectedPriority The id of the selected priority [inside available priority]
+     * @param operationState the current state of the operation (ACTIVE, AVAILABLE, COMPLETE)
      */
     constructor(
         // Metadata
@@ -84,6 +86,7 @@ class Operation {
         public caseInfo: string | undefined,
         public selectedHospital: number | undefined,
         public selectedPriority: number | undefined,
+        public operationState: OperationState
     ) {
     }
 
@@ -92,8 +95,8 @@ class Operation {
      * @param data JSON object
      */
     static fromJSON(data: any) {
-        if (data.operationID === undefined || data.name === undefined) {
-            throw Error("Operation Id and Operation Name must be specified for Operation");
+        if (data.operationID === undefined || data.name === undefined || data.operationState === undefined) {
+            throw Error("Operation Id, Operation Name and Operation State must be specified for Operation");
         }
         return new Operation(
             data.operationID,
@@ -132,7 +135,8 @@ class Operation {
             }) : undefined,
             (data.selectedPriority !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.find((priority: any) => {
                 return (priority.id === data.selectedPriority);
-            }) : undefined);
+            }) : undefined,
+            data.operationState);
     }
 
 }

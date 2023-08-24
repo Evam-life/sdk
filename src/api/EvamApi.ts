@@ -435,6 +435,10 @@ export class EvamApi {
         }
     }
 
+    onNewOrUpdatedOperationList(callback: (operationList: Operation[]) => void) {
+
+    }
+
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
      * @param notification
