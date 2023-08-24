@@ -85,7 +85,7 @@ it("onNewOrUpdatedOperation triggers the callback after subscription to the even
     evamApi.injectOperation(convertedOperation);
     expect(listener).not.toHaveBeenCalled();
 
-    evamApi.onNewOrUpdatedOperation(listener);
+    evamApi.onNewOrUpdatedActiveOperation(listener);
     evamApi.injectOperation(convertedOperation);
 
     expect(listener).toHaveBeenCalledWith(

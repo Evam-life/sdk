@@ -44,7 +44,7 @@ class EvamData {
  * const evamApi = new EvamApi();
  *
  * // Register a new callback on any operation update that simply logs it
- * evamApi.onNewOrUpdatedOperation((activeOperation) => console.log(activeOperation));
+ * evamApi.onNewOrUpdatedActiveOperation((activeOperation) => console.log(activeOperation));
  *
  * // Register a new callback on any application settings update that simply logs them
  * evamApi.onNewOrUpdatedSettings((settings) => console.log(settings));
@@ -297,7 +297,7 @@ export class EvamApi {
 
 
     /**
-     * Injects the Active Operation manually. This will trigger onNewOrUpdatedOperation(...)'s callback.
+     * Injects the Active Operation manually. This will trigger onNewOrUpdatedActiveOperation(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param activeCase The active case to be injected for development purposes.
      */
@@ -330,7 +330,7 @@ export class EvamApi {
      * Operation is updated.
      * @param callback The callback to be executed
      */
-    onNewOrUpdatedOperation(callback: (activeOperation: Operation | undefined) => void) {
+    onNewOrUpdatedActiveOperation(callback: (activeOperation: Operation | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
                 callback((<CustomEvent>e).detail as Operation);
