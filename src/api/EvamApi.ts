@@ -3,10 +3,19 @@
  * @module EvamApi
  */
 
-import {Operation, InternetState, DeviceRole, VehicleState, Location, TripLocationHistory, EvamEvents, Notification} from "../domain";
+import {
+    Operation,
+    InternetState,
+    DeviceRole,
+    VehicleState,
+    Location,
+    TripLocationHistory,
+    EvamEvents,
+    Notification
+} from "../domain";
 import {subscribe, publish, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
-import {v4 as uuidV4} from 'uuid'
+import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 
 /**
@@ -442,15 +451,25 @@ export class EvamApi {
         let primaryButtonCallbackUUID: string | undefined = undefined;
         let secondaryButtonCallbackUUID: string | undefined = undefined;
 
+        //The UUID used to identify the callback
+        //both callbacks have near-identical identifiers except for the last two digits
+        //say the callback uuid generated is '12345' then the primary callback id will be '12345-p' wheras the secondary callback
+        //will be '12345-s'
+        //The reason we do this is because when the callbacks are stored they don't currently store which notification they belong to, but rather this
+        //is handled by the notification. We now use this similar callback to identify the notification so that we can clear the memory of both (if both exist)
+        //callbacks.
+        const callbackUUID = uuidV4();
+
+
         if (primaryButton.callback) {
             //Store the primary button callback in the callbacks Map with a uuid
-            primaryButtonCallbackUUID = uuidV4();
+            primaryButtonCallbackUUID = callbackUUID + "-p";
             EvamApi.notificationCallbacks.set(primaryButtonCallbackUUID, primaryButton.callback);
         }
 
         //Store the secondary button callback in the callbacks Map with a uuid IF the secondary button is defined
         if ((secondaryButton !== undefined) && (secondaryButton.callback !== undefined)) {
-            secondaryButtonCallbackUUID = uuidV4();
+            secondaryButtonCallbackUUID = callbackUUID + "-s";
             EvamApi.notificationCallbacks.set(secondaryButtonCallbackUUID, secondaryButton.callback);
         }
 
@@ -473,9 +492,21 @@ export class EvamApi {
 
     private static triggerCallback = (uuid: string) => {
         const callback = EvamApi.notificationCallbacks.get(uuid);
+
         if (callback) {
             callback();
             EvamApi.notificationCallbacks.delete(uuid);
+
+            //This deletes the other callback (so if we called secondary then primary is deleted from memory and vice versa)
+            const isPrimaryCallback = uuid.slice(-2) === "-p"; //Primary callback UUIDs end with "-p" whereas secondary end with "-s"
+            const correspondingCallbackTypeIdentifier = isPrimaryCallback ? "-s" : "-p"; //which kind of callback aren't we delting (the one that wasn't called)
+            const correspondingCallbackUUID = uuid.slice(0, -2) + correspondingCallbackTypeIdentifier; //the UUID will be the same as the triggered callback but with different last two chars
+            const correspondingCallback = EvamApi.notificationCallbacks.get(correspondingCallbackUUID); //Find the callback
+
+
+            if (correspondingCallback) { //If it exists then delete it
+                EvamApi.notificationCallbacks.delete(correspondingCallbackUUID);
+            }
         }
     };
 
