@@ -11,7 +11,8 @@ import {
     Notification,
     Operation,
     TripLocationHistory,
-    VehicleState
+    VehicleState,
+    Battery
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -30,9 +31,13 @@ class EvamData {
         public location?: Location | undefined,
         public vehicleState?: VehicleState | undefined,
         public tripLocationHistory?: TripLocationHistory | undefined,
-        public operationList?: Operation[] | undefined
+        public operationList?: Operation[] | undefined,
+        public deviceId?: string | undefined,
+        public softwareVersion?: string | undefined,
+        public vehicleService?: string | undefined,
+        public battery?: Battery | undefined,
+        public appVersion?: string | undefined
     ) {
-
     }
 }
 
@@ -83,13 +88,20 @@ class EvamData {
  * evamApi.injectInternetState(new InternetState(...))
  * evamApi.injectOperation(new Operation(...))
  * evamApi.injectSettings(new Settings(...))
- *
+ * evamApi.injectOperationList(Operation[...])
+ *```
  *
  */
 export class EvamApi {
 
+    private static singletonExists = false;
 
     constructor() {
+
+        if (!EvamApi.singletonExists) {
+            EvamApi.singletonExists = true;
+        }
+
         if (!EvamApi.isListeningForNotificationCallbacks) {
             EvamApi.subscribeToVehicleServiceNotifications();
         }
@@ -325,12 +337,18 @@ export class EvamApi {
         }
     }
 
+
+    /**
+     * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param operationList The operation list to be injected for development purposes.
+     */
     injectOperationList(operationList: Operation[] | undefined) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.operationList = operationList;
             publish(EvamEvents.NewOrUpdatedOperationList, operationList);
-        }else {
-            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.")
+        } else {
+            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
@@ -444,6 +462,11 @@ export class EvamApi {
         }
     }
 
+
+    /**
+     * Used to assign a callback when the operation list is created or updated.
+     * @param callback The callback with (optional) argument operationList. Use this to access the operation list.
+     */
     onNewOrUpdatedOperationList(callback: ((operationList: Operation[]) => void) | undefined) {
         if (callback) {
             const c = (e: Event) => {

@@ -3,16 +3,19 @@ import {
     DestinationControlPointLocation,
     DestinationSiteLocation,
     HospitalLocation,
+    Location,
+    Notification,
     NotificationType,
-    Operation, OperationPriority,
-    Patient, SystemHealth,
+    Operation,
+    OperationPriority,
+    Patient,
+    SystemHealth,
     TripLocationHistory,
     VehicleState,
-    VehicleStatus,
-    Location,
-    Notification
+    VehicleStatus
 } from "../src";
 import OperationState from "../src/domain/OperationState";
+import {Battery, BatteryHealth, BatteryPlugged, BatteryStatus} from "../src/domain";
 
 export const vehicleStatus = {
     name: 59.3538975,
@@ -163,8 +166,15 @@ export const notification: Notification = {
     }
 };
 
+export const battery = {
+    health: BatteryHealth.GOOD,
+    status: BatteryStatus.CHARGING,
+    plugged: BatteryPlugged.AC
+}
+
 export const convertedOperation = Operation.fromJSON(operation);
 export const convertedOperationList = [Operation.fromJSON(operation), Operation.fromJSON(operation2)];
+export const convertedBattery = Battery.fromJSON(battery);
 export const convertedVehicleState = VehicleState.fromJSON(vehicleState);
 export const convertedPatient = Patient.fromJSON(patient);
 export const convertedTripLocationHistory = TripLocationHistory.fromJSON(tripLocationHistory);
