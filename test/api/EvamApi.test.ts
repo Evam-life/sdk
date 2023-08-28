@@ -1,5 +1,5 @@
 import {
-convertedBattery,
+    convertedBattery,
     convertedLocation,
     convertedOperation, convertedOperationList,
     convertedOperationWithAvailableHospitals, convertedOperationWithAvailablePriorities,
