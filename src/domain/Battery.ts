@@ -23,7 +23,15 @@ enum BatteryStatus {
     FULL = 5
 }
 
+
 class Battery {
+    /**
+     *  Class representing the device's battery health, status and plugged state.
+     *  See https://developer.android.com/reference/android/os/BatteryManager for more information.
+     * @param health the battery's health (either UNKNOWN, GOOD, OVERHEAT, DEAD, OVER_VOLTAGE, UNSPECIFIED_FAILURE, COLD)
+     * @param plugged the battery's plugged status (either DOCK, AC, USB, WIRELESS)
+     * @param status the battery's status (either UNKNOWN, CHARGING, DISCHARGING, NOT_CHARGING, FULL)
+     */
     constructor(
         public health?: BatteryHealth | undefined,
         public plugged?: BatteryPlugged | undefined,
@@ -31,6 +39,10 @@ class Battery {
     ) {
     }
 
+    /**
+     * Create from JSON
+     * @param battery JSON object
+     */
     static fromJSON(battery: any) {
         return new Battery(battery.health, battery.plugged, battery.status);
     }
