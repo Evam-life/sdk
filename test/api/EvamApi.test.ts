@@ -1,4 +1,5 @@
 import {
+convertedBattery,
     convertedLocation,
     convertedOperation, convertedOperationList,
     convertedOperationWithAvailableHospitals, convertedOperationWithAvailablePriorities,
@@ -227,6 +228,23 @@ it("onNewOrUpdatedOperationList triggers the callback after subscription to the 
         );
     });
 
+});
+
+it("onNewOrUpdatedBattery triggers the callback after subscription to the event", async () => {
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectBattery(convertedBattery);
+
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedBattery(listener);
+    evamApi.injectBattery(convertedBattery);
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(convertedBattery);
+    });
 });
 
 it("setHospital correctly calls the injectOperation with the right data", async () => {

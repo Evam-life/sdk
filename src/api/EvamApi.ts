@@ -352,6 +352,15 @@ export class EvamApi {
         }
     }
 
+    injectBattery(battery: Battery | undefined) {
+        if(!EvamApi.isRunningInVehicleServices){
+            EvamApi.evamData.battery = battery;
+            publish(EvamEvent.NewOrUpdatedBattery, battery);
+        }else{
+            throw Error("Injecting battery is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
      * Operation is updated.
@@ -433,7 +442,7 @@ export class EvamApi {
                 callback((e as CustomEvent).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedVehicleState,  c);
+            subscribe(EvamEvent.NewOrUpdatedVehicleState, c);
         }
     }
 
