@@ -4,6 +4,7 @@
  */
 
 import {
+    Battery,
     DeviceRole,
     EvamEvent,
     InternetState,
@@ -30,7 +31,11 @@ class EvamData {
         public location?: Location | undefined,
         public vehicleState?: VehicleState | undefined,
         public tripLocationHistory?: TripLocationHistory | undefined,
-        public operationList?: Operation[] | undefined
+        public operationList?: Operation[] | undefined,
+        public battery?: Battery | undefined,
+        public osVersion?: string | undefined,
+        public vsVersion?: string | undefined,
+        public appVersion?: string | undefined
     ) {
 
     }
@@ -92,14 +97,13 @@ export class EvamApi {
     private static singletonExists = false;
 
     constructor() {
-
         if (!EvamApi.singletonExists) {
-
             EvamApi.subscribeToVehicleServiceNotifications();
-
+            EvamApi.subscribeToAppVersionSet();
+            EvamApi.subscribeToOSVersionSet();
+            EvamApi.subscribeToVehicleServicesVersionSet()
             EvamApi.singletonExists = true;
         }
-
     }
 
     /**
@@ -334,8 +338,8 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.operationList = operationList;
             publish(EvamEvent.NewOrUpdatedOperationList, operationList);
-        }else {
-            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.")
+        } else {
+            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
@@ -542,10 +546,34 @@ export class EvamApi {
     };
 
     private static subscribeToVehicleServiceNotifications = () => {
-            subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
-                const callbackId = (<CustomEvent>e).detail;
-                EvamApi.triggerCallback(callbackId);
-            });
+        subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
+            const callbackId = (<CustomEvent>e).detail;
+            EvamApi.triggerCallback(callbackId);
+        });
+    };
+
+    private static subscribeToOSVersionSet = () => {
+        const osVersionSetSubscription = (e: Event) => {
+            EvamApi.evamData.osVersion = (<CustomEvent>e).detail;
+            unsubscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
+        };
+        subscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
+    };
+
+    private static subscribeToAppVersionSet = () => {
+        const appVersionSetSubscription = (e: Event) => {
+            EvamApi.evamData.appVersion = (<CustomEvent>e).detail;
+            unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription)
+        };
+        subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
+    };
+
+    private static subscribeToVehicleServicesVersionSet = () => {
+        const vehicleServicesVersionSetSubscription = (e:Event) => {
+            EvamApi.evamData.vsVersion = (e as CustomEvent).detail;
+            unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+        }
+        subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
     };
 
 }

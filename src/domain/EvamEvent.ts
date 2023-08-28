@@ -14,7 +14,7 @@ enum EvamEvent {
     VehicleServicesNotificationCallbackTriggered = 'vehicleServicesNotificationCallbackTriggered',
     NewOrUpdatedOperationList = 'newOrUpdatedOperationList',
     NewOrUpdatedBattery = 'newOrUpdatedBattery',
-    SoftwareVersionSet = 'softwareVersionSet',
+    OSVersionSet = 'osVersionSet',
     VehicleServicesVersionSet = 'vehicleServicesVersionSet',
     AppVersionSet = 'appVersionSet',
     _testEvent = '_testEvent'
