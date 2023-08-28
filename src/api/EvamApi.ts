@@ -41,6 +41,8 @@ class EvamData {
     }
 }
 
+type CallbackFunctionArray = Array<(e: Event) => void>
+
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
  *
@@ -116,13 +118,13 @@ export class EvamApi {
      * These arrays store references to every callback subscribed to certain events. We use these references to later unsubscribe from DOM events.
      * @hidden
      */
-    private static newOrUpdatedOperationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedSettingsCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedLocationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedDeviceRoleCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedInternetStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedVehicleStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedTripLocationHistoryCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedOperationCallbacks: CallbackFunctionArray = []
+    private static newOrUpdatedSettingsCallbacks: CallbackFunctionArray = []
+    private static newOrUpdatedLocationCallbacks: CallbackFunctionArray = []
+    private static newOrUpdatedDeviceRoleCallbacks: CallbackFunctionArray = []
+    private static newOrUpdatedInternetStateCallbacks: CallbackFunctionArray = []
+    private static newOrUpdatedVehicleStateCallbacks: CallbackFunctionArray = []
+    private static newOrUpdatedTripLocationHistoryCallbacks: CallbackFunctionArray = []
 
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
