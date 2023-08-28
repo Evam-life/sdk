@@ -3,7 +3,7 @@ import {Box, SlideFade, VStack} from "@chakra-ui/react";
 import _ from "lodash";
 import {publish, subscribe, unsubscribe} from "../../../util/EventHelpers";
 import {NotificationComponent, VehicleServicesNoRender} from "../../../components";
-import {EvamEvents} from "../../../../domain";
+import {EvamEvent} from "../../../../domain";
 import {_InternalVehicleServicesNotification} from "../../../../domain/_InternalVehicleServicesNotification";
 
 
@@ -23,15 +23,15 @@ const NotificationProvider: React.FC<PropsWithChildren> = ({children}) => {
             setNotifications(newNotifications);
         };
 
-        subscribe(EvamEvents.VehicleServicesNotificationSent, subscriptionFunctionSendNotification);
+        subscribe(EvamEvent.VehicleServicesNotificationSent, subscriptionFunctionSendNotification);
 
         return () => {
-            unsubscribe(EvamEvents.VehicleServicesNotificationSent, subscriptionFunctionSendNotification);
+            unsubscribe(EvamEvent.VehicleServicesNotificationSent, subscriptionFunctionSendNotification);
         };
     }, [notifications, setNotifications]);
 
     const dispatchCallback = (uuid: string) => {
-        publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, uuid);
+        publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, uuid);
         const notificationsClone = _.clone(notifications);
         const notificationToRemove = notificationsClone.find((notification) => {
             return (uuid === notification.primaryButton.callback || (notification.secondaryButton !== undefined && uuid === notification.secondaryButton.callback));

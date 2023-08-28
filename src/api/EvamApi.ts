@@ -5,14 +5,13 @@
 
 import {
     DeviceRole,
-    EvamEvents,
+    EvamEvent,
     InternetState,
     Location,
     Notification,
     Operation,
     TripLocationHistory,
-    VehicleState,
-    Battery
+    VehicleState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -31,13 +30,9 @@ class EvamData {
         public location?: Location | undefined,
         public vehicleState?: VehicleState | undefined,
         public tripLocationHistory?: TripLocationHistory | undefined,
-        public operationList?: Operation[] | undefined,
-        public deviceId?: string | undefined,
-        public softwareVersion?: string | undefined,
-        public vehicleService?: string | undefined,
-        public battery?: Battery | undefined,
-        public appVersion?: string | undefined
+        public operationList?: Operation[] | undefined
     ) {
+
     }
 }
 
@@ -149,38 +144,31 @@ export class EvamApi {
     unsubscribeFromAllCallbacks = () => {
 
         EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedOperation, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedOperation, callback);
         });
 
         EvamApi.newOrUpdatedSettingsCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedSettings, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedSettings, callback);
         });
 
         EvamApi.newOrUpdatedLocationCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedLocation, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedLocation, callback);
         });
 
         EvamApi.newOrUpdatedDeviceRoleCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedDeviceRole, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedDeviceRole, callback);
         });
 
         EvamApi.newOrUpdatedInternetStateCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedInternetState, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedInternetState, callback);
         });
 
         EvamApi.newOrUpdatedVehicleStateCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedVehicleState, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedVehicleState, callback);
         });
 
         EvamApi.newOrUpdatedTripLocationHistoryCallbacks.forEach((callback) => {
-            //@ts-ignore
-            unsubscribe(EvamEvents.NewOrUpdatedTripLocationHistory, callback);
+            unsubscribe(EvamEvent.NewOrUpdatedTripLocationHistory, callback);
         });
 
         EvamApi.newOrUpdatedOperationCallbacks = [];
@@ -190,7 +178,7 @@ export class EvamApi {
         EvamApi.newOrUpdatedInternetStateCallbacks = [];
         EvamApi.newOrUpdatedVehicleStateCallbacks = [];
         EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
-        EvamApi.notificationCallbacks = new Map([]);
+        EvamApi.notificationCallbacks = new Map();
     };
 
     /**
@@ -250,7 +238,7 @@ export class EvamApi {
     injectLocation(location: Location) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.location = location;
-            publish(EvamEvents.NewOrUpdatedLocation, location);
+            publish(EvamEvent.NewOrUpdatedLocation, location);
         } else {
             throw Error("Injecting an Location is not allowed in the Vehicle Services environment.");
         }
@@ -263,7 +251,7 @@ export class EvamApi {
     injectVehicleState(vehicleState: VehicleState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vehicleState = vehicleState;
-            publish(EvamEvents.NewOrUpdatedVehicleState, vehicleState);
+            publish(EvamEvent.NewOrUpdatedVehicleState, vehicleState);
         } else {
             throw Error("Injecting an VehicleState is not allowed in the Vehicle Services environment.");
         }
@@ -276,7 +264,7 @@ export class EvamApi {
     injectTrip(tripLocationHistory: TripLocationHistory) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.tripLocationHistory = tripLocationHistory;
-            publish(EvamEvents.NewOrUpdatedTripLocationHistory, tripLocationHistory);
+            publish(EvamEvent.NewOrUpdatedTripLocationHistory, tripLocationHistory);
         } else {
             throw Error("Injecting an TripLocationHistory is not allowed in the Vehicle Services environment.");
         }
@@ -289,7 +277,7 @@ export class EvamApi {
     injectDeviceRole(deviceRole: DeviceRole) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.deviceRole = deviceRole;
-            publish(EvamEvents.NewOrUpdatedDeviceRole, deviceRole);
+            publish(EvamEvent.NewOrUpdatedDeviceRole, deviceRole);
         } else {
             throw Error("Injecting an DeviceRole is not allowed in the Vehicle Services environment.");
         }
@@ -302,7 +290,7 @@ export class EvamApi {
     injectInternetState(internetState: InternetState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.internetState = internetState;
-            publish(EvamEvents.NewOrUpdatedInternetState, internetState);
+            publish(EvamEvent.NewOrUpdatedInternetState, internetState);
         } else {
             throw Error("Injecting an internetState is not allowed in the Vehicle Services environment.");
         }
@@ -317,7 +305,7 @@ export class EvamApi {
     injectOperation(activeCase: Operation | undefined) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.activeCase = activeCase;
-            publish(EvamEvents.NewOrUpdatedOperation, activeCase);
+            publish(EvamEvent.NewOrUpdatedOperation, activeCase);
         } else {
             throw Error("Injecting an Operation is not allowed in the Vehicle Services environment, use the Vehicle Services Demo tool instead.");
         }
@@ -331,7 +319,7 @@ export class EvamApi {
     injectSettings(settings: object) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.settings = settings;
-            publish(EvamEvents.NewOrUpdatedSettings, settings);
+            publish(EvamEvent.NewOrUpdatedSettings, settings);
         } else {
             throw Error("Injecting settings is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
@@ -346,9 +334,9 @@ export class EvamApi {
     injectOperationList(operationList: Operation[] | undefined) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.operationList = operationList;
-            publish(EvamEvents.NewOrUpdatedOperationList, operationList);
-        } else {
-            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.");
+            publish(EvamEvent.NewOrUpdatedOperationList, operationList);
+        }else {
+            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.")
         }
     }
 
@@ -363,7 +351,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Operation);
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedOperation, c);
+            subscribe(EvamEvent.NewOrUpdatedOperation, c);
         }
     }
 
@@ -377,7 +365,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as object);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedSettings, c);
+            subscribe(EvamEvent.NewOrUpdatedSettings, c);
         }
     }
 
@@ -391,7 +379,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedDeviceRole, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedDeviceRole, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -407,7 +395,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Location);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedLocation, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedLocation, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -423,7 +411,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedInternetState, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedInternetState, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -439,7 +427,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedVehicleState, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedVehicleState, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -456,7 +444,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as TripLocationHistory);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedTripLocationHistory, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -473,7 +461,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Operation[]);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            subscribe(EvamEvents.NewOrUpdatedOperationList, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedOperationList, (e) => {
                 callback((<CustomEvent>e).detail);
             });
         }
@@ -531,7 +519,7 @@ export class EvamApi {
             } : undefined
         };
 
-        publish(EvamEvents.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
+        publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
     }
 
     private static triggerCallback = (uuid: string) => {
@@ -556,7 +544,7 @@ export class EvamApi {
 
     private static subscribeToVehicleServiceNotifications = () => {
         if (!EvamApi.isListeningForNotificationCallbacks) {
-            subscribe(EvamEvents.VehicleServicesNotificationCallbackTriggered, (e) => {
+            subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
                 const callbackId = (<CustomEvent>e).detail;
                 EvamApi.triggerCallback(callbackId);
             });
