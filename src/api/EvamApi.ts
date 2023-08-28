@@ -94,12 +94,12 @@ export class EvamApi {
     constructor() {
 
         if (!EvamApi.singletonExists) {
+
+            EvamApi.subscribeToVehicleServiceNotifications();
+
             EvamApi.singletonExists = true;
         }
 
-        if (!EvamApi.isListeningForNotificationCallbacks) {
-            EvamApi.subscribeToVehicleServiceNotifications();
-        }
     }
 
     /**
@@ -120,7 +120,6 @@ export class EvamApi {
     private static newOrUpdatedVehicleStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
     private static newOrUpdatedTripLocationHistoryCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
 
-    private static isListeningForNotificationCallbacks = false;
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
     /**
@@ -543,13 +542,10 @@ export class EvamApi {
     };
 
     private static subscribeToVehicleServiceNotifications = () => {
-        if (!EvamApi.isListeningForNotificationCallbacks) {
             subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
                 const callbackId = (<CustomEvent>e).detail;
                 EvamApi.triggerCallback(callbackId);
             });
-            EvamApi.isListeningForNotificationCallbacks = true;
-        }
     };
 
 }
