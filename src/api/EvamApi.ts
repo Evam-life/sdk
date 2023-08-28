@@ -153,46 +153,21 @@ export class EvamApi {
      */
     unsubscribeFromAllCallbacks = () => {
 
-        EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedOperation, callback);
-        });
+        const clearCallbacksAndArray = (callbackFunctionArray: CallbackFunctionArray, event: EvamEvent) => {
+            callbackFunctionArray.forEach((callback) => {
+                unsubscribe(event, callback);
+            });
+            callbackFunctionArray = [];
+        };
 
-        EvamApi.newOrUpdatedSettingsCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedSettings, callback);
-        });
-
-        EvamApi.newOrUpdatedLocationCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedLocation, callback);
-        });
-
-        EvamApi.newOrUpdatedDeviceRoleCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedDeviceRole, callback);
-        });
-
-        EvamApi.newOrUpdatedInternetStateCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedInternetState, callback);
-        });
-
-        EvamApi.newOrUpdatedVehicleStateCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedVehicleState, callback);
-        });
-
-        EvamApi.newOrUpdatedTripLocationHistoryCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedTripLocationHistory, callback);
-        });
-
-        EvamApi.newOrUpdatedBatteryCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedBattery, callback);
-        });
-
-        EvamApi.newOrUpdatedOperationCallbacks = [];
-        EvamApi.newOrUpdatedSettingsCallbacks = [];
-        EvamApi.newOrUpdatedLocationCallbacks = [];
-        EvamApi.newOrUpdatedDeviceRoleCallbacks = [];
-        EvamApi.newOrUpdatedInternetStateCallbacks = [];
-        EvamApi.newOrUpdatedVehicleStateCallbacks = [];
-        EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
-        EvamApi.newOrUpdatedBatteryCallbacks = [];
+        clearCallbacksAndArray(EvamApi.newOrUpdatedOperationCallbacks, EvamEvent.NewOrUpdatedOperation);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedSettingsCallbacks, EvamEvent.NewOrUpdatedSettings);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedLocationCallbacks, EvamEvent.NewOrUpdatedLocation);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedDeviceRoleCallbacks, EvamEvent.NewOrUpdatedDeviceRole);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedInternetStateCallbacks, EvamEvent.NewOrUpdatedInternetState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedVehicleStateCallbacks, EvamEvent.NewOrUpdatedVehicleState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
 
         EvamApi.notificationCallbacks = new Map();
     };
