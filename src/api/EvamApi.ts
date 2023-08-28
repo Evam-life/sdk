@@ -105,6 +105,9 @@ export class EvamApi {
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
             EvamApi.singletonExists = true;
+
+            //TODO
+            //Need to tell VS that we are now ready to receive software versions
         }
     }
 
@@ -353,10 +356,10 @@ export class EvamApi {
     }
 
     injectBattery(battery: Battery | undefined) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.battery = battery;
             publish(EvamEvent.NewOrUpdatedBattery, battery);
-        }else{
+        } else {
             throw Error("Injecting battery is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
@@ -476,6 +479,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Used to assign a callback when the battery created or updated.
+     * @param callback The callback with (optional) argument battery. Use this to access the battery.
+     */
     onNewOrUpdatedBattery(callback: ((battery: Battery) => void) | undefined) {
         if (callback) {
             const c = (e: Event) => {
