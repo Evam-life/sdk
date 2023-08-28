@@ -91,6 +91,7 @@ type CallbackFunctionArray = Array<(e: Event) => void>
  * evamApi.injectOperation(new Operation(...))
  * evamApi.injectSettings(new Settings(...))
  * evamApi.injectOperationList([new Operation(...), new Operation(...), ...])
+ * evamApi.injectBattery(new Batter(...)))
  *```
  *
  */
@@ -355,6 +356,11 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Injects the battery manually. This will trigger onNewOrUpdatedBattery(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param battery The battery to be injected for development purposes.
+     */
     injectBattery(battery: Battery | undefined) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.battery = battery;
