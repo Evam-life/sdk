@@ -391,9 +391,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedDeviceRole, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedDeviceRole, c);
         }
     }
 
@@ -407,9 +405,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Location);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedLocation, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedLocation, c);
         }
     }
 
@@ -423,9 +419,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedInternetState, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedInternetState, c);
         }
     }
 
@@ -439,9 +433,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedVehicleState, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedVehicleState,  c);
         }
     }
 
@@ -456,9 +448,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as TripLocationHistory);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, c);
         }
     }
 
@@ -473,9 +463,7 @@ export class EvamApi {
                 callback((<CustomEvent>e).detail as Operation[]);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedOperationList, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedOperationList, c);
         }
     }
 
