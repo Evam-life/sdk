@@ -157,7 +157,9 @@ export class EvamApi {
             callbackFunctionArray.forEach((callback) => {
                 unsubscribe(event, callback);
             });
-            callbackFunctionArray = [];
+            //This empties the array.
+            //The reason I don't just do 'array = []' here is because TypeScript throws a warning, which will mess with pipelines.
+            callbackFunctionArray.splice(0, callbackFunctionArray.length);
         };
 
         clearCallbacksAndArray(EvamApi.newOrUpdatedOperationCallbacks, EvamEvent.NewOrUpdatedOperation);
@@ -316,6 +318,19 @@ export class EvamApi {
         }
     }
 
+    //These get*Version functions are different from the other ways of getting data from the SDK.
+    //The software versions are set once and then not changed again so it's fine to allow the developer to get these whenever they want.
+    getAppVersion() {
+        return EvamApi.evamData.appVersion;
+    }
+
+    getOSVersion() {
+        return EvamApi.evamData.osVersion;
+    }
+
+    getVehicleServicesVersion() {
+        return EvamApi.evamData.vsVersion;
+    }
 
     /**
      * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
