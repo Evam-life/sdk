@@ -1,13 +1,16 @@
 import {
     convertedBattery,
     convertedLocation,
-    convertedOperation, convertedOperationList,
-    convertedOperationWithAvailableHospitals, convertedOperationWithAvailablePriorities,
+    convertedOperation,
+    convertedOperationList,
+    convertedOperationWithAvailableHospitals,
+    convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
     convertedVehicleState
 } from "../testdata";
-import {DeviceRole, EvamApi, InternetState} from "../../src";
+import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
+import {publish} from "../../src/util/EventHelpers";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -304,4 +307,42 @@ it("setPriority correctly calls the injectOperation with the right data", async 
         });
     }
 
+});
+
+it("sets the app version correctly", async () => {
+    const evamApi = new TestEvamApi();
+
+    const appVersion = 1234;
+
+    expect(evamApi.getAppVersion()).toBeUndefined();
+    publish(EvamEvent.AppVersionSet, appVersion);
+    await waitFor(() => {
+        expect(evamApi.getAppVersion()).toEqual(appVersion);
+    });
+});
+
+it("sets the OS version correctly", async () => {
+    const evamApi = new TestEvamApi();
+    const osVersion = 4567;
+
+    expect(evamApi.getOSVersion()).toBeUndefined();
+    publish(EvamEvent.OSVersionSet, osVersion);
+
+    await waitFor(() => {
+        expect(evamApi.getOSVersion()).toEqual(osVersion);
+    });
+});
+
+it("sets the VS version correctly", async () => {
+    const evamApi = new TestEvamApi();
+    const vsVersion = 8910;
+
+    console.log("are we here");
+
+    expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
+    publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+
+    await waitFor(() => {
+        expect(evamApi.getVehicleServicesVersion()).toEqual(vsVersion );
+    });
 });
