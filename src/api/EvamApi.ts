@@ -360,7 +360,7 @@ export class EvamApi {
     onNewOrUpdatedActiveOperation(callback: (activeOperation: Operation | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as Operation);
+                callback((e as CustomEvent).detail as Operation);
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedOperation, c);
@@ -374,7 +374,7 @@ export class EvamApi {
     onNewOrUpdatedSettings(callback: (settings: object | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as object);
+                callback((e as CustomEvent).detail as object);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedSettings, c);
@@ -388,7 +388,7 @@ export class EvamApi {
     onNewOrUpdatedDeviceRole(callback: (deviceRole: DeviceRole | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as DeviceRole);
+                callback((e as CustomEvent).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedDeviceRole, c);
@@ -402,7 +402,7 @@ export class EvamApi {
     onNewOrUpdatedLocation(callback: (location: Location | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as Location);
+                callback((e as CustomEvent).detail as Location);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedLocation, c);
@@ -416,7 +416,7 @@ export class EvamApi {
     onNewOrUpdatedInternetState(callback: (internetState: InternetState | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as InternetState);
+                callback((e as CustomEvent).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedInternetState, c);
@@ -430,7 +430,7 @@ export class EvamApi {
     onNewOrUpdatedVehicleState(callback: (vehicleState: VehicleState | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as VehicleState);
+                callback((e as CustomEvent).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedVehicleState,  c);
@@ -445,7 +445,7 @@ export class EvamApi {
     onNewOrUpdatedTripLocationHistory(callback: (tripLocationHistory: TripLocationHistory | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as TripLocationHistory);
+                callback((e as CustomEvent).detail as TripLocationHistory);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, c);
@@ -460,7 +460,7 @@ export class EvamApi {
     onNewOrUpdatedOperationList(callback: ((operationList: Operation[]) => void) | undefined) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as Operation[]);
+                callback((e as CustomEvent).detail as Operation[]);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedOperationList, c);
@@ -554,14 +554,14 @@ export class EvamApi {
 
     private static subscribeToVehicleServiceNotifications = () => {
         subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
-            const callbackId = (<CustomEvent>e).detail;
+            const callbackId = (e as CustomEvent).detail;
             EvamApi.triggerCallback(callbackId);
         });
     };
 
     private static subscribeToOSVersionSet = () => {
         const osVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.osVersion = (<CustomEvent>e).detail;
+            EvamApi.evamData.osVersion = (e as CustomEvent).detail;
             unsubscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
         };
         subscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
@@ -569,7 +569,7 @@ export class EvamApi {
 
     private static subscribeToAppVersionSet = () => {
         const appVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.appVersion = (<CustomEvent>e).detail;
+            EvamApi.evamData.appVersion = (e as CustomEvent).detail;
             unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
         };
         subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
