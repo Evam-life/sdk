@@ -5,7 +5,8 @@
 
 import {
     Battery,
-    DeviceRole, DisplayMode,
+    DeviceRole,
+    DisplayMode,
     EvamEvent,
     InternetState,
     Location,
@@ -318,6 +319,20 @@ export class EvamApi {
             publish(EvamEvent.NewOrUpdatedSettings, settings);
         } else {
             throw Error("Injecting settings is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    /**
+     * Injects the display mode manually. This will trigger onNewOrUpdaredDisplayMode(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param displayMode The display mode (light or dark) to be injected for development purposes.
+     */
+    injectDisplayMode(displayMode:DisplayMode){
+        if(!EvamApi.isRunningInVehicleServices){
+            EvamApi.evamData.displayMode = displayMode;
+            publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
+        } else {
+            throw Error("Injecting display mode is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 

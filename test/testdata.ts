@@ -15,7 +15,7 @@ import {
     VehicleStatus
 } from "../src";
 import OperationState from "../src/domain/OperationState";
-import {Battery, BatteryHealth, BatteryPlugged, BatteryStatus} from "../src/domain";
+import {Battery, BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../src/domain";
 
 export const vehicleStatus = {
     name: 59.3538975,
@@ -165,6 +165,8 @@ export const notification: Notification = {
         }
     }
 };
+
+export const displayMode = DisplayMode.LIGHT;
 
 export const battery = {
     health: BatteryHealth.GOOD,

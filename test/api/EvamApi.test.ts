@@ -6,7 +6,7 @@ import {
     convertedOperationWithAvailableHospitals,
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
-    convertedVehicleState
+    convertedVehicleState, displayMode
 } from "../testdata";
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
@@ -247,6 +247,23 @@ it("onNewOrUpdatedBattery triggers the callback after subscription to the event"
 
     await waitFor(() => {
         expect(listener).toHaveBeenCalledWith(convertedBattery);
+    });
+});
+
+it("onNewOrUpdatedDisplayMode triggers the callback after subscription to the event", async () => {
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectDisplayMode(displayMode);
+
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedDisplayMode(listener);
+    evamApi.injectDisplayMode(displayMode);
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(displayMode);
     });
 });
 
