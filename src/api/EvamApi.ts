@@ -323,7 +323,7 @@ export class EvamApi {
     }
 
     /**
-     * Injects the display mode manually. This will trigger onNewOrUpdaredDisplayMode(...)'s callback.
+     * Injects the display mode manually. This will trigger onNewOrUpdatedDisplayMode(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
@@ -337,7 +337,7 @@ export class EvamApi {
     }
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
-    //The software versions are set once and then not changed again so it's fine to allow the developer to get these whenever they want.
+    //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
     getAppVersion() {
         return EvamApi.evamData.appVersion;
     }
@@ -562,21 +562,21 @@ export class EvamApi {
 
         //The UUID used to identify the callback
         //both callbacks have near-identical identifiers except for the last two digits
-        //say the callback uuid generated is '12345' then the primary callback id will be '12345-p' wheras the secondary callback
+        //say the callback uuid generated is '12345' then the primary callback id will be '12345-p' whereas the secondary callback
         //will be '12345-s'
-        //The reason we do this is because when the callbacks are stored they don't currently store which notification they belong to, but rather this
+        //The reason we do this is that when the callbacks are stored they don't currently store which notification they belong to, but rather this
         //is handled by the notification. We now use this similar callback to identify the notification so that we can clear the memory of both (if both exist)
         //callbacks.
         const callbackUUID = uuidV4();
 
 
         if (primaryButton.callback) {
-            //Store the primary button callback in the callbacks Map with a uuid
+            //Store the primary button callback in the callbacks Map with an uuid
             primaryButtonCallbackUUID = callbackUUID + "-p";
             EvamApi.notificationCallbacks.set(primaryButtonCallbackUUID, primaryButton.callback);
         }
 
-        //Store the secondary button callback in the callbacks Map with a uuid IF the secondary button is defined
+        //Store the secondary button callback in the callbacks Map with an uuid IF the secondary button is defined
         if ((secondaryButton !== undefined) && (secondaryButton.callback !== undefined)) {
             secondaryButtonCallbackUUID = callbackUUID + "-s";
             EvamApi.notificationCallbacks.set(secondaryButtonCallbackUUID, secondaryButton.callback);
@@ -608,7 +608,7 @@ export class EvamApi {
 
             //This deletes the other callback (so if we called secondary then primary is deleted from memory and vice versa)
             const isPrimaryCallback = uuid.slice(-2) === "-p"; //Primary callback UUIDs end with "-p" whereas secondary end with "-s"
-            const correspondingCallbackTypeIdentifier = isPrimaryCallback ? "-s" : "-p"; //which kind of callback aren't we delting (the one that wasn't called)
+            const correspondingCallbackTypeIdentifier = isPrimaryCallback ? "-s" : "-p"; //which kind of callback aren't we deleting (the one that wasn't called)
             const correspondingCallbackUUID = uuid.slice(0, -2) + correspondingCallbackTypeIdentifier; //the UUID will be the same as the triggered callback but with different last two chars
             const correspondingCallback = EvamApi.notificationCallbacks.get(correspondingCallbackUUID); //Find the callback
 

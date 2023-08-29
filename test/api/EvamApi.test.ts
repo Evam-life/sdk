@@ -328,9 +328,9 @@ it("setPriority correctly calls the injectOperation with the right data", async 
 
 describe("software versions", () => {
 
-    const appVersion = 1234;
-    const osVersion = 4567;
-    const vsVersion = 8910;
+    const appVersion = '1234';
+    const osVersion = '4567';
+    const vsVersion = '8910';
 
     it("Software versions are undefined by default", async () => {
         const evamApi = new EvamApi();
@@ -342,9 +342,10 @@ describe("software versions", () => {
     it("sets the app version correctly", async () => {
         const evamApi = new TestEvamApi();
 
-
         expect(evamApi.getAppVersion()).toBeUndefined();
-        publish(EvamEvent.AppVersionSet, appVersion);
+
+        evamApi.injectAppVersion(appVersion);
+
         await waitFor(() => {
             expect(evamApi.getAppVersion()).toEqual(appVersion);
         });
@@ -354,7 +355,7 @@ describe("software versions", () => {
         const evamApi = new TestEvamApi();
 
         expect(evamApi.getOSVersion()).toBeUndefined();
-        publish(EvamEvent.OSVersionSet, osVersion);
+        evamApi.injectOSVersion(osVersion);
 
         await waitFor(() => {
             expect(evamApi.getOSVersion()).toEqual(osVersion);
@@ -365,7 +366,8 @@ describe("software versions", () => {
         const evamApi = new TestEvamApi();
 
         expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
-        publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+
+        evamApi.injectVSVersion(vsVersion);
 
         await waitFor(() => {
             expect(evamApi.getVehicleServicesVersion()).toEqual(vsVersion);
@@ -383,9 +385,17 @@ describe("software versions", () => {
         const newOsVersion = oldOsVersion + 1;
         const newVsVersion = oldVsVersion + 1;
 
+        evamApi.injectAppVersion(oldAppVersion);
+        evamApi.injectOSVersion(oldOsVersion);
+        evamApi.injectVSVersion(oldVsVersion);
+
+        expect(evamApi.getAppVersion()).toEqual(oldAppVersion);
+        expect(evamApi.getOSVersion()).toEqual(oldOsVersion);
+        expect(evamApi.getVehicleServicesVersion()).toEqual(oldVsVersion);
+
         publish(EvamEvent.AppVersionSet, newAppVersion);
-        publish(EvamEvent.OSVersionSet, newOsVersion);
         publish(EvamEvent.VehicleServicesVersionSet, newVsVersion);
+        publish(EvamEvent.OSVersionSet, newOsVersion);
 
         expect(evamApi.getAppVersion()).toEqual(oldAppVersion);
         expect(evamApi.getOSVersion()).toEqual(oldOsVersion);
