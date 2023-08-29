@@ -309,40 +309,51 @@ it("setPriority correctly calls the injectOperation with the right data", async 
 
 });
 
-it("sets the app version correctly", async () => {
-    const evamApi = new TestEvamApi();
+describe("software versions",()=>{
 
-    const appVersion = 1234;
-
-    expect(evamApi.getAppVersion()).toBeUndefined();
-    publish(EvamEvent.AppVersionSet, appVersion);
-    await waitFor(() => {
-        expect(evamApi.getAppVersion()).toEqual(appVersion);
+    it("Software versions are undefined by default", async () => {
+        const evamApi = new EvamApi();
+        expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
+        expect(evamApi.getOSVersion()).toBeUndefined();
+        expect(evamApi.getAppVersion()).toBeUndefined();
     });
-});
 
-it("sets the OS version correctly", async () => {
-    const evamApi = new TestEvamApi();
-    const osVersion = 4567;
+    it("sets the app version correctly", async () => {
+        const evamApi = new TestEvamApi();
 
-    expect(evamApi.getOSVersion()).toBeUndefined();
-    publish(EvamEvent.OSVersionSet, osVersion);
+        const appVersion = 1234;
 
-    await waitFor(() => {
-        expect(evamApi.getOSVersion()).toEqual(osVersion);
+        expect(evamApi.getAppVersion()).toBeUndefined();
+        publish(EvamEvent.AppVersionSet, appVersion);
+        await waitFor(() => {
+            expect(evamApi.getAppVersion()).toEqual(appVersion);
+        });
     });
-});
 
-it("sets the VS version correctly", async () => {
-    const evamApi = new TestEvamApi();
-    const vsVersion = 8910;
+    it("sets the OS version correctly", async () => {
+        const evamApi = new TestEvamApi();
+        const osVersion = 4567;
 
-    console.log("are we here");
+        expect(evamApi.getOSVersion()).toBeUndefined();
+        publish(EvamEvent.OSVersionSet, osVersion);
 
-    expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
-    publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
-
-    await waitFor(() => {
-        expect(evamApi.getVehicleServicesVersion()).toEqual(vsVersion );
+        await waitFor(() => {
+            expect(evamApi.getOSVersion()).toEqual(osVersion);
+        });
     });
-});
+
+    it("sets the VS version correctly", async () => {
+        const evamApi = new TestEvamApi();
+        const vsVersion = 8910;
+
+        expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
+        publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+
+        await waitFor(() => {
+            expect(evamApi.getVehicleServicesVersion()).toEqual(vsVersion);
+        });
+    });
+
+})
+
+
