@@ -132,7 +132,7 @@ it("notification triggers should not be called twice AND corresponding callbacks
     expect(primaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
 
     expect(secondaryButtonCallbackSpy).not.toHaveBeenCalled();
-    publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, button2UUID);
+    publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button2UUID);
 
     await waitFor(() => {
         expect(secondaryButtonCallbackSpy).not.toHaveBeenCalled();
