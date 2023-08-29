@@ -5,7 +5,7 @@
 
 import {
     Battery,
-    DeviceRole,
+    DeviceRole, DisplayMode,
     EvamEvent,
     InternetState,
     Location,
@@ -35,7 +35,8 @@ class EvamData {
         public battery?: Battery | undefined,
         public osVersion?: string | undefined,
         public vsVersion?: string | undefined,
-        public appVersion?: string | undefined
+        public appVersion?: string | undefined,
+        public displayMode?: string | undefined
     ) {
 
     }
@@ -130,6 +131,7 @@ export class EvamApi {
     private static newOrUpdatedVehicleStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedTripLocationHistoryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
@@ -170,6 +172,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedVehicleStateCallbacks, EvamEvent.NewOrUpdatedVehicleState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
         clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
         EvamApi.notificationCallbacks = new Map();
     };
@@ -333,28 +336,28 @@ export class EvamApi {
     }
 
     injectAppVersion(appVersion: string) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.appVersion = appVersion;
             publish(EvamEvent.AppVersionSet, appVersion);
-        }else{
+        } else {
             throw Error("Injecting app version is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
     injectOSVersion(osVersion: string) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
-        }else{
+        } else {
             throw Error("Injecting OS version is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
     injectVSVersion(vsVersion: string) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vsVersion = vsVersion;
             publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
-        }else{
+        } else {
             throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
@@ -513,6 +516,16 @@ export class EvamApi {
             };
             EvamApi.newOrUpdatedBatteryCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedBattery, c);
+        }
+    }
+
+    onNewOrUpdatedDisplayMode(callback: ((displayMode: DisplayMode) => void) | undefined) {
+        if (callback) {
+            const c = (e: Event) => {
+                callback((e as CustomEvent).detail as DisplayMode);
+            };
+            EvamApi.newOrUpdatedDisplayModeCallbacks.push(c);
+            subscribe(EvamEvent.NewOrUpdatedDisplayMode, c);
         }
     }
 
