@@ -332,6 +332,33 @@ export class EvamApi {
         return EvamApi.evamData.vsVersion;
     }
 
+    injectAppVersion(appVersion: string) {
+        if(!EvamApi.isRunningInVehicleServices){
+            EvamApi.evamData.appVersion = appVersion;
+            publish(EvamEvent.AppVersionSet, appVersion);
+        }else{
+            throw Error("Injecting app version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectOSVersion(osVersion: string) {
+        if(!EvamApi.isRunningInVehicleServices){
+            EvamApi.evamData.osVersion = osVersion;
+            publish(EvamEvent.OSVersionSet, osVersion);
+        }else{
+            throw Error("Injecting OS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectVSVersion(vsVersion: string) {
+        if(!EvamApi.isRunningInVehicleServices){
+            EvamApi.evamData.vsVersion = vsVersion;
+            publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+        }else{
+            throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
     /**
      * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
