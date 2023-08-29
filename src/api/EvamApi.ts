@@ -91,7 +91,7 @@ type CallbackFunctionArray = Array<(e: Event) => void>
  * evamApi.injectOperation(new Operation(...))
  * evamApi.injectSettings(new Settings(...))
  * evamApi.injectOperationList([new Operation(...), new Operation(...), ...])
- * evamApi.injectBattery(new Batter(...)))
+ * evamApi.injectBattery(new Battery(...)))
  *```
  *
  */
