@@ -2,7 +2,7 @@ import {
     DestinationControlPointLocation,
     DestinationSiteLocation,
     DeviceRole,
-    EvamEvents,
+    EvamEvent,
     HospitalLocation,
     InternetState,
     Location,
@@ -18,12 +18,13 @@ import {
 } from "./domain";
 
 import {EvamApi} from "./api/EvamApi";
+import {VehicleServicesDevelopmentEnvironment} from "./dev-test-environment";
 
 export {
     DestinationControlPointLocation,
     DestinationSiteLocation,
     DeviceRole,
-    EvamEvents,
+    EvamEvent,
     HospitalLocation,
     InternetState,
     Location,
@@ -35,7 +36,8 @@ export {
     SystemHealth,
     TripLocationHistory,
     VehicleState,
-    VehicleStatus
+    VehicleStatus,
+    VehicleServicesDevelopmentEnvironment
 };
 
 export {EvamApi};

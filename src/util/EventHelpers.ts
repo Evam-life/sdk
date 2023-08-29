@@ -1,11 +1,11 @@
-import {EvamEvents} from "../domain";
+import {EvamEvent} from "../domain";
 
 /**
  * Low level method wrapper around document.addEventListener specifically for handling EvamEvents
  * @param eventName EvamEvent
  * @param listener callback
  */
-function subscribe(eventName:EvamEvents, listener:EventListenerOrEventListenerObject) {
+function subscribe(eventName:EvamEvent, listener:EventListenerOrEventListenerObject) {
     document.addEventListener(eventName.toString(), listener);
 }
 
@@ -14,7 +14,7 @@ function subscribe(eventName:EvamEvents, listener:EventListenerOrEventListenerOb
  * @param eventName EvamEvent
  * @param listener callback
  */
-function unsubscribe(eventName:EvamEvents, listener:EventListenerOrEventListenerObject) {
+function unsubscribe(eventName:EvamEvent, listener:EventListenerOrEventListenerObject) {
         document.removeEventListener(eventName.toString(), listener);
 }
 
@@ -23,7 +23,7 @@ function unsubscribe(eventName:EvamEvents, listener:EventListenerOrEventListener
  * @param eventName EvamEvent
  * @param data data to be passed to the callback
  */
-function publish(eventName:EvamEvents, data:any) {
+function publish(eventName:EvamEvent, data:any) {
     const event = new CustomEvent(eventName.toString(), { detail: data });
     document.dispatchEvent(event);
 }

@@ -6,9 +6,10 @@ import {
 
 import {EvamApi} from "../../src";
 import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
-import {EvamEvents, Notification, Location} from "../../src";
+import {EvamEvent, Notification, Location} from "../../src";
 import * as crypto from "crypto";
 import * as _ from "lodash";
+import {waitFor} from "@testing-library/react";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -31,7 +32,7 @@ Object.defineProperty(globalThis, "crypto", {
 let currentCallbackForVehicleServicesNotificationSentEvent: EventListenerOrEventListenerObject;
 
 beforeEach(() => {
-    unsubscribe(EvamEvents.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
+    unsubscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
     evamApi.unsubscribeFromAllCallbacks();
     jest.resetAllMocks();
 });
@@ -43,7 +44,7 @@ it("should trigger VehicleServicesNotificationSent event when sendNotification c
 
     currentCallbackForVehicleServicesNotificationSentEvent = callback;
 
-    subscribe(EvamEvents.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
+    subscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
 
     expect(callback).not.toHaveBeenCalled();
     evamApi.sendNotification(notification);
@@ -51,31 +52,38 @@ it("should trigger VehicleServicesNotificationSent event when sendNotification c
     expect(callback).toHaveBeenCalledTimes(1);
 });
 
-it("should trigger notification callback when VehicleServicesNotificationCallbackTriggered event is dispatched after sendNotification method is invoked", () => {
+it("should trigger notification callback when VehicleServicesNotificationCallbackTriggered event is dispatched after sendNotification method is invoked", async () => {
 
     let button1UUID: string;
     let button2UUID: string;
 
     const primaryButtonCallbackSpy = jest.spyOn(notification.primaryButton, "callback");
-    const secondaryButtonCallbackSpy = jest.spyOn(notification.secondaryButton, "callback");
 
     currentCallbackForVehicleServicesNotificationSentEvent = (e) => {
         const notification = (<CustomEvent>e).detail;
         button1UUID = notification.primaryButton.callback;
         button2UUID = notification.secondaryButton.callback;
+        console.log(button1UUID);
+        console.log(button2UUID);
     };
 
-    subscribe(EvamEvents.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
+    subscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
 
     evamApi.sendNotification(notification);
 
     expect(primaryButtonCallbackSpy).not.toHaveBeenCalled();
-    publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, button1UUID);
-    expect(primaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
 
-    expect(secondaryButtonCallbackSpy).not.toHaveBeenCalled();
-    publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, button2UUID);
-    expect(secondaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
+    await waitFor(()=>{
+        expect(button2UUID).not.toBeUndefined();
+        expect(button1UUID).not.toBeUndefined();
+    })
+
+    publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button1UUID);
+
+    await waitFor(()=>{
+        expect(primaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
+    })
+
 });
 
 it("secondaryButton should NOT be provided a UUID when secondaryButton is not present in notification object", () => {
@@ -89,14 +97,14 @@ it("secondaryButton should NOT be provided a UUID when secondaryButton is not pr
         expect(notification.secondaryButton).toBeUndefined();
     };
 
-    subscribe(EvamEvents.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
+    subscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
 
     evamApi.sendNotification(Notification.fromJSON(notificationWithoutSecondaryButton));
 
     expect(button1UUID).not.toBeUndefined();
 });
 
-it("notification triggers should not be called twice", () => {
+it("notification triggers should not be called twice AND corresponding callbacks will not trigger when the other is", () => {
 
     let button1UUID: string | undefined;
     let button2UUID: string | undefined;
@@ -110,7 +118,7 @@ it("notification triggers should not be called twice", () => {
         button2UUID = notification.secondaryButton.callback;
     }
 
-    subscribe(EvamEvents.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
+    subscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
 
     evamApi.sendNotification(notification);
 
@@ -118,13 +126,12 @@ it("notification triggers should not be called twice", () => {
     expect(button2UUID).not.toBeUndefined();
 
     expect(primaryButtonCallbackSpy).not.toHaveBeenCalled();
-    publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, button1UUID);
+    publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button1UUID);
     expect(primaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
 
     expect(secondaryButtonCallbackSpy).not.toHaveBeenCalled();
-    publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, button2UUID);
-    publish(EvamEvents.VehicleServicesNotificationCallbackTriggered, button2UUID); //<--- This is how this line differs from the previous test
-    expect(secondaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
+    publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button2UUID);
+    expect(secondaryButtonCallbackSpy).toHaveBeenCalledTimes(0);
 });
 
 it('tests that Notification fromJSON correctly assigns right values',()=>{

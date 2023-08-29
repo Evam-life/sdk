@@ -1,13 +1,12 @@
-
-
 import {
     convertedLocation,
-    convertedOperation,
+    convertedOperation, convertedOperationList,
     convertedOperationWithAvailableHospitals, convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
     convertedVehicleState
 } from "../testdata";
 import {DeviceRole, EvamApi, InternetState} from "../../src";
+import {waitFor} from "@testing-library/react";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -20,22 +19,27 @@ beforeEach(() => {
 });
 
 
-it("onNewOrUpdatedSettings triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedSettings triggers the callback after subscription to the event", async () => {
     const settings = {test: "test"};
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
 
     evamApi.injectSettings(settings);
+
     expect(listener).not.toHaveBeenCalled();
 
     evamApi.onNewOrUpdatedSettings(listener);
     evamApi.injectSettings(settings);
 
-    expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
+    });
+
 });
 
-it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription from all events", () => {
+it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription from all events", async () => {
     const settings = {test: "test"};
     const listener = jest.fn();
 
@@ -46,15 +50,21 @@ it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription fro
 
     evamApi.onNewOrUpdatedSettings(listener);
     evamApi.injectSettings(settings);
-    expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(expect.objectContaining(settings));
+    });
 
     evamApi.unsubscribeFromAllCallbacks();
     evamApi.injectSettings(settings);
-    expect(listener).toHaveBeenCalledTimes(1);
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledTimes(1);
+    });
 
 });
 
-it("onNewOrUpdatedSettings triggers multiple set callbacks", () => {
+it("onNewOrUpdatedSettings triggers multiple set callbacks", async () => {
     const settings = {test: "test"};
     const listeners = [jest.fn(), jest.fn()];
 
@@ -72,12 +82,15 @@ it("onNewOrUpdatedSettings triggers multiple set callbacks", () => {
 
     evamApi.injectSettings(settings);
 
-    listeners.forEach((listener) => {
-        expect(listener).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+        listeners.forEach((listener) => {
+            expect(listener).toHaveBeenCalledTimes(1);
+        });
     });
+
 });
 
-it("onNewOrUpdatedOperation triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedActiveOperation triggers the callback after subscription to the event", async () => {
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -85,16 +98,18 @@ it("onNewOrUpdatedOperation triggers the callback after subscription to the even
     evamApi.injectOperation(convertedOperation);
     expect(listener).not.toHaveBeenCalled();
 
-    evamApi.onNewOrUpdatedOperation(listener);
+    evamApi.onNewOrUpdatedActiveOperation(listener);
     evamApi.injectOperation(convertedOperation);
 
-    expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining(convertedOperation)
-    );
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            expect.objectContaining(convertedOperation)
+        );
+    });
 
 });
 
-it("onNewOrUpdatedLocation triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedLocation triggers the callback after subscription to the event", async () => {
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -105,13 +120,15 @@ it("onNewOrUpdatedLocation triggers the callback after subscription to the event
     evamApi.onNewOrUpdatedLocation(listener);
     evamApi.injectLocation(convertedLocation);
 
-    expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining(convertedLocation)
-    );
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            expect.objectContaining(convertedLocation)
+        );
+    });
 
 });
 
-it("onNewOrUpdatedInternetState triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedInternetState triggers the callback after subscription to the event", async () => {
 
     const internetState: InternetState = InternetState.NO_INTERNET;
     const listener = jest.fn();
@@ -124,13 +141,15 @@ it("onNewOrUpdatedInternetState triggers the callback after subscription to the 
     evamApi.onNewOrUpdatedInternetState(listener);
     evamApi.injectInternetState(internetState);
 
-    expect(listener).toHaveBeenCalledWith(
-        internetState
-    );
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            internetState
+        );
+    });
 
 });
 
-it("onNewOrUpdatedVehicleState triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedVehicleState triggers the callback after subscription to the event", async () => {
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -141,13 +160,15 @@ it("onNewOrUpdatedVehicleState triggers the callback after subscription to the e
     evamApi.onNewOrUpdatedVehicleState(listener);
     evamApi.injectVehicleState(convertedVehicleState);
 
-    expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining(convertedVehicleState)
-    );
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            expect.objectContaining(convertedVehicleState)
+        );
+    });
 
 });
 
-it("onNewOrUpdatedTripLocationHistory triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedTripLocationHistory triggers the callback after subscription to the event", async () => {
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -158,13 +179,15 @@ it("onNewOrUpdatedTripLocationHistory triggers the callback after subscription t
     evamApi.onNewOrUpdatedTripLocationHistory(listener);
     evamApi.injectTrip(convertedTripLocationHistory);
 
-    expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining(convertedTripLocationHistory)
-    );
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            expect.objectContaining(convertedTripLocationHistory)
+        );
+    });
 
 });
 
-it("onNewOrUpdatedDeviceRole triggers the callback after subscription to the event", () => {
+it("onNewOrUpdatedDeviceRole triggers the callback after subscription to the event", async () => {
 
     const deviceRole = DeviceRole.MAIN_DEVICE;
     const listener = jest.fn();
@@ -177,13 +200,36 @@ it("onNewOrUpdatedDeviceRole triggers the callback after subscription to the eve
     evamApi.onNewOrUpdatedDeviceRole(listener);
     evamApi.injectDeviceRole(deviceRole);
 
-    expect(listener).toHaveBeenCalledWith(
-        deviceRole
-    );
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            deviceRole
+        );
+    });
 
 });
 
-it("setHospital correctly calls the injectOperation with the right data", () => {
+it("onNewOrUpdatedOperationList triggers the callback after subscription to the event", async () => {
+
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectOperationList(convertedOperationList);
+
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedOperationList(listener);
+    evamApi.injectOperationList(convertedOperationList);
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(
+            convertedOperationList
+        );
+    });
+
+});
+
+it("setHospital correctly calls the injectOperation with the right data", async () => {
 
     let evamApi = new TestEvamApi();
     const injectOperationSpy = jest.spyOn(evamApi, "injectOperation");
@@ -203,14 +249,17 @@ it("setHospital correctly calls the injectOperation with the right data", () => 
         evamApi.injectOperation(convertedOperationWithAvailableHospitals);
         evamApi.setHospital(hospitalToSetId);
 
-        expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
-            selectedHospital: hospitalToSetId
-        }));
+        await waitFor(() => {
+            expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+                selectedHospital: hospitalToSetId
+            }));
+        });
+
     }
 
 });
 
-it("setPriority correctly calls the injectOperation with the right data", () => {
+it("setPriority correctly calls the injectOperation with the right data", async () => {
 
     let evamApi = new TestEvamApi();
     const injectOperationSpy = jest.spyOn(evamApi, "injectOperation");
@@ -230,9 +279,11 @@ it("setPriority correctly calls the injectOperation with the right data", () => 
         evamApi.injectOperation(convertedOperationWithAvailablePriorities);
         evamApi.setPriority(priorityToSetId);
 
-        expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
-            selectedPriority: priorityToSetId
-        }));
+        await waitFor(() => {
+            expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+                selectedPriority: priorityToSetId
+            }));
+        });
     }
 
 });
