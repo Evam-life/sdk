@@ -6,7 +6,7 @@ import {
     convertedOperationWithAvailableHospitals,
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
-    convertedVehicleState, displayMode
+    convertedVehicleState, displayMode, settings
 } from "../testdata";
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
@@ -24,7 +24,6 @@ beforeEach(() => {
 
 
 it("onNewOrUpdatedSettings triggers the callback after subscription to the event", async () => {
-    const settings = {test: "test"};
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -69,7 +68,6 @@ it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription fro
 });
 
 it("onNewOrUpdatedSettings triggers multiple set callbacks", async () => {
-    const settings = {test: "test"};
     const listeners = [jest.fn(), jest.fn()];
 
     let evamApi = new TestEvamApi();

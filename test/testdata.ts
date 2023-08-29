@@ -166,6 +166,9 @@ export const notification: Notification = {
     }
 };
 
+export const settings = {test: "test"};
+
+
 export const displayMode = DisplayMode.LIGHT;
 
 export const battery = {
