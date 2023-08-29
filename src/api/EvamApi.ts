@@ -35,13 +35,14 @@ class EvamData {
         public battery?: Battery | undefined,
         public osVersion?: string | undefined,
         public vsVersion?: string | undefined,
-        public appVersion?: string | undefined
+        public appVersion?: string | undefined,
+        public deviceId?: string | undefined
     ) {
 
     }
 }
 
-type CallbackFunctionArray = Array<(e: Event) => void>
+type CallbackFunctionArray = Array<(e: Event) => void>;
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -102,9 +103,12 @@ export class EvamApi {
     constructor() {
         if (!EvamApi.singletonExists) {
             EvamApi.subscribeToVehicleServiceNotifications();
-            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*VersionSet commands unsubscribe automatically when such versions have been set
+
+            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*Set commands unsubscribe automatically when such versions have been set
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
+            EvamApi.subscribeToDeviceIdSet();
+
             EvamApi.singletonExists = true;
 
             //TODO
@@ -333,28 +337,28 @@ export class EvamApi {
     }
 
     injectAppVersion(appVersion: string) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.appVersion = appVersion;
             publish(EvamEvent.AppVersionSet, appVersion);
-        }else{
+        } else {
             throw Error("Injecting app version is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
     injectOSVersion(osVersion: string) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
-        }else{
+        } else {
             throw Error("Injecting OS version is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
     injectVSVersion(vsVersion: string) {
-        if(!EvamApi.isRunningInVehicleServices){
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vsVersion = vsVersion;
             publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
-        }else{
+        } else {
             throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
@@ -608,7 +612,7 @@ export class EvamApi {
 
     private static subscribeToAppVersionSet = () => {
         const appVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.appVersion = (e as CustomEvent).detail;
+            EvamApi.evamData.appVersion = (e as CustomEvent).detail as string;
             unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
         };
         subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
@@ -616,10 +620,18 @@ export class EvamApi {
 
     private static subscribeToVehicleServicesVersionSet = () => {
         const vehicleServicesVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.vsVersion = (e as CustomEvent).detail;
+            EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
             unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
         };
         subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+    };
+
+    private static subscribeToDeviceIdSet = () => {
+        const deviceIdSetSubscription = (e: Event) => {
+            EvamApi.evamData.deviceId = (e as CustomEvent).detail as string;
+            unsubscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
+        };
+        subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
     };
 
 }
