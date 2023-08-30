@@ -22,6 +22,41 @@ beforeEach(() => {
     jest.resetAllMocks();
 });
 
+it("all inject methods allow undefined", () => {
+    const evamApi = new TestEvamApi();
+
+    const {
+        injectSettings,
+        injectOperation,
+        injectOperationList,
+        injectTrip,
+        injectLocation,
+        injectVehicleState,
+        injectInternetState,
+        injectDisplayMode,
+        injectBattery,
+        injectDeviceRole
+    } = evamApi
+
+    console.log("Injecting from first test");
+
+    expect(() => {
+        injectSettings(undefined);
+        injectOperation(undefined);
+        injectOperationList(undefined);
+        injectVSVersion(undefined);
+        injectAppVersion(undefined);
+        injectOSVersion(undefined);
+        injectTrip(undefined);
+        injectLocation(undefined);
+        injectVehicleState(undefined);
+        injectInternetState(undefined);
+        injectDisplayMode(undefined);
+        injectBattery(undefined);
+        injectDeviceRole(undefined);
+    }).not.toThrow();
+});
+
 
 it("onNewOrUpdatedSettings triggers the callback after subscription to the event", async () => {
     const listener = jest.fn();
@@ -326,12 +361,12 @@ it("setPriority correctly calls the injectOperation with the right data", async 
 
 describe("software versions", () => {
 
-    const appVersion = '1234';
-    const osVersion = '4567';
-    const vsVersion = '8910';
+    const appVersion = "1234";
+    const osVersion = "4567";
+    const vsVersion = "8910";
 
     it("Software versions are undefined by default", async () => {
-        const evamApi = new EvamApi();
+        const evamApi = new TestEvamApi();
         expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
         expect(evamApi.getOSVersion()).toBeUndefined();
         expect(evamApi.getAppVersion()).toBeUndefined();
@@ -379,9 +414,9 @@ describe("software versions", () => {
         const oldOsVersion = osVersion;
         const oldVsVersion = vsVersion;
 
-        const newAppVersion = oldAppVersion + 1;
-        const newOsVersion = oldOsVersion + 1;
-        const newVsVersion = oldVsVersion + 1;
+        const newAppVersion = oldAppVersion + "1";
+        const newOsVersion = oldOsVersion + "1";
+        const newVsVersion = oldVsVersion + "1";
 
         evamApi.injectAppVersion(oldAppVersion);
         evamApi.injectOSVersion(oldOsVersion);

@@ -348,6 +348,8 @@ export class EvamApi {
 
     injectOSVersion(osVersion: typeof EvamApi.evamData.osVersion) {
         if (!EvamApi.isRunningInVehicleServices) {
+            console.log(osVersion);
+            console.log(osVersion===null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
