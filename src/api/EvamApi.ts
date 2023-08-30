@@ -233,7 +233,7 @@ export class EvamApi {
      * Manually inject location to EvamApi (Only available in development.)
      * @param location the location to inject.
      */
-    injectLocation(location: Location | undefined) {
+    injectLocation(location: typeof EvamApi.evamData.location) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.location = location;
             publish(EvamEvent.NewOrUpdatedLocation, location);
@@ -246,7 +246,7 @@ export class EvamApi {
      * Manually inject vehicleState to EvamApi (Only available in development.)
      * @param vehicleState the vehicleState to inject.
      */
-    injectVehicleState(vehicleState: VehicleState | undefined) {
+    injectVehicleState(vehicleState: typeof EvamApi.evamData.vehicleState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vehicleState = vehicleState;
             publish(EvamEvent.NewOrUpdatedVehicleState, vehicleState);
@@ -259,7 +259,7 @@ export class EvamApi {
      * Manually inject tripLocationHistory to EvamApi (Only available in development.)
      * @param tripLocationHistory the tripLocationHistory to inject.
      */
-    injectTrip(tripLocationHistory: TripLocationHistory | undefined) {
+    injectTrip(tripLocationHistory: typeof EvamApi.evamData.tripLocationHistory) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.tripLocationHistory = tripLocationHistory;
             publish(EvamEvent.NewOrUpdatedTripLocationHistory, tripLocationHistory);
@@ -272,7 +272,7 @@ export class EvamApi {
      * Manually inject deviceRole to EvamApi (Only available in development.)
      * @param deviceRole the deviceRole to inject.
      */
-    injectDeviceRole(deviceRole: DeviceRole | undefined) {
+    injectDeviceRole(deviceRole: typeof EvamApi.evamData.deviceRole) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.deviceRole = deviceRole;
             publish(EvamEvent.NewOrUpdatedDeviceRole, deviceRole);
@@ -285,7 +285,7 @@ export class EvamApi {
      * Manually inject internetState to EvamApi (Only available in development.)
      * @param internetState the internetState to inject.
      */
-    injectInternetState(internetState: InternetState | undefined) {
+    injectInternetState(internetState: typeof EvamApi.evamData.internetState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.internetState = internetState;
             publish(EvamEvent.NewOrUpdatedInternetState, internetState);
@@ -300,7 +300,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param activeCase The active case to be injected for development purposes.
      */
-    injectOperation(activeCase: Operation | undefined) {
+    injectOperation(activeCase: typeof EvamApi.evamData.activeCase) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.activeCase = activeCase;
             publish(EvamEvent.NewOrUpdatedOperation, activeCase);
@@ -314,7 +314,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param settings The settings to be injected for development purposes.
      */
-    injectSettings(settings: object | undefined) {
+    injectSettings(settings: typeof EvamApi.evamData.settings) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.settings = settings;
             publish(EvamEvent.NewOrUpdatedSettings, settings);
@@ -328,12 +328,67 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
-    injectDisplayMode(displayMode:DisplayMode | undefined){
+    injectDisplayMode(displayMode:typeof EvamApi.evamData.displayMode){
         if(!EvamApi.isRunningInVehicleServices){
             EvamApi.evamData.displayMode = displayMode;
             publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
         } else {
             throw Error("Injecting display mode is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectAppVersion(appVersion: typeof EvamApi.evamData.appVersion) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.appVersion = appVersion;
+            publish(EvamEvent.AppVersionSet, appVersion);
+        } else {
+            throw Error("Injecting app version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectOSVersion(osVersion: typeof EvamApi.evamData.osVersion) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.osVersion = osVersion;
+            publish(EvamEvent.OSVersionSet, osVersion);
+        } else {
+            throw Error("Injecting OS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectVSVersion(vsVersion: typeof EvamApi.evamData.vsVersion) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.vsVersion = vsVersion;
+            publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+        } else {
+            throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    /**
+     * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param operationList The operation list to be injected for development purposes.
+     */
+    injectOperationList(operationList: typeof EvamApi.evamData.operationList) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.operationList = operationList;
+            publish(EvamEvent.NewOrUpdatedOperationList, operationList);
+        } else {
+            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    /**
+     * Injects the battery manually. This will trigger onNewOrUpdatedBattery(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param battery The battery to be injected for development purposes.
+     */
+    injectBattery(battery: typeof EvamApi.evamData.battery) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.battery = battery;
+            publish(EvamEvent.NewOrUpdatedBattery, battery);
+        } else {
+            throw Error("Injecting battery is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
@@ -349,61 +404,6 @@ export class EvamApi {
 
     getVehicleServicesVersion() {
         return EvamApi.evamData.vsVersion;
-    }
-
-    injectAppVersion(appVersion: string) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.appVersion = appVersion;
-            publish(EvamEvent.AppVersionSet, appVersion);
-        } else {
-            throw Error("Injecting app version is not allowed in the Vehicle Services environment, use a web browser instead.");
-        }
-    }
-
-    injectOSVersion(osVersion: string) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.osVersion = osVersion;
-            publish(EvamEvent.OSVersionSet, osVersion);
-        } else {
-            throw Error("Injecting OS version is not allowed in the Vehicle Services environment, use a web browser instead.");
-        }
-    }
-
-    injectVSVersion(vsVersion: string) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.vsVersion = vsVersion;
-            publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
-        } else {
-            throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
-        }
-    }
-
-    /**
-     * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
-     * This function is to be used for development only and will throw an error when used in Vehicle Services.
-     * @param operationList The operation list to be injected for development purposes.
-     */
-    injectOperationList(operationList: Operation[] | undefined) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.operationList = operationList;
-            publish(EvamEvent.NewOrUpdatedOperationList, operationList);
-        } else {
-            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.");
-        }
-    }
-
-    /**
-     * Injects the battery manually. This will trigger onNewOrUpdatedBattery(...)'s callback.
-     * This function is to be used for development only and will throw an error when used in Vehicle Services.
-     * @param battery The battery to be injected for development purposes.
-     */
-    injectBattery(battery: Battery | undefined) {
-        if (!EvamApi.isRunningInVehicleServices) {
-            EvamApi.evamData.battery = battery;
-            publish(EvamEvent.NewOrUpdatedBattery, battery);
-        } else {
-            throw Error("Injecting battery is not allowed in the Vehicle Services environment, use a web browser instead.");
-        }
     }
 
     /**
