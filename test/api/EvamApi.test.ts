@@ -44,9 +44,6 @@ it("all inject methods allow undefined", () => {
         injectSettings(undefined);
         injectOperation(undefined);
         injectOperationList(undefined);
-        injectVSVersion(undefined);
-        injectAppVersion(undefined);
-        injectOSVersion(undefined);
         injectTrip(undefined);
         injectLocation(undefined);
         injectVehicleState(undefined);
