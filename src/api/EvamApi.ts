@@ -37,7 +37,7 @@ class EvamData {
         public osVersion?: string | undefined,
         public vsVersion?: string | undefined,
         public appVersion?: string | undefined,
-        public displayMode?: string | undefined
+        public deviceId?: string | undefined
     ) {
 
     }
@@ -105,9 +105,12 @@ export class EvamApi {
     constructor() {
         if (!EvamApi.singletonExists) {
             EvamApi.subscribeToVehicleServiceNotifications();
-            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*VersionSet commands unsubscribe automatically when such versions have been set
+
+            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*Set commands unsubscribe automatically when such versions have been set
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
+            EvamApi.subscribeToDeviceIdSet();
+
             EvamApi.singletonExists = true;
 
             //TODO
@@ -639,7 +642,7 @@ export class EvamApi {
 
     private static subscribeToAppVersionSet = () => {
         const appVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.appVersion = (e as CustomEvent).detail;
+            EvamApi.evamData.appVersion = (e as CustomEvent).detail as string;
             unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
         };
         subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
@@ -647,10 +650,18 @@ export class EvamApi {
 
     private static subscribeToVehicleServicesVersionSet = () => {
         const vehicleServicesVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.vsVersion = (e as CustomEvent).detail;
+            EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
             unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
         };
         subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+    };
+
+    private static subscribeToDeviceIdSet = () => {
+        const deviceIdSetSubscription = (e: Event) => {
+            EvamApi.evamData.deviceId = (e as CustomEvent).detail as string;
+            unsubscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
+        };
+        subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
     };
 
 }
