@@ -584,7 +584,7 @@ export class EvamApi {
 
             //This deletes the other callback (so if we called secondary then primary is deleted from memory and vice versa)
             const isPrimaryCallback = uuid.slice(-2) === "-p"; //Primary callback UUIDs end with "-p" whereas secondary end with "-s"
-            const correspondingCallbackTypeIdentifier = isPrimaryCallback ? "-s" : "-p"; //which kind of callback aren't we delting (the one that wasn't called)
+            const correspondingCallbackTypeIdentifier = isPrimaryCallback ? "-s" : "-p"; //which kind of callback aren't we deleting (the one that wasn't called)
             const correspondingCallbackUUID = uuid.slice(0, -2) + correspondingCallbackTypeIdentifier; //the UUID will be the same as the triggered callback but with different last two chars
             const correspondingCallback = EvamApi.notificationCallbacks.get(correspondingCallbackUUID); //Find the callback
 

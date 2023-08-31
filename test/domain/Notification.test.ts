@@ -73,23 +73,23 @@ it("should trigger notification callback when VehicleServicesNotificationCallbac
 
     expect(primaryButtonCallbackSpy).not.toHaveBeenCalled();
 
-    await waitFor(()=>{
+    await waitFor(() => {
         expect(button2UUID).not.toBeUndefined();
         expect(button1UUID).not.toBeUndefined();
-    })
+    });
 
     publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button1UUID);
 
-    await waitFor(()=>{
+    await waitFor(() => {
         expect(primaryButtonCallbackSpy).toHaveBeenCalledTimes(1);
-    })
+    });
 
 });
 
 it("secondaryButton should NOT be provided a UUID when secondaryButton is not present in notification object", () => {
 
     let button1UUID: string | undefined;
-    const notificationWithoutSecondaryButton = _.omit(notification,'secondaryButton');
+    const notificationWithoutSecondaryButton = _.omit(notification, "secondaryButton");
 
     currentCallbackForVehicleServicesNotificationSentEvent = (e) => {
         const notification = (<CustomEvent>e).detail;
@@ -104,7 +104,7 @@ it("secondaryButton should NOT be provided a UUID when secondaryButton is not pr
     expect(button1UUID).not.toBeUndefined();
 });
 
-it("notification triggers should not be called twice AND corresponding callbacks will not trigger when the other is", () => {
+it("notification triggers should not be called twice AND corresponding callbacks will not trigger when the other is", async () => {
 
     let button1UUID: string | undefined;
     let button2UUID: string | undefined;
@@ -116,14 +116,16 @@ it("notification triggers should not be called twice AND corresponding callbacks
         const notification = (<CustomEvent>e).detail;
         button1UUID = notification.primaryButton.callback;
         button2UUID = notification.secondaryButton.callback;
-    }
+    };
 
     subscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
 
     evamApi.sendNotification(notification);
 
-    expect(button1UUID).not.toBeUndefined();
-    expect(button2UUID).not.toBeUndefined();
+    await waitFor(() => {
+        expect(button1UUID).not.toBeUndefined();
+        expect(button2UUID).not.toBeUndefined();
+    });
 
     expect(primaryButtonCallbackSpy).not.toHaveBeenCalled();
     publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button1UUID);
@@ -131,22 +133,25 @@ it("notification triggers should not be called twice AND corresponding callbacks
 
     expect(secondaryButtonCallbackSpy).not.toHaveBeenCalled();
     publish(EvamEvent.VehicleServicesNotificationCallbackTriggered, button2UUID);
-    expect(secondaryButtonCallbackSpy).toHaveBeenCalledTimes(0);
+
+    await waitFor(() => {
+        expect(secondaryButtonCallbackSpy).not.toHaveBeenCalled();
+    });
 });
 
-it('tests that Notification fromJSON correctly assigns right values',()=>{
-    expect(convertedTripLocationHistory.locationHistory).not.toBeUndefined()
-    expect(convertedTripLocationHistory.etaSeconds).not.toBeUndefined()
+it("tests that Notification fromJSON correctly assigns right values", () => {
+    expect(convertedTripLocationHistory.locationHistory).not.toBeUndefined();
+    expect(convertedTripLocationHistory.etaSeconds).not.toBeUndefined();
 
-    expect(tripLocationHistory.locationHistory).toEqual(convertedTripLocationHistory.locationHistory)
-    expect(tripLocationHistory.etaSeconds).toEqual(convertedTripLocationHistory.etaSeconds)
-})
+    expect(tripLocationHistory.locationHistory).toEqual(convertedTripLocationHistory.locationHistory);
+    expect(tripLocationHistory.etaSeconds).toEqual(convertedTripLocationHistory.etaSeconds);
+});
 
-it('tests that Notification fromJSON throws error when heading, description, notificationType or primaryButton is not present in JSON',()=>{
-    const tripLocationHistoryWithoutLocationHistory = _.omit(notification,'locationHistory')
+it("tests that Notification fromJSON throws error when heading, description, notificationType or primaryButton is not present in JSON", () => {
+    const tripLocationHistoryWithoutLocationHistory = _.omit(notification, "locationHistory");
 
-    expect(()=> {
+    expect(() => {
         Location.fromJSON(tripLocationHistoryWithoutLocationHistory);
-    }).toThrow()
+    }).toThrow();
 
-})
+});
