@@ -4,6 +4,7 @@
  */
 
 import {
+    Battery,
     DeviceRole,
     EvamEvent,
     InternetState,
@@ -30,11 +31,18 @@ class EvamData {
         public location?: Location | undefined,
         public vehicleState?: VehicleState | undefined,
         public tripLocationHistory?: TripLocationHistory | undefined,
-        public operationList?: Operation[] | undefined
+        public operationList?: Operation[] | undefined,
+        public battery?: Battery | undefined,
+        public osVersion?: string | undefined,
+        public vsVersion?: string | undefined,
+        public appVersion?: string | undefined,
+        public deviceId?: string | undefined
     ) {
 
     }
 }
+
+type CallbackFunctionArray = Array<(e: Event) => void>;
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -84,6 +92,7 @@ class EvamData {
  * evamApi.injectOperation(new Operation(...))
  * evamApi.injectSettings(new Settings(...))
  * evamApi.injectOperationList([new Operation(...), new Operation(...), ...])
+ * evamApi.injectBattery(new Battery(...)))
  *```
  *
  */
@@ -92,14 +101,19 @@ export class EvamApi {
     private static singletonExists = false;
 
     constructor() {
-
         if (!EvamApi.singletonExists) {
-
             EvamApi.subscribeToVehicleServiceNotifications();
 
-            EvamApi.singletonExists = true;
-        }
+            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*Set commands unsubscribe automatically when such versions have been set
+            EvamApi.subscribeToOSVersionSet();
+            EvamApi.subscribeToVehicleServicesVersionSet();
+            EvamApi.subscribeToDeviceIdSet();
 
+            EvamApi.singletonExists = true;
+
+            //TODO
+            //Need to tell VS that we are now ready to receive software versions
+        }
     }
 
     /**
@@ -112,13 +126,14 @@ export class EvamApi {
      * These arrays store references to every callback subscribed to certain events. We use these references to later unsubscribe from DOM events.
      * @hidden
      */
-    private static newOrUpdatedOperationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedSettingsCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedLocationCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedDeviceRoleCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedInternetStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedVehicleStateCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
-    private static newOrUpdatedTripLocationHistoryCallbacks: Array<(e: Event) => void> = new Array<(e: Event) => void>();
+    private static newOrUpdatedOperationCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedSettingsCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedLocationCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedDeviceRoleCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedInternetStateCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedVehicleStateCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedTripLocationHistoryCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
@@ -142,41 +157,24 @@ export class EvamApi {
      */
     unsubscribeFromAllCallbacks = () => {
 
-        EvamApi.newOrUpdatedOperationCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedOperation, callback);
-        });
+        const clearCallbacksAndArray = (callbackFunctionArray: CallbackFunctionArray, event: EvamEvent) => {
+            callbackFunctionArray.forEach((callback) => {
+                unsubscribe(event, callback);
+            });
+            //This empties the array.
+            //The reason I don't just do 'array = []' here is because TypeScript throws a warning, which will mess with pipelines.
+            callbackFunctionArray.splice(0, callbackFunctionArray.length);
+        };
 
-        EvamApi.newOrUpdatedSettingsCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedSettings, callback);
-        });
+        clearCallbacksAndArray(EvamApi.newOrUpdatedOperationCallbacks, EvamEvent.NewOrUpdatedOperation);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedSettingsCallbacks, EvamEvent.NewOrUpdatedSettings);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedLocationCallbacks, EvamEvent.NewOrUpdatedLocation);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedDeviceRoleCallbacks, EvamEvent.NewOrUpdatedDeviceRole);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedInternetStateCallbacks, EvamEvent.NewOrUpdatedInternetState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedVehicleStateCallbacks, EvamEvent.NewOrUpdatedVehicleState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
 
-        EvamApi.newOrUpdatedLocationCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedLocation, callback);
-        });
-
-        EvamApi.newOrUpdatedDeviceRoleCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedDeviceRole, callback);
-        });
-
-        EvamApi.newOrUpdatedInternetStateCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedInternetState, callback);
-        });
-
-        EvamApi.newOrUpdatedVehicleStateCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedVehicleState, callback);
-        });
-
-        EvamApi.newOrUpdatedTripLocationHistoryCallbacks.forEach((callback) => {
-            unsubscribe(EvamEvent.NewOrUpdatedTripLocationHistory, callback);
-        });
-
-        EvamApi.newOrUpdatedOperationCallbacks = [];
-        EvamApi.newOrUpdatedSettingsCallbacks = [];
-        EvamApi.newOrUpdatedLocationCallbacks = [];
-        EvamApi.newOrUpdatedDeviceRoleCallbacks = [];
-        EvamApi.newOrUpdatedInternetStateCallbacks = [];
-        EvamApi.newOrUpdatedVehicleStateCallbacks = [];
-        EvamApi.newOrUpdatedTripLocationHistoryCallbacks = [];
         EvamApi.notificationCallbacks = new Map();
     };
 
@@ -324,6 +322,46 @@ export class EvamApi {
         }
     }
 
+    //These get*Version functions are different from the other ways of getting data from the SDK.
+    //The software versions are set once and then not changed again so it's fine to allow the developer to get these whenever they want.
+    getAppVersion() {
+        return EvamApi.evamData.appVersion;
+    }
+
+    getOSVersion() {
+        return EvamApi.evamData.osVersion;
+    }
+
+    getVehicleServicesVersion() {
+        return EvamApi.evamData.vsVersion;
+    }
+
+    injectAppVersion(appVersion: string) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.appVersion = appVersion;
+            publish(EvamEvent.AppVersionSet, appVersion);
+        } else {
+            throw Error("Injecting app version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectOSVersion(osVersion: string) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.osVersion = osVersion;
+            publish(EvamEvent.OSVersionSet, osVersion);
+        } else {
+            throw Error("Injecting OS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectVSVersion(vsVersion: string) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.vsVersion = vsVersion;
+            publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+        } else {
+            throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
 
     /**
      * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
@@ -334,8 +372,22 @@ export class EvamApi {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.operationList = operationList;
             publish(EvamEvent.NewOrUpdatedOperationList, operationList);
-        }else {
-            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.")
+        } else {
+            throw Error("Injecting operation list is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    /**
+     * Injects the battery manually. This will trigger onNewOrUpdatedBattery(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param battery The battery to be injected for development purposes.
+     */
+    injectBattery(battery: Battery | undefined) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.battery = battery;
+            publish(EvamEvent.NewOrUpdatedBattery, battery);
+        } else {
+            throw Error("Injecting battery is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
@@ -347,7 +399,7 @@ export class EvamApi {
     onNewOrUpdatedActiveOperation(callback: (activeOperation: Operation | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as Operation);
+                callback((e as CustomEvent).detail as Operation);
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedOperation, c);
@@ -361,7 +413,7 @@ export class EvamApi {
     onNewOrUpdatedSettings(callback: (settings: object | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as object);
+                callback((e as CustomEvent).detail as object);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedSettings, c);
@@ -375,12 +427,10 @@ export class EvamApi {
     onNewOrUpdatedDeviceRole(callback: (deviceRole: DeviceRole | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as DeviceRole);
+                callback((e as CustomEvent).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedDeviceRole, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedDeviceRole, c);
         }
     }
 
@@ -391,12 +441,10 @@ export class EvamApi {
     onNewOrUpdatedLocation(callback: (location: Location | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as Location);
+                callback((e as CustomEvent).detail as Location);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedLocation, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedLocation, c);
         }
     }
 
@@ -407,12 +455,10 @@ export class EvamApi {
     onNewOrUpdatedInternetState(callback: (internetState: InternetState | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as InternetState);
+                callback((e as CustomEvent).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedInternetState, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedInternetState, c);
         }
     }
 
@@ -423,12 +469,10 @@ export class EvamApi {
     onNewOrUpdatedVehicleState(callback: (vehicleState: VehicleState | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as VehicleState);
+                callback((e as CustomEvent).detail as VehicleState);
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedVehicleState, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedVehicleState, c);
         }
     }
 
@@ -440,12 +484,10 @@ export class EvamApi {
     onNewOrUpdatedTripLocationHistory(callback: (tripLocationHistory: TripLocationHistory | undefined) => void) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as TripLocationHistory);
+                callback((e as CustomEvent).detail as TripLocationHistory);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, c);
         }
     }
 
@@ -457,12 +499,24 @@ export class EvamApi {
     onNewOrUpdatedOperationList(callback: ((operationList: Operation[]) => void) | undefined) {
         if (callback) {
             const c = (e: Event) => {
-                callback((<CustomEvent>e).detail as Operation[]);
+                callback((e as CustomEvent).detail as Operation[]);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
-            subscribe(EvamEvent.NewOrUpdatedOperationList, (e) => {
-                callback((<CustomEvent>e).detail);
-            });
+            subscribe(EvamEvent.NewOrUpdatedOperationList, c);
+        }
+    }
+
+    /**
+     * Used to assign a callback when the battery created or updated.
+     * @param callback The callback with (optional) argument battery. Use this to access the battery.
+     */
+    onNewOrUpdatedBattery(callback: ((battery: Battery) => void) | undefined) {
+        if (callback) {
+            const c = (e: Event) => {
+                callback((e as CustomEvent).detail as Battery);
+            };
+            EvamApi.newOrUpdatedBatteryCallbacks.push(c);
+            subscribe(EvamEvent.NewOrUpdatedBattery, c);
         }
     }
 
@@ -542,10 +596,42 @@ export class EvamApi {
     };
 
     private static subscribeToVehicleServiceNotifications = () => {
-            subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
-                const callbackId = (<CustomEvent>e).detail;
-                EvamApi.triggerCallback(callbackId);
-            });
+        subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
+            const callbackId = (e as CustomEvent).detail;
+            EvamApi.triggerCallback(callbackId);
+        });
+    };
+
+    private static subscribeToOSVersionSet = () => {
+        const osVersionSetSubscription = (e: Event) => {
+            EvamApi.evamData.osVersion = (e as CustomEvent).detail;
+            unsubscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
+        };
+        subscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
+    };
+
+    private static subscribeToAppVersionSet = () => {
+        const appVersionSetSubscription = (e: Event) => {
+            EvamApi.evamData.appVersion = (e as CustomEvent).detail as string;
+            unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
+        };
+        subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
+    };
+
+    private static subscribeToVehicleServicesVersionSet = () => {
+        const vehicleServicesVersionSetSubscription = (e: Event) => {
+            EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
+            unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+        };
+        subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+    };
+
+    private static subscribeToDeviceIdSet = () => {
+        const deviceIdSetSubscription = (e: Event) => {
+            EvamApi.evamData.deviceId = (e as CustomEvent).detail as string;
+            unsubscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
+        };
+        subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
     };
 
 }

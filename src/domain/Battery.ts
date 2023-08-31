@@ -31,11 +31,13 @@ class Battery {
      * @param health the battery's health (either UNKNOWN, GOOD, OVERHEAT, DEAD, OVER_VOLTAGE, UNSPECIFIED_FAILURE, COLD)
      * @param plugged the battery's plugged status (either DOCK, AC, USB, WIRELESS)
      * @param status the battery's status (either UNKNOWN, CHARGING, DISCHARGING, NOT_CHARGING, FULL)
+     * @param capacity Remaining battery capacity as an integer percentage of total capacity (with no fractional part).
      */
     constructor(
         public health?: BatteryHealth | undefined,
         public plugged?: BatteryPlugged | undefined,
-        public status?: BatteryStatus | undefined
+        public status?: BatteryStatus | undefined,
+        public capacity?: number | undefined
     ) {
     }
 
@@ -44,7 +46,7 @@ class Battery {
      * @param battery JSON object
      */
     static fromJSON(battery: any) {
-        return new Battery(battery.health, battery.plugged, battery.status);
+        return new Battery(battery.health, battery.plugged, battery.status, battery.capacity);
     }
 }
 
