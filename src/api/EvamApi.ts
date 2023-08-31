@@ -37,7 +37,8 @@ class EvamData {
         public osVersion?: string | undefined,
         public vsVersion?: string | undefined,
         public appVersion?: string | undefined,
-        public deviceId?: string | undefined
+        public deviceId?: string | undefined,
+        public displayMode?: DisplayMode | undefined
     ) {
 
     }
