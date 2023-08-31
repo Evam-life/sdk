@@ -6,7 +6,7 @@ import {
     convertedOperationWithAvailableHospitals,
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
-    convertedVehicleState
+    convertedVehicleState, displayMode, settings
 } from "../testdata";
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
@@ -22,9 +22,40 @@ beforeEach(() => {
     jest.resetAllMocks();
 });
 
+it("all inject methods allow undefined", () => {
+    const evamApi = new TestEvamApi();
+
+    const {
+        injectSettings,
+        injectOperation,
+        injectOperationList,
+        injectTrip,
+        injectLocation,
+        injectVehicleState,
+        injectInternetState,
+        injectDisplayMode,
+        injectBattery,
+        injectDeviceRole
+    } = evamApi
+
+    console.log("Injecting from first test");
+
+    expect(() => {
+        injectSettings(undefined);
+        injectOperation(undefined);
+        injectOperationList(undefined);
+        injectTrip(undefined);
+        injectLocation(undefined);
+        injectVehicleState(undefined);
+        injectInternetState(undefined);
+        injectDisplayMode(undefined);
+        injectBattery(undefined);
+        injectDeviceRole(undefined);
+    }).not.toThrow();
+});
+
 
 it("onNewOrUpdatedSettings triggers the callback after subscription to the event", async () => {
-    const settings = {test: "test"};
     const listener = jest.fn();
 
     let evamApi = new TestEvamApi();
@@ -69,7 +100,6 @@ it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription fro
 });
 
 it("onNewOrUpdatedSettings triggers multiple set callbacks", async () => {
-    const settings = {test: "test"};
     const listeners = [jest.fn(), jest.fn()];
 
     let evamApi = new TestEvamApi();
@@ -250,6 +280,23 @@ it("onNewOrUpdatedBattery triggers the callback after subscription to the event"
     });
 });
 
+it("onNewOrUpdatedDisplayMode triggers the callback after subscription to the event", async () => {
+    const listener = jest.fn();
+
+    let evamApi = new TestEvamApi();
+
+    evamApi.injectDisplayMode(displayMode);
+
+    expect(listener).not.toHaveBeenCalled();
+
+    evamApi.onNewOrUpdatedDisplayMode(listener);
+    evamApi.injectDisplayMode(displayMode);
+
+    await waitFor(() => {
+        expect(listener).toHaveBeenCalledWith(displayMode);
+    });
+});
+
 it("setHospital correctly calls the injectOperation with the right data", async () => {
 
     let evamApi = new TestEvamApi();
@@ -311,12 +358,12 @@ it("setPriority correctly calls the injectOperation with the right data", async 
 
 describe("software versions", () => {
 
-    const appVersion = 1234;
-    const osVersion = 4567;
-    const vsVersion = 8910;
+    const appVersion = "1234";
+    const osVersion = "4567";
+    const vsVersion = "8910";
 
     it("Software versions are undefined by default", async () => {
-        const evamApi = new EvamApi();
+        const evamApi = new TestEvamApi();
         expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
         expect(evamApi.getOSVersion()).toBeUndefined();
         expect(evamApi.getAppVersion()).toBeUndefined();
@@ -325,9 +372,10 @@ describe("software versions", () => {
     it("sets the app version correctly", async () => {
         const evamApi = new TestEvamApi();
 
-
         expect(evamApi.getAppVersion()).toBeUndefined();
-        publish(EvamEvent.AppVersionSet, appVersion);
+
+        evamApi.injectAppVersion(appVersion);
+
         await waitFor(() => {
             expect(evamApi.getAppVersion()).toEqual(appVersion);
         });
@@ -337,7 +385,7 @@ describe("software versions", () => {
         const evamApi = new TestEvamApi();
 
         expect(evamApi.getOSVersion()).toBeUndefined();
-        publish(EvamEvent.OSVersionSet, osVersion);
+        evamApi.injectOSVersion(osVersion);
 
         await waitFor(() => {
             expect(evamApi.getOSVersion()).toEqual(osVersion);
@@ -348,7 +396,8 @@ describe("software versions", () => {
         const evamApi = new TestEvamApi();
 
         expect(evamApi.getVehicleServicesVersion()).toBeUndefined();
-        publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
+
+        evamApi.injectVSVersion(vsVersion);
 
         await waitFor(() => {
             expect(evamApi.getVehicleServicesVersion()).toEqual(vsVersion);
@@ -362,13 +411,21 @@ describe("software versions", () => {
         const oldOsVersion = osVersion;
         const oldVsVersion = vsVersion;
 
-        const newAppVersion = oldAppVersion + 1;
-        const newOsVersion = oldOsVersion + 1;
-        const newVsVersion = oldVsVersion + 1;
+        const newAppVersion = oldAppVersion + "1";
+        const newOsVersion = oldOsVersion + "1";
+        const newVsVersion = oldVsVersion + "1";
+
+        evamApi.injectAppVersion(oldAppVersion);
+        evamApi.injectOSVersion(oldOsVersion);
+        evamApi.injectVSVersion(oldVsVersion);
+
+        expect(evamApi.getAppVersion()).toEqual(oldAppVersion);
+        expect(evamApi.getOSVersion()).toEqual(oldOsVersion);
+        expect(evamApi.getVehicleServicesVersion()).toEqual(oldVsVersion);
 
         publish(EvamEvent.AppVersionSet, newAppVersion);
-        publish(EvamEvent.OSVersionSet, newOsVersion);
         publish(EvamEvent.VehicleServicesVersionSet, newVsVersion);
+        publish(EvamEvent.OSVersionSet, newOsVersion);
 
         expect(evamApi.getAppVersion()).toEqual(oldAppVersion);
         expect(evamApi.getOSVersion()).toEqual(oldOsVersion);

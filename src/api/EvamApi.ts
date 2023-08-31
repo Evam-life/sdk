@@ -6,6 +6,7 @@
 import {
     Battery,
     DeviceRole,
+    DisplayMode,
     EvamEvent,
     InternetState,
     Location,
@@ -36,13 +37,15 @@ class EvamData {
         public osVersion?: string | undefined,
         public vsVersion?: string | undefined,
         public appVersion?: string | undefined,
-        public deviceId?: string | undefined
+        public deviceId?: string | undefined,
+        public displayMode?: DisplayMode | undefined
     ) {
 
     }
 }
 
-type CallbackFunctionArray = Array<(e: Event) => void>;
+type CallbackFunction<T1, T2 = void> = (t: T1) => T2
+type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -134,6 +137,7 @@ export class EvamApi {
     private static newOrUpdatedVehicleStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedTripLocationHistoryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
@@ -174,6 +178,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedVehicleStateCallbacks, EvamEvent.NewOrUpdatedVehicleState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
         clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
         EvamApi.notificationCallbacks = new Map();
     };
@@ -232,7 +237,7 @@ export class EvamApi {
      * Manually inject location to EvamApi (Only available in development.)
      * @param location the location to inject.
      */
-    injectLocation(location: Location) {
+    injectLocation(location: typeof EvamApi.evamData.location) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.location = location;
             publish(EvamEvent.NewOrUpdatedLocation, location);
@@ -245,7 +250,7 @@ export class EvamApi {
      * Manually inject vehicleState to EvamApi (Only available in development.)
      * @param vehicleState the vehicleState to inject.
      */
-    injectVehicleState(vehicleState: VehicleState) {
+    injectVehicleState(vehicleState: typeof EvamApi.evamData.vehicleState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vehicleState = vehicleState;
             publish(EvamEvent.NewOrUpdatedVehicleState, vehicleState);
@@ -258,7 +263,7 @@ export class EvamApi {
      * Manually inject tripLocationHistory to EvamApi (Only available in development.)
      * @param tripLocationHistory the tripLocationHistory to inject.
      */
-    injectTrip(tripLocationHistory: TripLocationHistory) {
+    injectTrip(tripLocationHistory: typeof EvamApi.evamData.tripLocationHistory) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.tripLocationHistory = tripLocationHistory;
             publish(EvamEvent.NewOrUpdatedTripLocationHistory, tripLocationHistory);
@@ -271,7 +276,7 @@ export class EvamApi {
      * Manually inject deviceRole to EvamApi (Only available in development.)
      * @param deviceRole the deviceRole to inject.
      */
-    injectDeviceRole(deviceRole: DeviceRole) {
+    injectDeviceRole(deviceRole: typeof EvamApi.evamData.deviceRole) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.deviceRole = deviceRole;
             publish(EvamEvent.NewOrUpdatedDeviceRole, deviceRole);
@@ -284,7 +289,7 @@ export class EvamApi {
      * Manually inject internetState to EvamApi (Only available in development.)
      * @param internetState the internetState to inject.
      */
-    injectInternetState(internetState: InternetState) {
+    injectInternetState(internetState: typeof EvamApi.evamData.internetState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.internetState = internetState;
             publish(EvamEvent.NewOrUpdatedInternetState, internetState);
@@ -299,7 +304,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param activeCase The active case to be injected for development purposes.
      */
-    injectOperation(activeCase: Operation | undefined) {
+    injectOperation(activeCase: typeof EvamApi.evamData.activeCase) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.activeCase = activeCase;
             publish(EvamEvent.NewOrUpdatedOperation, activeCase);
@@ -313,7 +318,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param settings The settings to be injected for development purposes.
      */
-    injectSettings(settings: object) {
+    injectSettings(settings: typeof EvamApi.evamData.settings) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.settings = settings;
             publish(EvamEvent.NewOrUpdatedSettings, settings);
@@ -322,21 +327,21 @@ export class EvamApi {
         }
     }
 
-    //These get*Version functions are different from the other ways of getting data from the SDK.
-    //The software versions are set once and then not changed again so it's fine to allow the developer to get these whenever they want.
-    getAppVersion() {
-        return EvamApi.evamData.appVersion;
+    /**
+     * Injects the display mode manually. This will trigger onNewOrUpdatedDisplayMode(...)'s callback.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param displayMode The display mode (light or dark) to be injected for development purposes.
+     */
+    injectDisplayMode(displayMode:typeof EvamApi.evamData.displayMode){
+        if(!EvamApi.isRunningInVehicleServices){
+            EvamApi.evamData.displayMode = displayMode;
+            publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
+        } else {
+            throw Error("Injecting display mode is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
     }
 
-    getOSVersion() {
-        return EvamApi.evamData.osVersion;
-    }
-
-    getVehicleServicesVersion() {
-        return EvamApi.evamData.vsVersion;
-    }
-
-    injectAppVersion(appVersion: string) {
+    injectAppVersion(appVersion: typeof EvamApi.evamData.appVersion) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.appVersion = appVersion;
             publish(EvamEvent.AppVersionSet, appVersion);
@@ -345,8 +350,10 @@ export class EvamApi {
         }
     }
 
-    injectOSVersion(osVersion: string) {
+    injectOSVersion(osVersion: typeof EvamApi.evamData.osVersion) {
         if (!EvamApi.isRunningInVehicleServices) {
+            console.log(osVersion);
+            console.log(osVersion===null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
@@ -354,7 +361,7 @@ export class EvamApi {
         }
     }
 
-    injectVSVersion(vsVersion: string) {
+    injectVSVersion(vsVersion: typeof EvamApi.evamData.vsVersion) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vsVersion = vsVersion;
             publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
@@ -368,7 +375,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param operationList The operation list to be injected for development purposes.
      */
-    injectOperationList(operationList: Operation[] | undefined) {
+    injectOperationList(operationList: typeof EvamApi.evamData.operationList) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.operationList = operationList;
             publish(EvamEvent.NewOrUpdatedOperationList, operationList);
@@ -382,7 +389,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param battery The battery to be injected for development purposes.
      */
-    injectBattery(battery: Battery | undefined) {
+    injectBattery(battery: typeof EvamApi.evamData.battery) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.battery = battery;
             publish(EvamEvent.NewOrUpdatedBattery, battery);
@@ -391,12 +398,26 @@ export class EvamApi {
         }
     }
 
+    //These get*Version functions are different from the other ways of getting data from the SDK.
+    //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
+    getAppVersion() {
+        return EvamApi.evamData.appVersion;
+    }
+
+    getOSVersion() {
+        return EvamApi.evamData.osVersion;
+    }
+
+    getVehicleServicesVersion() {
+        return EvamApi.evamData.vsVersion;
+    }
+
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
      * Operation is updated.
      * @param callback The callback to be executed
      */
-    onNewOrUpdatedActiveOperation(callback: (activeOperation: Operation | undefined) => void) {
+    onNewOrUpdatedActiveOperation(callback: CallbackFunction<typeof EvamApi.evamData.activeCase | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as Operation);
@@ -410,7 +431,7 @@ export class EvamApi {
      * Registers a callback to be run upon new application settings reception or settings update
      * @param callback The callback to be executed.
      */
-    onNewOrUpdatedSettings(callback: (settings: object | undefined) => void) {
+    onNewOrUpdatedSettings(callback: CallbackFunction<typeof EvamApi.evamData.settings | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as object);
@@ -424,7 +445,7 @@ export class EvamApi {
      * Registers a callback to be run upon new device role or device role update
      * @param callback The callback to be executed.
      */
-    onNewOrUpdatedDeviceRole(callback: (deviceRole: DeviceRole | undefined) => void) {
+    onNewOrUpdatedDeviceRole(callback: CallbackFunction<typeof EvamApi.evamData.deviceRole | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as DeviceRole);
@@ -438,7 +459,7 @@ export class EvamApi {
      * Registers a callback to be run upon new location or location update
      * @param callback The callback to be executed.
      */
-    onNewOrUpdatedLocation(callback: (location: Location | undefined) => void) {
+    onNewOrUpdatedLocation(callback: CallbackFunction<typeof EvamApi.evamData.location | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as Location);
@@ -452,7 +473,7 @@ export class EvamApi {
      * Registers a callback to be run upon new internetState or internetState update
      * @param callback The callback to be executed.
      */
-    onNewOrUpdatedInternetState(callback: (internetState: InternetState | undefined) => void) {
+    onNewOrUpdatedInternetState(callback: CallbackFunction<typeof EvamApi.evamData.internetState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as InternetState);
@@ -466,7 +487,7 @@ export class EvamApi {
      * Used to assign a callback when the vehicle state is created or updated.
      * @param callback The callback with (optional) argument vehicleState. Use this to access the vehicle state.
      */
-    onNewOrUpdatedVehicleState(callback: (vehicleState: VehicleState | undefined) => void) {
+    onNewOrUpdatedVehicleState(callback: CallbackFunction<typeof EvamApi.evamData.vehicleState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as VehicleState);
@@ -481,7 +502,7 @@ export class EvamApi {
      * Used to assign a callback when the trip location history is created or updated.
      * @param callback The callback with (optional) argument tripLocationHistory. Use this to access the trip location history.
      */
-    onNewOrUpdatedTripLocationHistory(callback: (tripLocationHistory: TripLocationHistory | undefined) => void) {
+    onNewOrUpdatedTripLocationHistory(callback: CallbackFunction<typeof EvamApi.evamData.tripLocationHistory | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as TripLocationHistory);
@@ -496,7 +517,7 @@ export class EvamApi {
      * Used to assign a callback when the operation list is created or updated.
      * @param callback The callback with (optional) argument operationList. Use this to access the operation list.
      */
-    onNewOrUpdatedOperationList(callback: ((operationList: Operation[]) => void) | undefined) {
+    onNewOrUpdatedOperationList(callback: CallbackFunction<typeof EvamApi.evamData.operationList | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as Operation[]);
@@ -510,13 +531,23 @@ export class EvamApi {
      * Used to assign a callback when the battery created or updated.
      * @param callback The callback with (optional) argument battery. Use this to access the battery.
      */
-    onNewOrUpdatedBattery(callback: ((battery: Battery) => void) | undefined) {
+    onNewOrUpdatedBattery(callback: CallbackFunction<typeof EvamApi.evamData.battery | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as Battery);
             };
             EvamApi.newOrUpdatedBatteryCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedBattery, c);
+        }
+    }
+
+    onNewOrUpdatedDisplayMode(callback: CallbackFunction<typeof EvamApi.evamData.displayMode | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                callback((e as CustomEvent).detail as DisplayMode);
+            };
+            EvamApi.newOrUpdatedDisplayModeCallbacks.push(c);
+            subscribe(EvamEvent.NewOrUpdatedDisplayMode, c);
         }
     }
 
@@ -538,21 +569,21 @@ export class EvamApi {
 
         //The UUID used to identify the callback
         //both callbacks have near-identical identifiers except for the last two digits
-        //say the callback uuid generated is '12345' then the primary callback id will be '12345-p' wheras the secondary callback
+        //say the callback uuid generated is '12345' then the primary callback id will be '12345-p' whereas the secondary callback
         //will be '12345-s'
-        //The reason we do this is because when the callbacks are stored they don't currently store which notification they belong to, but rather this
+        //The reason we do this is that when the callbacks are stored they don't currently store which notification they belong to, but rather this
         //is handled by the notification. We now use this similar callback to identify the notification so that we can clear the memory of both (if both exist)
         //callbacks.
         const callbackUUID = uuidV4();
 
 
         if (primaryButton.callback) {
-            //Store the primary button callback in the callbacks Map with a uuid
+            //Store the primary button callback in the callbacks Map with an uuid
             primaryButtonCallbackUUID = callbackUUID + "-p";
             EvamApi.notificationCallbacks.set(primaryButtonCallbackUUID, primaryButton.callback);
         }
 
-        //Store the secondary button callback in the callbacks Map with a uuid IF the secondary button is defined
+        //Store the secondary button callback in the callbacks Map with an uuid IF the secondary button is defined
         if ((secondaryButton !== undefined) && (secondaryButton.callback !== undefined)) {
             secondaryButtonCallbackUUID = callbackUUID + "-s";
             EvamApi.notificationCallbacks.set(secondaryButtonCallbackUUID, secondaryButton.callback);
