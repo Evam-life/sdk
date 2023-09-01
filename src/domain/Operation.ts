@@ -91,6 +91,14 @@ class Operation {
     }
 
     /**
+     * Gets the full operation ID, e.g. '1:18:6546', composed by 'callCenterId:caseFolderId:operationID'.
+     * @returns id The full operation ID
+     */
+    getFullId(){
+        return `${this.callCenterId}:${this.caseFolderId}:${this.operationID}`
+    }
+
+    /**
      * Create from JSON
      * @param data JSON object
      */
