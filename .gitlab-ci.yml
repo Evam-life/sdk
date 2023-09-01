@@ -20,19 +20,17 @@ test:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
 
-deploy:
+deploy-npm:
   stage: deploy
   only:
     - tags
   variables:
-    REPO_ID: 4
-    AUTH_TOKEN: $DEV_PORTAL_BOT_AUTH_TOKEN
+    AUTH_TOKEN: NPM_AUTH_TOKEN
   script:
     - git config --global user.email "info@evam.life"
     - git config --global user.name "Evam Bot"
     - npm version "$CI_COMMIT_TAG"
-    - echo "@evam:registry=https://www.developers.evam.life/api/v4/projects/$REPO_ID/packages/npm/" > ~/.npmrc
-    - echo "//www.developers.evam.life/api/v4/projects/$REPO_ID/packages/npm/:_authToken=$AUTH_TOKEN" >> ~/.npmrc
+    - echo "//registry.npmjs.org/:_authToken=$AUTH_TOKEN" > ~/.npmrc
     - npm install
     - npm run build
-    - npm publish
+    - npm publish --access public
