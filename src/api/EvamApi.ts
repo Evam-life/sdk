@@ -7,7 +7,7 @@ import {
     Battery,
     DeviceRole,
     DisplayMode,
-    EvamEvent, GRPCMethod, GRPCPackage,
+    EvamEvent,
     InternetState,
     Location,
     Notification,
@@ -46,6 +46,8 @@ class EvamData {
 
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
+type CallbackFunctionMap<T1, T2 = string> = Map<T1, CallbackFunction<T2>>
+
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -139,7 +141,8 @@ export class EvamApi {
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
 
-    private static notificationCallbacks: Map<string, () => any> = new Map([]);
+    private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
+
 
     /**
      * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
@@ -180,7 +183,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
-        EvamApi.notificationCallbacks = new Map();
+        EvamApi.notificationCallbacks.clear();
     };
 
     /**
@@ -606,11 +609,7 @@ export class EvamApi {
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
     }
 
-    callGRPC(grpcMethod: GRPCMethod, grpcPackage: (GRPCPackage | string), metadata: object, callback?: CallbackFunction<object>) {
-
-    }
-
-    private static triggerCallback = (uuid: string) => {
+    private static triggerNotificationCallback = (uuid: string) => {
         const callback = EvamApi.notificationCallbacks.get(uuid);
 
         if (callback) {
@@ -633,7 +632,7 @@ export class EvamApi {
     private static subscribeToVehicleServiceNotifications = () => {
         subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
             const callbackId = (e as CustomEvent).detail;
-            EvamApi.triggerCallback(callbackId);
+            EvamApi.triggerNotificationCallback(callbackId);
         });
     };
 

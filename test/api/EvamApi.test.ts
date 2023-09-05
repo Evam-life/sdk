@@ -11,6 +11,7 @@ import {
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
+import crypto from "crypto";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -21,6 +22,13 @@ class TestEvamApi extends EvamApi {
 beforeEach(() => {
     jest.resetAllMocks();
 });
+
+Object.defineProperty(globalThis, "crypto", {
+    value: {
+        getRandomValues: (arr: Uint8Array) => crypto.randomBytes(arr.length)
+    }
+});
+
 
 it("all inject methods allow undefined", () => {
     const evamApi = new TestEvamApi();
@@ -36,7 +44,7 @@ it("all inject methods allow undefined", () => {
         injectDisplayMode,
         injectBattery,
         injectDeviceRole
-    } = evamApi
+    } = evamApi;
 
     console.log("Injecting from first test");
 
@@ -404,7 +412,7 @@ describe("software versions", () => {
         });
     });
 
-    it("doesn't reassign the app/os/vs version after it has been reassigned", () => {
+    it("doesn't reassign the app/os/vs version after it has been assigned", () => {
         const evamApi = new TestEvamApi();
 
         const oldAppVersion = appVersion;
@@ -435,4 +443,29 @@ describe("software versions", () => {
 
 });
 
+describe("gRPC call", () => {
 
+    const testApi = new TestEvamApi();
+
+    const listener = jest.fn();
+
+    const metadataToSend = {
+        some: "metadata",
+        for: "sending to vehicle services"
+    };
+
+    const metadataToReceive = {
+        some: "more metadata",
+        for: "receiving back from vehicle services"
+    };
+
+    it("triggers the callback with the correct data", async () => {
+        testApi.callGRPC("grpcMethod", "grpcPackage", metadataToSend, listener);
+        expect(listener).not.toHaveBeenCalled();
+        publish(EvamEvent.GRPCCallbackTriggered, metadataToReceive);
+        await waitFor(()=>{
+            expect(listener).toHaveBeenCalledWith(metadataToReceive)
+        })
+    });
+
+});
