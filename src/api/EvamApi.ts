@@ -7,7 +7,7 @@ import {
     Battery,
     DeviceRole,
     DisplayMode,
-    EvamEvent,
+    EvamEvent, GRPCMethod, GRPCPackage,
     InternetState,
     Location,
     Notification,
@@ -332,8 +332,8 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
-    injectDisplayMode(displayMode:typeof EvamApi.evamData.displayMode){
-        if(!EvamApi.isRunningInVehicleServices){
+    injectDisplayMode(displayMode: typeof EvamApi.evamData.displayMode) {
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.displayMode = displayMode;
             publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
         } else {
@@ -353,7 +353,7 @@ export class EvamApi {
     injectOSVersion(osVersion: typeof EvamApi.evamData.osVersion) {
         if (!EvamApi.isRunningInVehicleServices) {
             console.log(osVersion);
-            console.log(osVersion===null);
+            console.log(osVersion === null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
@@ -604,6 +604,10 @@ export class EvamApi {
         };
 
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
+    }
+
+    callGRPC(grpcMethod: GRPCMethod, grpcPackage: (GRPCPackage | string), metadata: object, callback?: CallbackFunction<object>) {
+
     }
 
     private static triggerCallback = (uuid: string) => {

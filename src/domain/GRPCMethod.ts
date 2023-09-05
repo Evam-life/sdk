@@ -1,0 +1,5 @@
+enum GRPCMethod {
+
+}
+
+export {GRPCMethod}

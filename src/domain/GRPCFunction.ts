@@ -1,5 +1,0 @@
-enum GRPCFunction {
-
-}
-
-export {GRPCFunction}
