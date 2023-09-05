@@ -13,7 +13,8 @@ import {
     Notification,
     Operation,
     TripLocationHistory,
-    VehicleState
+    VehicleState,
+    GRPC
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -38,7 +39,8 @@ class EvamData {
         public vsVersion?: string | undefined,
         public appVersion?: string | undefined,
         public deviceId?: string | undefined,
-        public displayMode?: DisplayMode | undefined
+        public displayMode?: DisplayMode | undefined,
+        public grpc?: GRPC | undefined
     ) {
 
     }
@@ -400,6 +402,11 @@ export class EvamApi {
             throw Error("Injecting battery is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
+
+    getGRPC() {
+        return EvamApi.evamData.grpc;
+    }
+
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
