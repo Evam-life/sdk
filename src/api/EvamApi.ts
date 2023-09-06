@@ -16,7 +16,9 @@ import {
     VehicleState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
-import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
+import {
+    _InternalVehicleServicesNotification
+} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 
@@ -142,8 +144,7 @@ export class EvamApi {
     private static notificationCallbacks: Map<string, () => any> = new Map([]);
 
     /**
-     * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
-     * We have to ignore this because the Android item causes an error.
+     * True if Vehicle Services environment is detected, False otherwise (development environment).
      */
         //@ts-ignore
     public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
@@ -185,6 +186,7 @@ export class EvamApi {
 
     /**
      * Sets the selected hospital id for the current active operation. The id must be present inside the available hospitals
+     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
@@ -210,6 +212,7 @@ export class EvamApi {
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
+     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id of the priority to be set
      */
     setPriority(id: number) {
@@ -332,8 +335,8 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
-    injectDisplayMode(displayMode: DisplayMode){
-        if(!EvamApi.isRunningInVehicleServices){
+    injectDisplayMode(displayMode: DisplayMode) {
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.displayMode = displayMode;
             publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
         } else {
@@ -353,7 +356,7 @@ export class EvamApi {
     injectOSVersion(osVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
             console.log(osVersion);
-            console.log(osVersion===null);
+            console.log(osVersion === null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
@@ -400,14 +403,23 @@ export class EvamApi {
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
+    /**
+     * Gets the Evam App version as defined in the evam.json manifest
+     */
     getAppVersion() {
         return EvamApi.evamData.appVersion;
     }
 
+    /**
+     * Gets the Android OS version
+     */
     getOSVersion() {
         return EvamApi.evamData.osVersion;
     }
 
+    /**
+     * Gets the Vehicle Services app version
+     */
     getVehicleServicesVersion() {
         return EvamApi.evamData.vsVersion;
     }
@@ -415,6 +427,7 @@ export class EvamApi {
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
      * Operation is updated.
+     * @requires Permissions ACTIVE_OPERATION_READ
      * @param callback The callback to be executed
      */
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
@@ -443,6 +456,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new device role or device role update
+     * @requires Permissions DEVICE_ROLE_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedDeviceRole(callback: CallbackFunction<DeviceRole | undefined>) {
@@ -457,6 +471,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new location or location update
+     * @requires Permissions LOCATION_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
@@ -471,6 +486,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new internetState or internetState update
+     * @requires Permissions CONNECTIVITY_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedInternetState(callback: CallbackFunction<InternetState | undefined>) {
@@ -484,7 +500,8 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the vehicle state is created or updated.
+     * Used to assign a callback when the vehicle state is updated.
+     * @requires Permissions VEHICLE_STATE_READ
      * @param callback The callback with (optional) argument vehicleState. Use this to access the vehicle state.
      */
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
@@ -499,7 +516,8 @@ export class EvamApi {
 
 
     /**
-     * Used to assign a callback when the trip location history is created or updated.
+     * Used to assign a callback when the trip location history is updated.
+     * @requires Permissions TRIP_HISTORY_READ
      * @param callback The callback with (optional) argument tripLocationHistory. Use this to access the trip location history.
      */
     onNewOrUpdatedTripLocationHistory(callback: CallbackFunction<TripLocationHistory | undefined>) {
@@ -514,7 +532,8 @@ export class EvamApi {
 
 
     /**
-     * Used to assign a callback when the operation list is created or updated.
+     * Used to assign a callback when the operation list is updated.
+     * @requires Permissions OPERATION_READ
      * @param callback The callback with (optional) argument operationList. Use this to access the operation list.
      */
     onNewOrUpdatedOperationList(callback: CallbackFunction<Operation[] | undefined>) {
@@ -528,7 +547,8 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the battery created or updated.
+     * Used to assign a callback when the battery data is updated.
+     * @requires Permissions BATTERY_READ
      * @param callback The callback with (optional) argument battery. Use this to access the battery.
      */
     onNewOrUpdatedBattery(callback: CallbackFunction<Battery | undefined>) {
@@ -541,6 +561,12 @@ export class EvamApi {
         }
     }
 
+    /**
+     *
+     * Used to assign a callback when the battery created or updated.
+     * @requires Permissions DISPLAY_MODE_READ
+     * @param callback The callback with (optional) argument display mode. Use this to access the display mode.
+     */
     onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
         if (callback) {
             const c = (e: Event) => {
@@ -553,7 +579,8 @@ export class EvamApi {
 
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
-     * @param notification
+     * @requires Permissions SEND_NOTIFICATION
+     * @param notification The notification to be sent
      */
     sendNotification(notification: Notification) {
         const {
