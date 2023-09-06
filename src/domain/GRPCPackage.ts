@@ -1,5 +1,0 @@
-enum GRPCPackage {
-
-}
-
-export {GRPCPackage}

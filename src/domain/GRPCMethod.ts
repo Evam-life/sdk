@@ -1,5 +1,0 @@
-enum GRPCMethod {
-
-}
-
-export {GRPCMethod}
