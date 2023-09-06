@@ -402,24 +402,18 @@ export class EvamApi {
         }
     }
 
-    getGRPC() {
-        return EvamApi.evamData.grpc;
-    }
-
+    getGRPC = () => EvamApi.evamData.grpc
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
-    getAppVersion() {
-        return EvamApi.evamData.appVersion;
-    }
+    getAppVersion = () => EvamApi.evamData.appVersion;
 
-    getOSVersion() {
-        return EvamApi.evamData.osVersion;
-    }
 
-    getVehicleServicesVersion() {
-        return EvamApi.evamData.vsVersion;
-    }
+    getOSVersion = () => EvamApi.evamData.osVersion;
+
+
+    getVehicleServicesVersion = () => EvamApi.evamData.vsVersion;
+
 
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
