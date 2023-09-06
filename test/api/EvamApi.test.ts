@@ -6,7 +6,9 @@ import {
     convertedOperationWithAvailableHospitals,
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
-    convertedVehicleState, displayMode, settings
+    convertedVehicleState,
+    displayMode,
+    settings
 } from "../testdata";
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
@@ -443,3 +445,19 @@ describe("software versions", () => {
 
 });
 
+describe("gRPC", () => {
+
+    const evamApi = new TestEvamApi();
+
+    it("it is undefined by default", () => {
+        expect(evamApi.getGRPC()).toBeUndefined();
+    });
+
+    it("then gets set by EvamEvent.GRPCEstablished event", async () => {
+        const gRPCAddress = 'https://localhost:...'
+        publish(EvamEvent.GRPCEstablished, gRPCAddress);
+        await waitFor(()=>{
+            expect(evamApi.getGRPC()).toEqual(gRPCAddress);
+        })
+    });
+});

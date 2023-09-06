@@ -48,7 +48,6 @@ class EvamData {
 
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
-type CallbackFunctionMap<T1, T2 = string> = Map<T1, CallbackFunction<T2>>
 
 
 /**
@@ -151,7 +150,6 @@ export class EvamApi {
      * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
      * We have to ignore this because the Android item causes an error.
      */
-        //@ts-ignore
     public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
         try {
             //@ts-ignore
@@ -160,7 +158,7 @@ export class EvamApi {
         } catch {
             return false;
         }
-    })();
+    })(); //<-- Notice we are calling this function and not just defining it. isRunningInVehicleServices is not a function
 
     /**
      * Unsubscribes all registered callbacks from Vehicle Service events.

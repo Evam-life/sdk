@@ -12,7 +12,7 @@ enum EvamEvent {
     NewOrUpdatedTripLocationHistory = "newOrUpdatedTripLocationHistory",
     VehicleServicesNotificationSent = "vehicleServicesNotificationSent",
     VehicleServicesNotificationCallbackTriggered = "vehicleServicesNotificationCallbackTriggered",
-    GRPCEstablished = "gRPCSet",
+    GRPCEstablished = "gRPCEstablished",
     NewOrUpdatedOperationList = "newOrUpdatedOperationList",
     NewOrUpdatedBattery = "newOrUpdatedBattery",
     NewOrUpdatedDisplayMode = "newOrUpdatedDisplayMode",

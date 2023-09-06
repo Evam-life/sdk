@@ -17,5 +17,3 @@ export {VehicleStatus} from "./VehicleStatus";
 export {BatteryHealth, BatteryPlugged, BatteryStatus, Battery} from "./Battery";
 export {DisplayMode} from "./DisplayMode";
 export {GRPC} from "./GRPC"
-export {GRPCPackage} from "./GRPCPackage";
-export {GRPCMethod} from "./GRPCMethod";
