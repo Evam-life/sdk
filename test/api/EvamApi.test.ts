@@ -448,16 +448,25 @@ describe("software versions", () => {
 describe("gRPC", () => {
 
     const evamApi = new TestEvamApi();
+    const gRPCAddress = "https://localhost:...";
 
     it("it is undefined by default", () => {
         expect(evamApi.getGRPC()).toBeUndefined();
     });
 
     it("then gets set by EvamEvent.GRPCEstablished event", async () => {
-        const gRPCAddress = 'https://localhost:...'
         publish(EvamEvent.GRPCEstablished, gRPCAddress);
-        await waitFor(()=>{
+        await waitFor(() => {
             expect(evamApi.getGRPC()).toEqual(gRPCAddress);
+        });
+    });
+
+    it("should be able to change the GRPC address", async () => {
+        const newAddress = gRPCAddress + 'adding this to change the address'
+        expect(gRPCAddress).not.toEqual(newAddress);
+        publish(EvamEvent.GRPCEstablished, newAddress);
+        await waitFor(()=>{
+            expect(evamApi.getGRPC()).toEqual(newAddress);
         })
     });
 });
