@@ -1,5 +1,5 @@
 class GRPC {
-    constructor(public proxy: string) {
+    constructor(public address: string | undefined) {
     }
 
 }

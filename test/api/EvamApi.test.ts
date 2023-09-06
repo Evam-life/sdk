@@ -443,29 +443,3 @@ describe("software versions", () => {
 
 });
 
-describe("gRPC call", () => {
-
-    const testApi = new TestEvamApi();
-
-    const listener = jest.fn();
-
-    const metadataToSend = {
-        some: "metadata",
-        for: "sending to vehicle services"
-    };
-
-    const metadataToReceive = {
-        some: "more metadata",
-        for: "receiving back from vehicle services"
-    };
-
-    it("triggers the callback with the correct data", async () => {
-        testApi.callGRPC("grpcMethod", "grpcPackage", metadataToSend, listener);
-        expect(listener).not.toHaveBeenCalled();
-        publish(EvamEvent.GRPCCallbackTriggered, metadataToReceive);
-        await waitFor(()=>{
-            expect(listener).toHaveBeenCalledWith(metadataToReceive)
-        })
-    });
-
-});

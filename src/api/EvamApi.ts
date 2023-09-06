@@ -8,13 +8,13 @@ import {
     DeviceRole,
     DisplayMode,
     EvamEvent,
+    GRPC,
     InternetState,
     Location,
     Notification,
     Operation,
     TripLocationHistory,
-    VehicleState,
-    GRPC
+    VehicleState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -115,6 +115,7 @@ export class EvamApi {
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
             EvamApi.subscribeToDeviceIdSet();
+            EvamApi.subscribeToGRPCEstablished();
 
             EvamApi.singletonExists = true;
 
@@ -551,6 +552,10 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Used to assign a callback when the display mode is created or updated.
+     * @param callback The callback with (optional) argument displayMode. Use this to access the display mode.
+     */
     onNewOrUpdatedDisplayMode(callback: CallbackFunction<typeof EvamApi.evamData.displayMode | undefined>) {
         if (callback) {
             const c = (e: Event) => {
@@ -634,6 +639,12 @@ export class EvamApi {
                 EvamApi.notificationCallbacks.delete(correspondingCallbackUUID);
             }
         }
+    };
+
+    private static subscribeToGRPCEstablished = () => {
+        subscribe(EvamEvent.GRPCEstablished, (e) => {
+            EvamApi.evamData.grpc = (e as CustomEvent).detail;
+        });
     };
 
     private static subscribeToVehicleServiceNotifications = () => {
