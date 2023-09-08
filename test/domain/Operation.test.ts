@@ -23,6 +23,12 @@ it("tests that Operation fromJSON correctly assigns right values", () => {
     expect(new Date(operation.createdTime)).toEqual(convertedOperation.createdTime);
 });
 
+it("tests that getFullId returns the full id", () => {
+    expect(convertedOperation.getFullId()).toEqual(
+        `${operation.callCenterId}:${operation.caseFolderId}:${operation.operationID}`
+    )
+})
+
 it("tests that Location fromJSON throws error when either latitude or longitude are not present in JSON", () => {
 
     const opWithoutName = _.omit(operation, "name");

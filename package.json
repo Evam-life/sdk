@@ -1,8 +1,13 @@
 {
-  "name": "@evam/sdk",
-  "version": "0.3.9",
-  "description": "SDK for Evam platform",
+  "name": "@evam-life/sdk",
+  "version": "0.3.11",
+  "description": "SDK for the Evam platform",
   "main": "sdk/index.js",
+  "homepage": "https://evam.life",
+  "keywords": ["Evam", "first-responders", "sdk"],
+  "repository": {
+    "url": "https://github.com/Evam-life/sdk/"
+  },
   "files": [
     "sdk/"
   ],
