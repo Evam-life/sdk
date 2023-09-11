@@ -398,6 +398,8 @@ export class EvamApi {
         }
     }
 
+    getDeviceId = () => EvamApi.evamData.deviceId
+
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
     getAppVersion() {
