@@ -443,6 +443,34 @@ describe("software versions", () => {
 
     });
 
+    describe("device id", () => {
+        const evampApi = new TestEvamApi();
+        const exampleId = "12345";
+        const exampleChangedId = exampleId + "1";
+
+        expect(evampApi).not.toEqual(exampleChangedId);
+
+        it('should be undefined by default',()=>{
+            expect(evampApi.getDeviceId()).toBeUndefined();
+        })
+
+        it("can be retrieved after being set", async () => {
+            publish(EvamEvent.DeviceIdSet, exampleId);
+            await waitFor(() => {
+                expect(evampApi.getDeviceId()).toBe(exampleId);
+            });
+        });
+
+        it("cannot be reset once initialised", async () => {
+            publish(EvamEvent.DeviceIdSet, exampleChangedId);
+            await waitFor(() => {
+                expect(evampApi.getDeviceId()).toBe(exampleId);
+            });
+            await waitFor(() => {
+                expect(evampApi.getDeviceId()).not.toBe(exampleChangedId);
+            });
+        });
+    });
 });
 
 describe("gRPC", () => {
