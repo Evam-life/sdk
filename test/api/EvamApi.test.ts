@@ -13,6 +13,7 @@ import {
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
+import crypto from "crypto";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -23,6 +24,13 @@ class TestEvamApi extends EvamApi {
 beforeEach(() => {
     jest.resetAllMocks();
 });
+
+Object.defineProperty(globalThis, "crypto", {
+    value: {
+        getRandomValues: (arr: Uint8Array) => crypto.randomBytes(arr.length)
+    }
+});
+
 
 it("all inject methods allow undefined", () => {
     const evamApi = new TestEvamApi();
@@ -406,7 +414,7 @@ describe("software versions", () => {
         });
     });
 
-    it("doesn't reassign the app/os/vs version after it has been reassigned", () => {
+    it("doesn't reassign the app/os/vs version after it has been assigned", () => {
         const evamApi = new TestEvamApi();
 
         const oldAppVersion = appVersion;
@@ -465,4 +473,28 @@ describe("software versions", () => {
     });
 });
 
+describe("gRPC", () => {
 
+    const evamApi = new TestEvamApi();
+    const gRPCAddress = "https://localhost:...";
+
+    it("it is undefined by default", () => {
+        expect(evamApi.getGRPC()).toBeUndefined();
+    });
+
+    it("then gets set by EvamEvent.GRPCEstablished event", async () => {
+        publish(EvamEvent.GRPCEstablished, gRPCAddress);
+        await waitFor(() => {
+            expect(evamApi.getGRPC()).toEqual(gRPCAddress);
+        });
+    });
+
+    it("should be able to change the GRPC address", async () => {
+        const newAddress = gRPCAddress + 'adding this to change the address'
+        expect(gRPCAddress).not.toEqual(newAddress);
+        publish(EvamEvent.GRPCEstablished, newAddress);
+        await waitFor(()=>{
+            expect(evamApi.getGRPC()).toEqual(newAddress);
+        })
+    });
+});

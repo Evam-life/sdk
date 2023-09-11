@@ -38,7 +38,8 @@ class EvamData {
         public vsVersion?: string | undefined,
         public appVersion?: string | undefined,
         public deviceId?: string | undefined,
-        public displayMode?: DisplayMode | undefined
+        public displayMode?: DisplayMode | undefined,
+        public grpc?: GRPC | undefined
     ) {
 
     }
@@ -46,6 +47,7 @@ class EvamData {
 
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
+
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -111,6 +113,7 @@ export class EvamApi {
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
             EvamApi.subscribeToDeviceIdSet();
+            EvamApi.subscribeToGRPCEstablished();
 
             EvamApi.singletonExists = true;
 
@@ -139,13 +142,13 @@ export class EvamApi {
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
 
-    private static notificationCallbacks: Map<string, () => any> = new Map([]);
+    private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
+
 
     /**
      * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
      * We have to ignore this because the Android item causes an error.
      */
-        //@ts-ignore
     public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
         try {
             //@ts-ignore
@@ -154,7 +157,7 @@ export class EvamApi {
         } catch {
             return false;
         }
-    })();
+    })(); //<-- Notice we are calling this function and not just defining it. isRunningInVehicleServices is not a function
 
     /**
      * Unsubscribes all registered callbacks from Vehicle Service events.
@@ -180,7 +183,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
-        EvamApi.notificationCallbacks = new Map();
+        EvamApi.notificationCallbacks.clear();
     };
 
     /**
@@ -332,8 +335,8 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
-    injectDisplayMode(displayMode: DisplayMode){
-        if(!EvamApi.isRunningInVehicleServices){
+    injectDisplayMode(displayMode: typeof EvamApi.evamData.displayMode) {
+        if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.displayMode = displayMode;
             publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
         } else {
@@ -353,7 +356,7 @@ export class EvamApi {
     injectOSVersion(osVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
             console.log(osVersion);
-            console.log(osVersion===null);
+            console.log(osVersion === null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
@@ -398,21 +401,20 @@ export class EvamApi {
         }
     }
 
+    getGRPC = () => EvamApi.evamData.grpc
+
     getDeviceId = () => EvamApi.evamData.deviceId
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
-    getAppVersion() {
-        return EvamApi.evamData.appVersion;
-    }
+    getAppVersion = () => EvamApi.evamData.appVersion;
 
-    getOSVersion() {
-        return EvamApi.evamData.osVersion;
-    }
 
-    getVehicleServicesVersion() {
-        return EvamApi.evamData.vsVersion;
-    }
+    getOSVersion = () => EvamApi.evamData.osVersion;
+
+
+    getVehicleServicesVersion = () => EvamApi.evamData.vsVersion;
+
 
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
@@ -543,7 +545,11 @@ export class EvamApi {
         }
     }
 
-    onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
+    /**
+     * Used to assign a callback when the display mode is created or updated.
+     * @param callback The callback with (optional) argument displayMode. Use this to access the display mode.
+     */
+    onNewOrUpdatedDisplayMode(callback: CallbackFunction<typeof EvamApi.evamData.displayMode | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as DisplayMode);
@@ -608,7 +614,7 @@ export class EvamApi {
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
     }
 
-    private static triggerCallback = (uuid: string) => {
+    private static triggerNotificationCallback = (uuid: string) => {
         const callback = EvamApi.notificationCallbacks.get(uuid);
 
         if (callback) {
@@ -628,10 +634,16 @@ export class EvamApi {
         }
     };
 
+    private static subscribeToGRPCEstablished = () => {
+        subscribe(EvamEvent.GRPCEstablished, (e) => {
+            EvamApi.evamData.grpc = (e as CustomEvent).detail;
+        });
+    };
+
     private static subscribeToVehicleServiceNotifications = () => {
         subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
             const callbackId = (e as CustomEvent).detail;
-            EvamApi.triggerCallback(callbackId);
+            EvamApi.triggerNotificationCallback(callbackId);
         });
     };
 
