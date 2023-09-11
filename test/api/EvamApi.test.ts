@@ -6,7 +6,9 @@ import {
     convertedOperationWithAvailableHospitals,
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
-    convertedVehicleState, displayMode, settings
+    convertedVehicleState,
+    displayMode,
+    settings
 } from "../testdata";
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
@@ -36,7 +38,7 @@ it("all inject methods allow undefined", () => {
         injectDisplayMode,
         injectBattery,
         injectDeviceRole
-    } = evamApi
+    } = evamApi;
 
     console.log("Injecting from first test");
 
@@ -433,6 +435,31 @@ describe("software versions", () => {
 
     });
 
+    describe("device id", () => {
+        const evampApi = new TestEvamApi();
+        const exampleId = "12345";
+        const exampleChangedId = exampleId + "1";
+
+        expect(evampApi).not.toEqual(exampleChangedId);
+
+        it("can be retrieved after being set", async () => {
+            expect(evampApi.getDeviceId()).toBeUndefined();
+            publish(EvamEvent.DeviceIdSet, exampleId);
+            await waitFor(() => {
+                expect(evampApi.getDeviceId()).toBe(exampleId);
+            });
+        });
+
+        it("cannot be reset once initialised", async () => {
+            publish(EvamEvent.DeviceIdSet, exampleChangedId);
+            await waitFor(() => {
+                expect(evampApi.getDeviceId()).toBe(exampleId);
+            });
+            await waitFor(() => {
+                expect(evampApi.getDeviceId()).not.toBe(exampleChangedId);
+            });
+        });
+    });
 });
 
 
