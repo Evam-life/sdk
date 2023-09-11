@@ -442,8 +442,11 @@ describe("software versions", () => {
 
         expect(evampApi).not.toEqual(exampleChangedId);
 
-        it("can be retrieved after being set", async () => {
+        it('should be undefined by default',()=>{
             expect(evampApi.getDeviceId()).toBeUndefined();
+        })
+
+        it("can be retrieved after being set", async () => {
             publish(EvamEvent.DeviceIdSet, exampleId);
             await waitFor(() => {
                 expect(evampApi.getDeviceId()).toBe(exampleId);
