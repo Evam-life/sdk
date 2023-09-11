@@ -7,7 +7,7 @@ import {
     Battery,
     DeviceRole,
     DisplayMode,
-    EvamEvent,
+    EvamEvent, GRPC,
     InternetState,
     Location,
     Notification,
