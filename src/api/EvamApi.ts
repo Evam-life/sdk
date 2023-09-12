@@ -162,13 +162,13 @@ export class EvamApi {
             //@ts-ignore
             const android = Android;
             if ((android !== undefined)) {
-                //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
-                EvamApi.persistentStorageMap = new Map([]);
                 return true;
             }
-
+            //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
+            EvamApi.persistentStorageMap = new Map([]);
             return false;
         } catch {
+            EvamApi.persistentStorageMap = new Map([]);
             return false;
         }
     })(); //<-- Notice we are calling this function and not just defining it. isRunningInVehicleServices is not a function
@@ -209,27 +209,25 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.set(key, value);
-                if (this.getAppId() === null) {
+                if (this.getAppId() === undefined) {
                     console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
                     return;
                 }
-                localStorage.setItem(key, value);
+                localStorage.setItem(this.getAppId() + key, value);
             }
         }
     };
 
-    getItem = (key: string) => {
+    getItem = (key: string): any => {
         if (EvamApi.isRunningInVehicleServices) {
             //TODO get an item for local storage on vehicle services
             //Android.getItem()
         } else {
             if (EvamApi.persistentStorageMap !== null) {
-                EvamApi.persistentStorageMap.get(key);
-                if (this.getAppId() !== null) {
-                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
-                    return;
+                if (this.getAppId() === undefined) {
+                    return EvamApi.persistentStorageMap.get(key)
                 }
-                localStorage.getItem(key);
+                return localStorage.getItem(this.getAppId() + key);
             }
         }
     };
@@ -241,11 +239,11 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.delete(key);
-                if (this.getDeviceId() !== null) {
+                if (this.getAppId() === undefined) {
                     console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
                     return;
                 }
-                localStorage.removeItem(key);
+                localStorage.removeItem(this.getAppId() + key);
             }
         }
     };
@@ -257,7 +255,7 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.clear();
-                if (this.getDeviceId() !== null) {
+                if (this.getAppId() === undefined) {
                     console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
                     return;
                 }
@@ -415,7 +413,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
-    injectDisplayMode(displayMode: typeof EvamApi.evamData.displayMode) {
+    injectDisplayMode(displayMode: DisplayMode) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.displayMode = displayMode;
             publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
@@ -435,8 +433,6 @@ export class EvamApi {
 
     injectOSVersion(osVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
-            console.log(osVersion);
-            console.log(osVersion === null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
@@ -640,7 +636,7 @@ export class EvamApi {
      * Used to assign a callback when the display mode is created or updated.
      * @param callback The callback with (optional) argument displayMode. Use this to access the display mode.
      */
-    onNewOrUpdatedDisplayMode(callback: CallbackFunction<typeof EvamApi.evamData.displayMode | undefined>) {
+    onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as DisplayMode);

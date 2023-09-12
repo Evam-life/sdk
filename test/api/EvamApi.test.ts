@@ -48,8 +48,6 @@ it("all inject methods allow undefined", () => {
         injectDeviceRole
     } = evamApi;
 
-    console.log("Injecting from first test");
-
     expect(() => {
         injectSettings(undefined);
         injectOperation(undefined);
@@ -450,9 +448,9 @@ describe("software versions", () => {
 
         expect(evampApi).not.toEqual(exampleChangedId);
 
-        it('should be undefined by default',()=>{
+        it("should be undefined by default", () => {
             expect(evampApi.getDeviceId()).toBeUndefined();
-        })
+        });
 
         it("can be retrieved after being set", async () => {
             publish(EvamEvent.DeviceIdSet, exampleId);
@@ -490,11 +488,117 @@ describe("gRPC", () => {
     });
 
     it("should be able to change the GRPC address", async () => {
-        const newAddress = gRPCAddress + 'adding this to change the address'
+        const newAddress = gRPCAddress + "adding this to change the address";
         expect(gRPCAddress).not.toEqual(newAddress);
         publish(EvamEvent.GRPCEstablished, newAddress);
-        await waitFor(()=>{
+        await waitFor(() => {
             expect(evamApi.getGRPC()).toEqual(newAddress);
-        })
+        });
     });
+});
+
+describe("persistent storage", () => {
+
+    const evamApi = new TestEvamApi();
+    const warningMessage = "Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call";
+
+
+    it("should warn you if you try to set items when app Id is undefined", async () => {
+        const warnMock = jest.spyOn(global.console, "warn").mockImplementation(() => {
+        });
+        expect(warnMock).not.toHaveBeenCalledWith(warningMessage);
+
+        expect(evamApi.getAppId()).toBeUndefined();
+        evamApi.setItem("exampleKey", "exampleValue");
+        evamApi.deleteItem("exampleKey");
+        evamApi.clearItems();
+
+        await waitFor(() => {
+            expect(warnMock).toHaveBeenCalledTimes(3);
+        });
+
+        warnMock.mockRestore();
+    });
+
+    it("should no longer warn you when app id is set", async () => {
+        const warnMock = jest.spyOn(global.console, "warn").mockImplementation(() => {
+        });
+
+        expect(warnMock).not.toHaveBeenCalledWith(warningMessage);
+
+        const newAppId = "12345";
+
+        evamApi.injectAppId(newAppId);
+        expect(evamApi.getAppId()).toEqual(newAppId);
+
+        evamApi.setItem("exampleKey", "exampleValue");
+        evamApi.deleteItem("exampleKey");
+        evamApi.clearItems();
+
+        await waitFor(() => {
+            expect(warnMock).toHaveBeenCalledTimes(0);
+        });
+        warnMock.mockRestore();
+
+    });
+
+    const exampleKey = "exampleKey";
+    const exampleValue = "12345";
+
+    it("should set an item then be able to get an item", async () => {
+
+        expect(evamApi.getItem(exampleKey)).toBeNull();
+
+        evamApi.setItem(exampleKey, exampleValue);
+
+        await waitFor(() => {
+            expect(evamApi.getItem(exampleKey)).toEqual(exampleValue);
+        });
+    });
+
+
+    it("should delete the item with deleteItem", () => {
+        evamApi.deleteItem(exampleKey);
+        expect(evamApi.getItem(exampleKey)).toBeNull();
+    });
+
+    it("should not be able to get the item when it doesn't exist", () => {
+        expect(evamApi.getItem(exampleKey + "1234")).toBeNull();
+    });
+
+    it("should not be able to get the items when clear is called", () => {
+
+        const exampleItemOne = {
+            key: "12345",
+            value: "12345"
+        };
+
+        const exampleItemTwo = {
+            key: "45678",
+            value: "45678"
+        };
+
+        //just for extra precaution
+        expect(exampleItemOne.key).not.toEqual(exampleItemTwo.key);
+
+        //Items don't already exist
+        expect(evamApi.getItem(exampleItemOne.key)).toBeNull();
+        expect(evamApi.getItem(exampleItemTwo.key)).toBeNull();
+
+        //set items
+        evamApi.setItem(exampleItemOne.key,exampleItemOne.value);
+        evamApi.setItem(exampleItemTwo.key,exampleItemTwo.value);
+
+        //get items
+        expect(evamApi.getItem(exampleItemOne.key)).toEqual(exampleItemOne.value);
+        expect(evamApi.getItem(exampleItemTwo.key)).toEqual(exampleItemTwo.value);
+
+        evamApi.clearItems();
+
+        //items don't exist again
+        expect(evamApi.getItem(exampleItemOne.key)).toBeNull();
+        expect(evamApi.getItem(exampleItemTwo.key)).toBeNull();
+    });
+
+
 });
