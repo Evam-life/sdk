@@ -39,7 +39,8 @@ class EvamData {
         public appVersion?: string | undefined,
         public deviceId?: string | undefined,
         public displayMode?: DisplayMode | undefined,
-        public grpc?: GRPC | undefined
+        public grpc?: GRPC | undefined,
+        public appId?: string | undefined
     ) {
 
     }
@@ -144,6 +145,10 @@ export class EvamApi {
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
+    /**
+     * The persistentStorageMap object is only used for testing. It is null unless the isRunningInVehicleServices method
+     * returns false.
+     */
     private static persistentStorageMap: Map<string, any> | null = null;
 
 
@@ -158,6 +163,7 @@ export class EvamApi {
             if ((android !== undefined)) {
                 //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
                 EvamApi.persistentStorageMap = new Map([]);
+
                 return true;
             }
 
@@ -202,6 +208,9 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.set(key, value);
+                if (this.getAppId() === null) {
+                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                }
             }
         }
     };
@@ -213,6 +222,9 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.get(key);
+                if (this.getDeviceId() !== null) {
+
+                }
             }
         }
     };
@@ -224,6 +236,9 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.delete(key);
+                if (this.getDeviceId() !== null) {
+
+                }
             }
         }
     };
@@ -235,6 +250,9 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.clear();
+                if (this.getDeviceId() !== null) {
+
+                }
             }
         }
     };
@@ -426,6 +444,15 @@ export class EvamApi {
         }
     }
 
+    injectAppId(appId: string) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.appId = appId;
+            publish(EvamEvent.AppIdSet, appId);
+        } else {
+            throw Error("Injecting app id is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
     /**
      * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
@@ -457,6 +484,8 @@ export class EvamApi {
     getGRPC = () => EvamApi.evamData.grpc;
 
     getDeviceId = () => EvamApi.evamData.deviceId;
+
+    getAppId = () => EvamApi.evamData.appId
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
