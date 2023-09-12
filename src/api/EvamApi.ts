@@ -144,6 +144,8 @@ export class EvamApi {
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
+    private static persistentStorageMap: Map<string, any> | null = null;
+
 
     /**
      * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
@@ -153,7 +155,13 @@ export class EvamApi {
         try {
             //@ts-ignore
             const android = Android;
-            return (android !== undefined);
+            if ((android !== undefined)) {
+                //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
+                EvamApi.persistentStorageMap = new Map([]);
+                return true;
+            }
+
+            return false;
         } catch {
             return false;
         }
@@ -184,6 +192,51 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
         EvamApi.notificationCallbacks.clear();
+    };
+
+
+    setItem = (key: string, value: string) => {
+        if (EvamApi.isRunningInVehicleServices) {
+            //TODO Set an item for local storage on vehicle services
+            //Android.setItem()
+        } else {
+            if (EvamApi.persistentStorageMap !== null) {
+                EvamApi.persistentStorageMap.set(key, value);
+            }
+        }
+    };
+
+    getItem = (key: string) => {
+        if (EvamApi.isRunningInVehicleServices) {
+            //TODO get an item for local storage on vehicle services
+            //Android.getItem()
+        } else {
+            if (EvamApi.persistentStorageMap !== null) {
+                EvamApi.persistentStorageMap.get(key);
+            }
+        }
+    };
+
+    deleteItem = (key: string) => {
+        if (EvamApi.isRunningInVehicleServices) {
+            //TODO delete an item for local storage on vehicle services
+            //Android.deleteItem()
+        } else {
+            if (EvamApi.persistentStorageMap !== null) {
+                EvamApi.persistentStorageMap.delete(key);
+            }
+        }
+    };
+
+    clearItems = () => {
+        if (EvamApi.isRunningInVehicleServices) {
+            //TODO clear all items for local storage on vehicle services
+            //Android.clearItems()
+        } else {
+            if (EvamApi.persistentStorageMap !== null) {
+                EvamApi.persistentStorageMap.clear();
+            }
+        }
     };
 
     /**
@@ -401,9 +454,9 @@ export class EvamApi {
         }
     }
 
-    getGRPC = () => EvamApi.evamData.grpc
+    getGRPC = () => EvamApi.evamData.grpc;
 
-    getDeviceId = () => EvamApi.evamData.deviceId
+    getDeviceId = () => EvamApi.evamData.deviceId;
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
