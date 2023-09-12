@@ -110,10 +110,11 @@ export class EvamApi {
         if (!EvamApi.singletonExists) {
             EvamApi.subscribeToVehicleServiceNotifications();
 
-            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*Set commands unsubscribe automatically when such versions have been set
+            EvamApi.subscribeToAppVersionSet(); //The subscribeTo* commands unsubscribe automatically when such versions or objects have been set
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
             EvamApi.subscribeToDeviceIdSet();
+            EvamApi.subscribeToAppIdSet();
             EvamApi.subscribeToGRPCEstablished();
 
             EvamApi.singletonExists = true;
@@ -163,7 +164,6 @@ export class EvamApi {
             if ((android !== undefined)) {
                 //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
                 EvamApi.persistentStorageMap = new Map([]);
-
                 return true;
             }
 
@@ -198,6 +198,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
         EvamApi.notificationCallbacks.clear();
+
     };
 
 
@@ -210,7 +211,9 @@ export class EvamApi {
                 EvamApi.persistentStorageMap.set(key, value);
                 if (this.getAppId() === null) {
                     console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                    return;
                 }
+                localStorage.setItem(key, value);
             }
         }
     };
@@ -222,9 +225,11 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.get(key);
-                if (this.getDeviceId() !== null) {
-
+                if (this.getAppId() !== null) {
+                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                    return;
                 }
+                localStorage.getItem(key);
             }
         }
     };
@@ -237,8 +242,10 @@ export class EvamApi {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.delete(key);
                 if (this.getDeviceId() !== null) {
-
+                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                    return;
                 }
+                localStorage.removeItem(key);
             }
         }
     };
@@ -251,8 +258,10 @@ export class EvamApi {
             if (EvamApi.persistentStorageMap !== null) {
                 EvamApi.persistentStorageMap.clear();
                 if (this.getDeviceId() !== null) {
-
+                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                    return;
                 }
+                localStorage.clear();
             }
         }
     };
@@ -485,7 +494,7 @@ export class EvamApi {
 
     getDeviceId = () => EvamApi.evamData.deviceId;
 
-    getAppId = () => EvamApi.evamData.appId
+    getAppId = () => EvamApi.evamData.appId;
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
@@ -761,6 +770,29 @@ export class EvamApi {
         subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
     };
 
+
+    private static subscribeToAppIdSet = () => {
+
+        const getAllItemsFromLocalStorage = (id: string) => {
+            for (const key in localStorage) {
+                //reg ex pattern
+                const pattern: RegExp = new RegExp(`^${id}.*`);
+                if (key.match(pattern)) {
+                    const value = localStorage.getItem(key);
+                    if (EvamApi.persistentStorageMap !== null) {
+                        EvamApi.persistentStorageMap.set(key, value);
+                    }
+                }
+            }
+        };
+        const appIdSetSubscription = (e: Event) => {
+            const appId = (e as CustomEvent).detail as string;
+            EvamApi.evamData.appId = appId;
+            getAllItemsFromLocalStorage(appId);
+            unsubscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+        };
+        subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+    };
 }
 
 
