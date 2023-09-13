@@ -558,6 +558,7 @@ describe("persistent storage", () => {
 
 
     it("should delete the item with deleteItem", () => {
+        expect(evamApi.getItem(exampleKey)).not.toBeNull();
         evamApi.deleteItem(exampleKey);
         expect(evamApi.getItem(exampleKey)).toBeNull();
     });
