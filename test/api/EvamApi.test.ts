@@ -509,9 +509,9 @@ describe("persistent storage", () => {
         expect(warnMock).not.toHaveBeenCalledWith(warningMessage);
 
         expect(evamApi.getAppId()).toBeUndefined();
-        evamApi.setItem("exampleKey", "exampleValue");
-        evamApi.deleteItem("exampleKey");
-        evamApi.clearItems();
+        evamApi.store.set("exampleKey", "exampleValue");
+        evamApi.store.delete("exampleKey");
+        evamApi.store.clear();
 
         await waitFor(() => {
             expect(warnMock).toHaveBeenCalledTimes(3);
@@ -531,9 +531,9 @@ describe("persistent storage", () => {
         evamApi.injectAppId(newAppId);
         expect(evamApi.getAppId()).toEqual(newAppId);
 
-        evamApi.setItem("exampleKey", "exampleValue");
-        evamApi.deleteItem("exampleKey");
-        evamApi.clearItems();
+        evamApi.store.set("exampleKey", "exampleValue");
+        evamApi.store.delete("exampleKey");
+        evamApi.store.clear();
 
         await waitFor(() => {
             expect(warnMock).toHaveBeenCalledTimes(0);
@@ -547,24 +547,24 @@ describe("persistent storage", () => {
 
     it("should set an item then be able to get an item", async () => {
 
-        expect(evamApi.getItem(exampleKey)).toBeNull();
+        expect(evamApi.store.get(exampleKey)).toBeNull();
 
-        evamApi.setItem(exampleKey, exampleValue);
+        evamApi.store.set(exampleKey, exampleValue);
 
         await waitFor(() => {
-            expect(evamApi.getItem(exampleKey)).toEqual(exampleValue);
+            expect(evamApi.store.get(exampleKey)).toEqual(exampleValue);
         });
     });
 
 
-    it("should delete the item with deleteItem", () => {
-        expect(evamApi.getItem(exampleKey)).not.toBeNull();
-        evamApi.deleteItem(exampleKey);
-        expect(evamApi.getItem(exampleKey)).toBeNull();
+    it("should delete the item with store.delete", () => {
+        expect(evamApi.store.get(exampleKey)).not.toBeNull();
+        evamApi.store.delete(exampleKey);
+        expect(evamApi.store.get(exampleKey)).toBeNull();
     });
 
     it("should not be able to get the item when it doesn't exist", () => {
-        expect(evamApi.getItem(exampleKey + "1234")).toBeNull();
+        expect(evamApi.store.get(exampleKey + "1234")).toBeNull();
     });
 
     it("should not be able to get the items when clear is called", () => {
@@ -583,22 +583,22 @@ describe("persistent storage", () => {
         expect(exampleItemOne.key).not.toEqual(exampleItemTwo.key);
 
         //Items don't already exist
-        expect(evamApi.getItem(exampleItemOne.key)).toBeNull();
-        expect(evamApi.getItem(exampleItemTwo.key)).toBeNull();
+        expect(evamApi.store.get(exampleItemOne.key)).toBeNull();
+        expect(evamApi.store.get(exampleItemTwo.key)).toBeNull();
 
         //set items
-        evamApi.setItem(exampleItemOne.key,exampleItemOne.value);
-        evamApi.setItem(exampleItemTwo.key,exampleItemTwo.value);
+        evamApi.store.set(exampleItemOne.key,exampleItemOne.value);
+        evamApi.store.set(exampleItemTwo.key,exampleItemTwo.value);
 
         //get items
-        expect(evamApi.getItem(exampleItemOne.key)).toEqual(exampleItemOne.value);
-        expect(evamApi.getItem(exampleItemTwo.key)).toEqual(exampleItemTwo.value);
+        expect(evamApi.store.get(exampleItemOne.key)).toEqual(exampleItemOne.value);
+        expect(evamApi.store.get(exampleItemTwo.key)).toEqual(exampleItemTwo.value);
 
-        evamApi.clearItems();
+        evamApi.store.clear();
 
         //items don't exist again
-        expect(evamApi.getItem(exampleItemOne.key)).toBeNull();
-        expect(evamApi.getItem(exampleItemTwo.key)).toBeNull();
+        expect(evamApi.store.get(exampleItemOne.key)).toBeNull();
+        expect(evamApi.store.get(exampleItemTwo.key)).toBeNull();
     });
 
 

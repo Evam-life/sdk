@@ -48,6 +48,7 @@ class EvamData {
     }
 }
 
+
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 
@@ -202,65 +203,83 @@ export class EvamApi {
 
     };
 
-
-    setItem = (key: string, value: string) => {
-        if (EvamApi.isRunningInVehicleServices) {
-            //TODO Set an item for local storage on vehicle services
-            //Android.setItem()
-        } else {
-            if (EvamApi.persistentStorageMap !== null) {
-                EvamApi.persistentStorageMap.set(key, value);
-                if (this.getAppId() === undefined) {
-                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
-                    return;
+    /**
+     * Store used for persisting data within Vehicle Services. If you are in development and not running your application within vehicle services then this
+     * will serve as a lightweight wrapper around localstorage. To avoid naming conflicts AppId must be set as it is used to identify application items.
+     */
+    store = {
+        /**
+         * Stores an item in Vehicle Services
+         * @param key the identifying name of the item
+         * @param value the value of the item
+         */
+        set: (key: string, value: string) => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO Set an item for local storage on vehicle services
+                //Android.setItem()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    EvamApi.persistentStorageMap.set(key, value);
+                    if (this.getAppId() === undefined) {
+                        console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                        return;
+                    }
+                    localStorage.setItem(this.getAppId() + key, value);
                 }
-                localStorage.setItem(this.getAppId() + key, value);
             }
-        }
-    };
-
-    getItem = (key: string): any => {
-        if (EvamApi.isRunningInVehicleServices) {
-            //TODO get an item for local storage on vehicle services
-            //Android.getItem()
-        } else {
-            if (EvamApi.persistentStorageMap !== null) {
-                if (this.getAppId() === undefined) {
-                    return EvamApi.persistentStorageMap.get(key);
+        },
+        /**
+         * Retrieves an item from Vehicle Services
+         * @param key the identifying name of the item
+         */
+        get: (key: string): any => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO get an item for local storage on vehicle services
+                //Android.getItem()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    if (this.getAppId() === undefined) {
+                        return EvamApi.persistentStorageMap.get(key);
+                    }
+                    return localStorage.getItem(this.getAppId() + key);
                 }
-                return localStorage.getItem(this.getAppId() + key);
             }
-        }
-    };
-
-    deleteItem = (key: string) => {
-        if (EvamApi.isRunningInVehicleServices) {
-            //TODO delete an item for local storage on vehicle services
-            //Android.deleteItem()
-        } else {
-            if (EvamApi.persistentStorageMap !== null) {
-                EvamApi.persistentStorageMap.delete(key);
-                if (this.getAppId() === undefined) {
-                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
-                    return;
+        },
+        /**
+         * Deletes an item from Vehicle Services
+         * @param key the identifying name of the item
+         */
+        delete: (key: string) => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO delete an item for local storage on vehicle services
+                //Android.deleteItem()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    EvamApi.persistentStorageMap.delete(key);
+                    if (this.getAppId() === undefined) {
+                        console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                        return;
+                    }
+                    localStorage.removeItem(this.getAppId() + key);
                 }
-                localStorage.removeItem(this.getAppId() + key);
             }
-        }
-    };
-
-    clearItems = () => {
-        if (EvamApi.isRunningInVehicleServices) {
-            //TODO clear all items for local storage on vehicle services
-            //Android.clearItems()
-        } else {
-            if (EvamApi.persistentStorageMap !== null) {
-                EvamApi.persistentStorageMap.clear();
-                if (this.getAppId() === undefined) {
-                    console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
-                    return;
+        },
+        /**
+         * Deletes all item from Vehicle Services
+         */
+        clear: () => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO clear all items for local storage on vehicle services
+                //Android.clearItems()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    EvamApi.persistentStorageMap.clear();
+                    if (this.getAppId() === undefined) {
+                        console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                        return;
+                    }
+                    localStorage.clear();
                 }
-                localStorage.clear();
             }
         }
     };
