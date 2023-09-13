@@ -16,7 +16,9 @@ import {
     VehicleState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
-import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
+import {
+    _InternalVehicleServicesNotification
+} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 
@@ -48,7 +50,6 @@ class EvamData {
 
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
-
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -154,9 +155,9 @@ export class EvamApi {
 
 
     /**
-     * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
-     * We have to ignore this because the Android item causes an error.
+     * True if Vehicle Services environment is detected, False otherwise (development environment).
      */
+        //@ts-ignore
     public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
         try {
             //@ts-ignore
@@ -225,7 +226,7 @@ export class EvamApi {
         } else {
             if (EvamApi.persistentStorageMap !== null) {
                 if (this.getAppId() === undefined) {
-                    return EvamApi.persistentStorageMap.get(key)
+                    return EvamApi.persistentStorageMap.get(key);
                 }
                 return localStorage.getItem(this.getAppId() + key);
             }
@@ -266,6 +267,7 @@ export class EvamApi {
 
     /**
      * Sets the selected hospital id for the current active operation. The id must be present inside the available hospitals
+     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
@@ -291,6 +293,7 @@ export class EvamApi {
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
+     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id of the priority to be set
      */
     setPriority(id: number) {
@@ -486,26 +489,29 @@ export class EvamApi {
         }
     }
 
-    getGRPC = () => EvamApi.evamData.grpc;
-
-    getDeviceId = () => EvamApi.evamData.deviceId;
-
-    getAppId = () => EvamApi.evamData.appId;
-
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
+    /**
+     * Gets the Evam App version as defined in the evam.json manifest
+     */
     getAppVersion = () => EvamApi.evamData.appVersion;
 
 
+    /**
+     * Gets the Android OS version
+     */
     getOSVersion = () => EvamApi.evamData.osVersion;
 
-
+    /**
+     * Gets the Vehicle Services app version
+     */
     getVehicleServicesVersion = () => EvamApi.evamData.vsVersion;
 
 
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
      * Operation is updated.
+     * @requires Permissions ACTIVE_OPERATION_READ
      * @param callback The callback to be executed
      */
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
@@ -534,6 +540,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new device role or device role update
+     * @requires Permissions DEVICE_ROLE_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedDeviceRole(callback: CallbackFunction<DeviceRole | undefined>) {
@@ -548,6 +555,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new location or location update
+     * @requires Permissions LOCATION_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
@@ -562,6 +570,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new internetState or internetState update
+     * @requires Permissions CONNECTIVITY_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedInternetState(callback: CallbackFunction<InternetState | undefined>) {
@@ -575,7 +584,8 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the vehicle state is created or updated.
+     * Used to assign a callback when the vehicle state is updated.
+     * @requires Permissions VEHICLE_STATE_READ
      * @param callback The callback with (optional) argument vehicleState. Use this to access the vehicle state.
      */
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
@@ -590,7 +600,8 @@ export class EvamApi {
 
 
     /**
-     * Used to assign a callback when the trip location history is created or updated.
+     * Used to assign a callback when the trip location history is updated.
+     * @requires Permissions TRIP_HISTORY_READ
      * @param callback The callback with (optional) argument tripLocationHistory. Use this to access the trip location history.
      */
     onNewOrUpdatedTripLocationHistory(callback: CallbackFunction<TripLocationHistory | undefined>) {
@@ -605,7 +616,8 @@ export class EvamApi {
 
 
     /**
-     * Used to assign a callback when the operation list is created or updated.
+     * Used to assign a callback when the operation list is updated.
+     * @requires Permissions OPERATION_READ
      * @param callback The callback with (optional) argument operationList. Use this to access the operation list.
      */
     onNewOrUpdatedOperationList(callback: CallbackFunction<Operation[] | undefined>) {
@@ -619,7 +631,8 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the battery created or updated.
+     * Used to assign a callback when the battery data is updated.
+     * @requires Permissions BATTERY_READ
      * @param callback The callback with (optional) argument battery. Use this to access the battery.
      */
     onNewOrUpdatedBattery(callback: CallbackFunction<Battery | undefined>) {
@@ -633,8 +646,10 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the display mode is created or updated.
-     * @param callback The callback with (optional) argument displayMode. Use this to access the display mode.
+     *
+     * Used to assign a callback when the battery created or updated.
+     * @requires Permissions DISPLAY_MODE_READ
+     * @param callback The callback with (optional) argument display mode. Use this to access the display mode.
      */
     onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
         if (callback) {
@@ -648,7 +663,8 @@ export class EvamApi {
 
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
-     * @param notification
+     * @requires Permissions SEND_NOTIFICATION
+     * @param notification The notification to be sent
      */
     sendNotification(notification: Notification) {
         const {

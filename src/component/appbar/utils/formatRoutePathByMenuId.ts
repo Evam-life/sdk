@@ -3,5 +3,5 @@
  * @param menuId The menu entry ID
  */
 export function formatRoutePathByMenuId(menuId: string) {
-    return `/hmenu/${encodeURIComponent(menuId)}`
+    return `/hmenu/${menuId}`
 }
