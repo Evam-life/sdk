@@ -489,13 +489,27 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Gets the address for the GRPC proxy
+     */
+    getGRPC = () => EvamApi.evamData.grpc;
+
+    /**
+     * Gets the device Id as defined in Android
+     */
+    getDeviceId = () => EvamApi.evamData.deviceId;
+
+    /**
+     * Gets the Evam App id as given by Vehicle Services
+     */
+    getAppId = () => EvamApi.evamData.appId;
+
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
     /**
      * Gets the Evam App version as defined in the evam.json manifest
      */
     getAppVersion = () => EvamApi.evamData.appVersion;
-
 
     /**
      * Gets the Android OS version
