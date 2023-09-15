@@ -213,7 +213,7 @@ export class EvamApi {
          * @param key the identifying name of the item
          * @param value the value of the item
          */
-        set: (key: string, value: string) => {
+        set: (key: string, value: any) => {
             if (EvamApi.isRunningInVehicleServices) {
                 //TODO Set an item for local storage on vehicle services
                 //Android.setItem()
