@@ -16,7 +16,9 @@ import {
     VehicleState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
-import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
+import {
+    _InternalVehicleServicesNotification
+} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 
@@ -39,15 +41,16 @@ class EvamData {
         public appVersion?: string | undefined,
         public deviceId?: string | undefined,
         public displayMode?: DisplayMode | undefined,
-        public grpc?: GRPC | undefined
+        public grpc?: GRPC | undefined,
+        public appId?: string | undefined
     ) {
 
     }
 }
 
+
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
-
 
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
@@ -109,10 +112,11 @@ export class EvamApi {
         if (!EvamApi.singletonExists) {
             EvamApi.subscribeToVehicleServiceNotifications();
 
-            EvamApi.subscribeToAppVersionSet(); //The subscribeTo*Set commands unsubscribe automatically when such versions have been set
+            EvamApi.subscribeToAppVersionSet(); //The subscribeTo* commands unsubscribe automatically when such versions or objects have been set
             EvamApi.subscribeToOSVersionSet();
             EvamApi.subscribeToVehicleServicesVersionSet();
             EvamApi.subscribeToDeviceIdSet();
+            EvamApi.subscribeToAppIdSet();
             EvamApi.subscribeToGRPCEstablished();
 
             EvamApi.singletonExists = true;
@@ -144,17 +148,29 @@ export class EvamApi {
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
+    /**
+     * The persistentStorageMap object is only used for testing. It is null unless the isRunningInVehicleServices method
+     * returns false.
+     */
+    private static persistentStorageMap: Map<string, any> | null = null;
+
 
     /**
-     * True if Vehicle Services environment is detected, False otherwise (for instance a web application)
-     * We have to ignore this because the Android item causes an error.
+     * True if Vehicle Services environment is detected, False otherwise (development environment).
      */
+        //@ts-ignore
     public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
         try {
             //@ts-ignore
             const android = Android;
-            return (android !== undefined);
+            if ((android !== undefined)) {
+                return true;
+            }
+            //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
+            EvamApi.persistentStorageMap = new Map([]);
+            return false;
         } catch {
+            EvamApi.persistentStorageMap = new Map([]);
             return false;
         }
     })(); //<-- Notice we are calling this function and not just defining it. isRunningInVehicleServices is not a function
@@ -184,10 +200,93 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
 
         EvamApi.notificationCallbacks.clear();
+
+    };
+
+    /**
+     * Store used for persisting data within Vehicle Services. If you are in development and not running your application within vehicle services then this
+     * will serve as a lightweight wrapper around localstorage. To avoid naming conflicts AppId must be set as it is used to identify application items.
+     */
+    store = {
+        /**
+         * Stores an item in Vehicle Services
+         * @param key the identifying name of the item
+         * @param value the value of the item
+         */
+        set: (key: string, value: any) => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO Set an item for local storage on vehicle services
+                //Android.setItem()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    EvamApi.persistentStorageMap.set(key, value);
+                    if (this.getAppId() === undefined) {
+                        console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                        return;
+                    }
+                    localStorage.setItem(this.getAppId() + key, value);
+                }
+            }
+        },
+        /**
+         * Retrieves an item from Vehicle Services
+         * @param key the identifying name of the item
+         */
+        get: (key: string): any => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO get an item for local storage on vehicle services
+                //Android.getItem()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    if (this.getAppId() === undefined) {
+                        return EvamApi.persistentStorageMap.get(key);
+                    }
+                    return localStorage.getItem(this.getAppId() + key);
+                }
+            }
+        },
+        /**
+         * Deletes an item from Vehicle Services
+         * @param key the identifying name of the item
+         */
+        delete: (key: string) => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO delete an item for local storage on vehicle services
+                //Android.deleteItem()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    EvamApi.persistentStorageMap.delete(key);
+                    if (this.getAppId() === undefined) {
+                        console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                        return;
+                    }
+                    localStorage.removeItem(this.getAppId() + key);
+                }
+            }
+        },
+        /**
+         * Deletes all item from Vehicle Services
+         */
+        clear: () => {
+            if (EvamApi.isRunningInVehicleServices) {
+                //TODO clear all items for local storage on vehicle services
+                //Android.clearItems()
+            } else {
+                if (EvamApi.persistentStorageMap !== null) {
+                    EvamApi.persistentStorageMap.clear();
+                    if (this.getAppId() === undefined) {
+                        console.warn("Using EvamApi localstorage functions will not persist until you set the app id. If you are not running in Vehicle Services then you need to call");
+                        return;
+                    }
+                    localStorage.clear();
+                }
+            }
+        }
     };
 
     /**
      * Sets the selected hospital id for the current active operation. The id must be present inside the available hospitals
+     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
@@ -213,6 +312,7 @@ export class EvamApi {
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
+     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id of the priority to be set
      */
     setPriority(id: number) {
@@ -335,7 +435,7 @@ export class EvamApi {
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
      */
-    injectDisplayMode(displayMode: typeof EvamApi.evamData.displayMode) {
+    injectDisplayMode(displayMode: DisplayMode) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.displayMode = displayMode;
             publish(EvamEvent.NewOrUpdatedDisplayMode, displayMode);
@@ -355,8 +455,6 @@ export class EvamApi {
 
     injectOSVersion(osVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
-            console.log(osVersion);
-            console.log(osVersion === null);
             EvamApi.evamData.osVersion = osVersion;
             publish(EvamEvent.OSVersionSet, osVersion);
         } else {
@@ -370,6 +468,15 @@ export class EvamApi {
             publish(EvamEvent.VehicleServicesVersionSet, vsVersion);
         } else {
             throw Error("Injecting VS version is not allowed in the Vehicle Services environment, use a web browser instead.");
+        }
+    }
+
+    injectAppId(appId: string) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.appId = appId;
+            publish(EvamEvent.AppIdSet, appId);
+        } else {
+            throw Error("Injecting app id is not allowed in the Vehicle Services environment, use a web browser instead.");
         }
     }
 
@@ -401,24 +508,43 @@ export class EvamApi {
         }
     }
 
-    getGRPC = () => EvamApi.evamData.grpc
+    /**
+     * Gets the address for the GRPC proxy
+     */
+    getGRPC = () => EvamApi.evamData.grpc;
 
-    getDeviceId = () => EvamApi.evamData.deviceId
+    /**
+     * Gets the device Id as defined in Android
+     */
+    getDeviceId = () => EvamApi.evamData.deviceId;
+
+    /**
+     * Gets the Evam App id as given by Vehicle Services
+     */
+    getAppId = () => EvamApi.evamData.appId;
 
     //These get*Version functions are different from the other ways of getting data from the SDK.
     //The software versions are set once and then not changed again, so it's fine to allow the developer to get these whenever they want.
+    /**
+     * Gets the Evam App version as defined in the evam.json manifest
+     */
     getAppVersion = () => EvamApi.evamData.appVersion;
 
-
+    /**
+     * Gets the Android OS version
+     */
     getOSVersion = () => EvamApi.evamData.osVersion;
 
-
+    /**
+     * Gets the Vehicle Services app version
+     */
     getVehicleServicesVersion = () => EvamApi.evamData.vsVersion;
 
 
     /**
      * Registers a callback to be run upon a new Active Operation is available or the current Active
      * Operation is updated.
+     * @requires Permissions ACTIVE_OPERATION_READ
      * @param callback The callback to be executed
      */
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
@@ -447,6 +573,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new device role or device role update
+     * @requires Permissions DEVICE_ROLE_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedDeviceRole(callback: CallbackFunction<DeviceRole | undefined>) {
@@ -461,6 +588,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new location or location update
+     * @requires Permissions LOCATION_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
@@ -475,6 +603,7 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new internetState or internetState update
+     * @requires Permissions CONNECTIVITY_READ
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedInternetState(callback: CallbackFunction<InternetState | undefined>) {
@@ -488,7 +617,8 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the vehicle state is created or updated.
+     * Used to assign a callback when the vehicle state is updated.
+     * @requires Permissions VEHICLE_STATE_READ
      * @param callback The callback with (optional) argument vehicleState. Use this to access the vehicle state.
      */
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
@@ -503,7 +633,8 @@ export class EvamApi {
 
 
     /**
-     * Used to assign a callback when the trip location history is created or updated.
+     * Used to assign a callback when the trip location history is updated.
+     * @requires Permissions TRIP_HISTORY_READ
      * @param callback The callback with (optional) argument tripLocationHistory. Use this to access the trip location history.
      */
     onNewOrUpdatedTripLocationHistory(callback: CallbackFunction<TripLocationHistory | undefined>) {
@@ -518,7 +649,8 @@ export class EvamApi {
 
 
     /**
-     * Used to assign a callback when the operation list is created or updated.
+     * Used to assign a callback when the operation list is updated.
+     * @requires Permissions OPERATION_READ
      * @param callback The callback with (optional) argument operationList. Use this to access the operation list.
      */
     onNewOrUpdatedOperationList(callback: CallbackFunction<Operation[] | undefined>) {
@@ -532,7 +664,8 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the battery created or updated.
+     * Used to assign a callback when the battery data is updated.
+     * @requires Permissions BATTERY_READ
      * @param callback The callback with (optional) argument battery. Use this to access the battery.
      */
     onNewOrUpdatedBattery(callback: CallbackFunction<Battery | undefined>) {
@@ -546,10 +679,12 @@ export class EvamApi {
     }
 
     /**
-     * Used to assign a callback when the display mode is created or updated.
-     * @param callback The callback with (optional) argument displayMode. Use this to access the display mode.
+     *
+     * Used to assign a callback when the battery created or updated.
+     * @requires Permissions DISPLAY_MODE_READ
+     * @param callback The callback with (optional) argument display mode. Use this to access the display mode.
      */
-    onNewOrUpdatedDisplayMode(callback: CallbackFunction<typeof EvamApi.evamData.displayMode | undefined>) {
+    onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 callback((e as CustomEvent).detail as DisplayMode);
@@ -561,7 +696,8 @@ export class EvamApi {
 
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
-     * @param notification
+     * @requires Permissions SEND_NOTIFICATION
+     * @param notification The notification to be sent
      */
     sendNotification(notification: Notification) {
         const {
@@ -679,6 +815,29 @@ export class EvamApi {
         subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
     };
 
+
+    private static subscribeToAppIdSet = () => {
+
+        const getAllItemsFromLocalStorage = (id: string) => {
+            for (const key in localStorage) {
+                //reg ex pattern
+                const pattern: RegExp = new RegExp(`^${id}.*`);
+                if (key.match(pattern)) {
+                    const value = localStorage.getItem(key);
+                    if (EvamApi.persistentStorageMap !== null) {
+                        EvamApi.persistentStorageMap.set(key, value);
+                    }
+                }
+            }
+        };
+        const appIdSetSubscription = (e: Event) => {
+            const appId = (e as CustomEvent).detail as string;
+            EvamApi.evamData.appId = appId;
+            getAllItemsFromLocalStorage(appId);
+            unsubscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+        };
+        subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+    };
 }
 
 
