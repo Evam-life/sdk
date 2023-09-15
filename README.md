@@ -4,7 +4,7 @@
 
 This package contains the Evam SDK TS/JS modules for Evam app development.
 
-The full documentation is available at: [Evam SDK documentation](https://evam-life.github.io).
+The full documentation is available at: [Evam SDK documentation](https://documentation.evam.life).
 
 ## Quick start
 
@@ -40,4 +40,4 @@ compatible with the SDK.
 
 The use of React is recommended, but other libraries/frameworks
 should also work. A set of turnkey React components is provided to get
-you started quickly, see [Use the built-in components](https://evam-life.github.io/tech/using_the_sdk.html#use-the-built-in-ui-components).
+you started quickly, see [Use the built-in components](https://documentation.evam.life/tech/using_the_sdk.html#use-the-built-in-ui-components).
