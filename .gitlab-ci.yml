@@ -24,6 +24,7 @@ deploy-npm:
   stage: deploy
   only:
     - tags
+    - manual
   script:
     - git config --global user.email "info@evam.life"
     - git config --global user.name "Evam Bot"
@@ -32,4 +33,4 @@ deploy-npm:
     - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
     - npm install
     - npm run build
-    - npm publish --access public
+    - if [[ "$CI_COMMIT_TAG" == *"-beta"* ]]; then echo "Publishing Beta" && npm publish --access public --tag beta; else echo "Publishing Production" && npm publish --access public; fi;
