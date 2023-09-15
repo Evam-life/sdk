@@ -45,9 +45,9 @@ export function EvamTabPanel(props: TabPanelProps) {
                             <Slide direction={getDirection(context.activeTabId, context.subTabId, context.previousActiveTabId)}
                                    in={context.subTabId === index}
                                    mountOnEnter unmountOnExit>
-                                <Typography>
+                                <div>
                                     {children}
-                                </Typography>
+                                </div>
                             </Slide>
                         </Box>)}
 

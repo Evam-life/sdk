@@ -20,6 +20,7 @@ enum EvamEvent {
     VehicleServicesVersionSet = "vehicleServicesVersionSet",
     AppVersionSet = "appVersionSet",
     DeviceIdSet = "deviceIdSet",
+    AppIdSet = "appIdSet",
     _testEvent = "_testEvent"
 }
 
