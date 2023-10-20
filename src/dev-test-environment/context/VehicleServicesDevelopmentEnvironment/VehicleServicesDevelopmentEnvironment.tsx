@@ -1,19 +1,17 @@
 import React, {PropsWithChildren} from "react";
 import {ChakraProvider} from "@chakra-ui/react";
 import {NotificationProvider} from "./NotificationProvider";
-import {VehicleServicesNoRender} from "../../components";
+import {EvamApi} from "../../../api/EvamApi";
 
 const VehicleServicesDevelopmentEnvironment: React.FC<PropsWithChildren> = ({children}) => {
 
-    return (
-        <VehicleServicesNoRender>
-                <ChakraProvider>
-                    <NotificationProvider>
-                        {children}
-                    </NotificationProvider>
-                </ChakraProvider>
-        </VehicleServicesNoRender>
-    );
+    if (EvamApi.isRunningInVehicleServices) return <>{children}</>;
+
+    return (<ChakraProvider>
+        <NotificationProvider>
+            {children}
+        </NotificationProvider>
+    </ChakraProvider>);
 
 };
 

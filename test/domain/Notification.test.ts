@@ -7,9 +7,10 @@ import {
 import {EvamApi} from "../../src";
 import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
 import {EvamEvent, Notification, Location} from "../../src";
-import * as crypto from "crypto";
 import * as _ from "lodash";
 import {waitFor} from "@testing-library/react";
+import crypto from "crypto";
+
 
 class TestEvamApi extends EvamApi {
     public constructor() {

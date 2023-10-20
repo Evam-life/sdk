@@ -16,9 +16,12 @@
       ]
     },
     "plugins": [
-    ],
+    ]
   },
   "include": [
     "src/**/*"
   ],
+  "exclude": [
+    "sdk/**/*"
+  ]
 }

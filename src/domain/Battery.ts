@@ -1,26 +1,26 @@
 enum BatteryHealth {
-    UNKNOWN = 1,
-    GOOD = 2,
-    OVERHEAT = 3,
-    DEAD = 4,
-    OVER_VOLTAGE = 5,
-    UNSPECIFIED_FAILURE = 6,
-    COLD = 7
+    UNKNOWN = "UNKNOWN",
+    GOOD = "GOOD",
+    OVERHEAT = "OVERHEAT",
+    DEAD = "DEAD",
+    OVER_VOLTAGE = "OVER_VOLTAGE",
+    UNSPECIFIED_FAILURE = "UNSPECIFIED_FAILURE ",
+    COLD = "COLD"
 }
 
 enum BatteryPlugged {
-    DOCK = 0,
-    AC = 1,
-    USB = 2,
-    WIRELESS = 4
+    DOCK = "DOCK",
+    AC = "AC",
+    USB = "USB",
+    WIRELESS = "WIRELESS"
 }
 
 enum BatteryStatus {
-    UNKNOWN = 1,
-    CHARGING = 2,
-    DISCHARGING = 3,
-    NOT_CHARGING = 4,
-    FULL = 5
+    UNKNOWN = "UNKNOWN",
+    CHARGING = "CHARGING",
+    DISCHARGING = "DISCHARGING",
+    NOT_CHARGING = "NOT_CHARGING",
+    FULL = "FULL"
 }
 
 

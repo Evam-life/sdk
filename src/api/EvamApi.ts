@@ -841,3 +841,92 @@ export class EvamApi {
 }
 
 
+/**
+ * new dynamic and scalable way of doing things (maybe use  a reducer)
+ *
+ * interface EvamEventTypeInterface {
+ *     onNewOrUpdated: {
+ *         operation: (op: Operation) => void,
+ *         tripLocationHistory: (tlh: TripLocationHistory) => void
+ *     }
+ * }
+ *
+ * type Leaf<T> = T extends object ? { [K in keyof T]:
+ *     `${Exclude<K, symbol>}${Leaf<T[K]> extends never ? "" : `.${Leaf<T[K]>}`}`
+ * }[keyof T] : never
+ *
+ *
+ * type EvamEvent = Leaf<EvamEventTypeInterface>
+ *
+ * //fix the 'any' here
+ * const map = new Map<EvamEvent,any>([]);
+ *
+ *
+ * type EvamEventMapReducerAction = {type: 'ADD_LISTENER', payload: {
+ *     event: EvamKey,
+ *     fn: ()
+ * }} ...
+ *
+ * const mapReducer = (state: typeof map, action: EvamEventMapReducerAction) => {
+ *     switch (action.type){
+ *         case 'ADD_LISTENER': {
+ *         const newState = clone(state)
+ *                const fnArr = newState.get(event) || [];
+ *     fnArr.push(fn);
+ *     newState.set(event, fnArr);
+ *     return newState;
+ *         }
+ *         case 'REMOVE_ALL' {
+ *             return new Map<EvamEvent,any>([]);
+ *         }
+ *         case 'REMOVE_EVENT' {
+ *             const newState = clone(state);
+ *                     newState.delete(paylad);
+ *         return newState;
+ *         }
+ *         case 'REMOVE_LISTENER' {
+ *                     const newState = clone(state);
+ *                     const fnArr = newState.get(event);
+ *         if (fnArr === undefined) return;
+ *         const newFnArr = fnArr.filter(fnArrItem => fnArrItem !== fn);
+ *         if (newFnArr.length === fnArr.length) return //event wasn't found
+ *         newState.set(event, newFnArr);
+ *         return newState;
+ *         }
+ *         default : {
+ *         return state
+ *         }
+ *     }
+ * }
+ *
+ * function on(event: EvamKey, fn: EvamEventTypeInterface[event]) {
+
+ * }
+ *
+ * function off(event?: EvamKey, fn?: EvamEventTypeInterface[event]) {
+ *     //remove all listeners when evamApi.off() is called like this
+ *     if (event === undefined && fn === undefined) {
+ *         dispatch({
+ *             type: 'REMOVE_ALL'
+ *         })
+ *     }
+ *     //remove all listeners for a specific event when evamApi.off("event") is called like this
+ *     if (event !== undefined && fn === undefined) {
+ *        dispatch({
+ *            type: 'REMOVE_EVENT'
+ *            payload: event
+ *        })
+ *     }
+ *     //remove a specific listener to a specific event when evamApi.off('event',fn) is called like this
+ *     if (event !== undefined && fn !== undefined) {
+ *         dispatch({
+ *             type:'REMOVE_LISTENER',
+ *             payload: {
+ *                 event,
+ *               fn
+ *             }
+ *         })
+ *     }
+ * }
+ *
+ */
