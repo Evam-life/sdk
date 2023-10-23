@@ -1,7 +1,7 @@
-import * as React from 'react';
+import * as React from "react";
 import {EvamTabContext} from "./EvamTabContext";
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import {Slide} from "@mui/material";
 
 export interface TabPanelProps {

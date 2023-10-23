@@ -1,7 +1,7 @@
 import {Input} from "@mui/material";
 import * as React from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
 import {Fragment, useRef} from "react";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
 interface EvamSearchInputProps {
     searchTextHint: string

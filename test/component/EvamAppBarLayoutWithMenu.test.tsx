@@ -1,8 +1,5 @@
 import {EvamAppBarLayout} from "../../src/component/appbar/EvamAppBarLayout";
-import {
-    render,
-    screen
-} from '@testing-library/react';
+import {render, screen} from "@testing-library/react";
 import {EvamTabs} from "../../src/component/appbar/EvamTabs";
 import {EvamTab} from "../../src/component/appbar/EvamTab";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
@@ -14,9 +11,7 @@ import {clickButton} from "../testutils/clickButton";
 import {EvamHamburgerMenu} from "../../src/component/appbar/EvamHamburgerMenu";
 import Box from "@mui/material/Box";
 import {EvamMenuItem} from "../../src/component/appbar/EvamMenuItem";
-import {
-    formatRoutePathByMenuId
-} from "../../src/component/appbar/utils/formatRoutePathByMenuId";
+import {formatRoutePathByMenuId} from "../../src/component/appbar/utils/formatRoutePathByMenuId";
 
 
 // A basic test application with Search

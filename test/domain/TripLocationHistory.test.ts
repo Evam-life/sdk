@@ -1,5 +1,5 @@
 import {Location} from "../../src";
-import * as _ from "lodash"
+import * as _ from "lodash";
 import {convertedTripLocationHistory, tripLocationHistory} from "../testdata";
 
 it('tests that TripLocationHistory fromJSON correctly assigns right values',()=>{

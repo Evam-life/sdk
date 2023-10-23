@@ -1,9 +1,5 @@
 import {EvamAppBarLayout} from "../../src/component/appbar/EvamAppBarLayout";
-import {
-    fireEvent,
-    render,
-    screen
-} from '@testing-library/react';
+import {fireEvent, render, screen} from "@testing-library/react";
 import {EvamTabs} from "../../src/component/appbar/EvamTabs";
 import {EvamTab} from "../../src/component/appbar/EvamTab";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";

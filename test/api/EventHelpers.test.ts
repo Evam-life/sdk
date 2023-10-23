@@ -1,5 +1,5 @@
 //import the event.js file
-import {publish,unsubscribe,subscribe} from "../../src/util/EventHelpers";
+import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
 import {EvamEvent} from "../../src";
 
 beforeEach(() => {

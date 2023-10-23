@@ -8,13 +8,21 @@ import {
     convertedTripLocationHistory,
     convertedVehicleState,
     displayMode,
-    settings, tripLocationHistory
+    settings,
+    tripLocationHistory
 } from "../testdata";
-import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
+import {
+    DeviceRole,
+    EvamApi,
+    EvamEvent,
+    InternetState,
+    Location as EvamLocation,
+    Operation,
+    TripLocationHistory
+} from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
-import {Operation, TripLocationHistory, Location as EvamLocation} from "../../src";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
