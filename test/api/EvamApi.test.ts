@@ -8,12 +8,13 @@ import {
     convertedTripLocationHistory,
     convertedVehicleState,
     displayMode,
-    settings
+    settings, tripLocationHistory
 } from "../testdata";
 import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
+import {Operation, TripLocationHistory, Location as EvamLocation} from "../../src";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -602,4 +603,98 @@ describe("persistent storage", () => {
     });
 
 
+});
+
+it("should contain type Operation for when we dispatch a new CustomEvent of type \"newOrUpdatedOperationList\" with \"detail\" being a JSON", () => {
+
+    const evamApi = new EvamApi();
+
+    const detail = [{
+        "operationID": "1",
+        "name": "Trafikolycka",
+        "sendTime": 1697734938000,
+        "createdTime": 1697734958000,
+        "callCenterId": "18",
+        "caseFolderId": "1358263",
+        "radioGroupMain": "Sthm RAPS-01",
+        "radioGroupSecondary": "230 RtjIns-1",
+        "availablePriorities": [{"id": 1, "name": "PRIO 1"}, {"id": 2, "name": "PRIO 2"}, {
+            "id": 3,
+            "name": "PRIO 3"
+        }],
+        "vehicleStatus": {
+            "name": "Lastat",
+            "isStartStatus": false,
+            "isEndStatus": false,
+            "categoryType": "STATUS_MISSION",
+            "categoryName": "mission",
+            "successorName": "Lämnar",
+            "event": "EVENT_EXIT_SITE"
+        },
+        "destinationSiteLocation": {
+            "latitude": 59.368248333333334,
+            "longitude": 18.020505,
+            "street": "E4 Norrgående",
+            "locality": "Stockholm",
+            "municipality": "Stockholm"
+        },
+        "availableHospitalLocations": [{
+            "id": -1006239340,
+            "latitude": 59.36339,
+            "longitude": 17.967539,
+            "name": "My hospital",
+            "street1": "",
+            "city": "",
+            "region": "",
+            "postalCode": ""
+        }, {
+            "id": 105668922,
+            "latitude": 59.353016,
+            "longitude": 17.970813,
+            "name": "Karolinska",
+            "street1": "",
+            "city": "",
+            "region": "",
+            "postalCode": ""
+        }],
+        "header1": "Personbil",
+        "header2": "Övrigt",
+        "selectedPriority": 1,
+        "operationState": "ACTIVE"
+    }];
+
+    const callbackFn = jest.fn();
+
+    evamApi.onNewOrUpdatedOperationList(callbackFn);
+
+    const event = new CustomEvent("newOrUpdatedOperationList", {
+        detail
+    });
+    document.dispatchEvent(event);
+
+
+    //expect(callbackFn).toHaveBeenLastCalledWith(detail.map(Operation.fromJSON))
+
+    expect(callbackFn.mock.lastCall[0][0]).toBeInstanceOf(Operation)
+});
+
+it("should contain type TripLocationHistory for when we dispatch a new CustomEvent of type \"newOrUpdatedTripLocationHistory\" with \"detail\" being a JSON", () => {
+
+    const evamApi = new EvamApi();
+
+    const detail = tripLocationHistory
+
+    const callbackFn = jest.fn();
+
+    evamApi.onNewOrUpdatedTripLocationHistory(callbackFn);
+
+    const event = new CustomEvent("newOrUpdatedTripLocationHistory", {
+        detail
+    });
+    document.dispatchEvent(event);
+
+    console.log(callbackFn.mock.lastCall[0].locationHistory[0]);
+
+    expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(TripLocationHistory)
+    expect(callbackFn.mock.lastCall[0].locationHistory[0]).toBeInstanceOf(EvamLocation)
 });
