@@ -552,7 +552,7 @@ export class EvamApi {
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as Operation);
+                callback(Operation.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedOperation, c);
@@ -596,7 +596,7 @@ export class EvamApi {
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as Location);
+                callback(Location.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedLocation, c);
@@ -626,7 +626,7 @@ export class EvamApi {
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as VehicleState);
+                callback(VehicleState.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedVehicleState, c);

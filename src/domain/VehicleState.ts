@@ -28,7 +28,7 @@ class VehicleState {
         }
         return new VehicleState(
             new Date(vehicleState.timestamp),
-            vehicleState.vehicleStatus,
+            VehicleStatus.fromJSON(vehicleState.vehicleStatus),
             vehicleState.activeCaseFullId,
             vehicleState.vehicleLocation
         )
