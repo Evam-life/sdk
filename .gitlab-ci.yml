@@ -13,7 +13,7 @@ test:
     - merge_requests
   script:
     - npm install
-    - npm build
+    - npm run build
     - npm test
   artifacts:
     reports:
