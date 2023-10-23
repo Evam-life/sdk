@@ -7,11 +7,13 @@ const VehicleServicesDevelopmentEnvironment: React.FC<PropsWithChildren> = ({chi
 
     if (EvamApi.isRunningInVehicleServices) return <>{children}</>;
 
-    return (<ChakraProvider>
-        <NotificationProvider>
-            {children}
-        </NotificationProvider>
-    </ChakraProvider>);
+    return (<>
+        <ChakraProvider>
+            <NotificationProvider>
+                {children}
+            </NotificationProvider>
+        </ChakraProvider>
+    </>);
 
 };
 
