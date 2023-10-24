@@ -3,6 +3,11 @@ import {ChakraProvider} from "@chakra-ui/react";
 import {NotificationProvider} from "./NotificationProvider";
 import {EvamApi} from "../../../api/EvamApi";
 
+/**
+ * The VehicleServicesDevelopmentEnvironment provides a notification environment for you to test sending notifications in vehicle services.
+ * @param children the children of the component
+ * @constructor
+ */
 const VehicleServicesDevelopmentEnvironment: React.FC<PropsWithChildren> = ({children}) => {
 
     //just render the app (this is for if we accidentally leave the VehicleServicesDevelopmentEnvironment component in
