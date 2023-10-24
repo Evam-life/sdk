@@ -20,13 +20,19 @@ class TripLocationHistory {
      */
     static fromJSON(tripLocationHistory: any) {
         if (tripLocationHistory.locationHistory === undefined) {
-            throw Error('TripLocationHistory must define locationHistory')
+            throw Error("TripLocationHistory must define locationHistory");
         }
-        return new TripLocationHistory(
-            tripLocationHistory.locationHistory,
-            tripLocationHistory.etaSeconds
-        );
+        const {locationHistory} = tripLocationHistory;
+        if (Array.isArray(locationHistory)) {
+            const locationHistoryMapped: Array<Location> = locationHistory.map<Location>(Location.fromJSON);
+            return new TripLocationHistory(
+                locationHistoryMapped,
+                tripLocationHistory.etaSeconds
+            );
+        } else {
+            throw Error("TripLocationHistory must be an array");
+        }
     }
 }
 
-export {TripLocationHistory}
+export {TripLocationHistory};

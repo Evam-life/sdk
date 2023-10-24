@@ -7,13 +7,26 @@ import {
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
     convertedVehicleState,
-    displayMode,
-    settings
+    displayMode, operation,
+    settings,
+    tripLocationHistory
 } from "../testdata";
-import {DeviceRole, EvamApi, EvamEvent, InternetState} from "../../src";
+import {
+    DeviceRole,
+    EvamApi,
+    EvamEvent,
+    InternetState,
+    Location as EvamLocation,
+    Operation,
+    TripLocationHistory,
+    VehicleState,
+    VehicleStatus,
+    Battery, HospitalLocation
+} from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
+import {BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../../src/domain";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -602,4 +615,229 @@ describe("persistent storage", () => {
     });
 
 
+});
+
+it("should call callbacks with type Operation for newOrUpdatedOperation event", () => {
+    const evamApi = new EvamApi();
+    const detail = operation;
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedActiveOperation(callbackFn);
+    const event = new CustomEvent("newOrUpdatedOperation", {
+        detail
+    });
+    document.dispatchEvent(event);
+    expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(Operation);
+});
+
+it("should call callbacks with type Object for newOrUpdatedSettings event", () => {
+    const evamApi = new EvamApi();
+    const detail = {
+        settingA: "12345"
+    };
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedSettings(callbackFn);
+    const event = new CustomEvent("newOrUpdatedSettings", {
+        detail
+    });
+    document.dispatchEvent(event);
+    expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(Object);
+});
+
+it("should call callbacks with type DeviceRole for newOrUpdatedDeviceRole event", () => {
+    const evamApi = new EvamApi();
+    const detail: DeviceRole = DeviceRole.MAIN_DEVICE;
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedDeviceRole(callbackFn);
+    const event = new CustomEvent("newOrUpdatedDeviceRole", {
+        detail
+    });
+    document.dispatchEvent(event);
+    expect(Object.values(DeviceRole)).toContain(callbackFn.mock.lastCall[0]);
+});
+
+it("should call callbacks with type Location for newOrUpdatedLocation event", () => {
+    const evamApi = new EvamApi();
+    const detail = {
+        longitude: 0,
+        latitude: 0
+    };
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedLocation(callbackFn);
+    const event = new CustomEvent("newOrUpdatedLocation", {
+        detail
+    });
+    document.dispatchEvent(event);
+    expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(EvamLocation);
+});
+
+it("should call callbacks with type InternetState for newOrUpdatedInternetState event", () => {
+    const evamApi = new EvamApi();
+    const detail = InternetState.CONNECTED_2G;
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedInternetState(callbackFn);
+    const event = new CustomEvent("newOrUpdatedInternetState", {
+        detail
+    });
+    document.dispatchEvent(event);
+    expect(Object.values(InternetState)).toContain(callbackFn.mock.lastCall[0]);
+});
+
+it("should call callbacks with type VehicleState for newOrUpdatedVehicleState event", () => {
+    const evamApi = new EvamApi();
+    const detail = VehicleState.fromJSON({
+        timestamp: 0,
+        vehicleStatus: {
+            name: test,
+            isStartStatus: true,
+            isEndStatus: false,
+            categoryType: "test",
+            categoryName: "test"
+        }
+    });
+    const callbackFn = jest.fn();
+
+    evamApi.onNewOrUpdatedVehicleState(callbackFn);
+    const event = new CustomEvent("newOrUpdatedVehicleState", {
+        detail
+    });
+
+    document.dispatchEvent(event);
+
+    expect(callbackFn.mock.lastCall[0].vehicleStatus).toBeInstanceOf(VehicleStatus);
+    expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(VehicleState);
+
+});
+
+it("should contain type TripLocationHistory for when we dispatch a new CustomEvent of type \"newOrUpdatedTripLocationHistory\" with \"detail\" being a JSON", () => {
+
+    const evamApi = new EvamApi();
+
+    const detail = tripLocationHistory;
+
+    const callbackFn = jest.fn();
+
+    evamApi.onNewOrUpdatedTripLocationHistory(callbackFn);
+
+    const event = new CustomEvent("newOrUpdatedTripLocationHistory", {
+        detail
+    });
+
+    document.dispatchEvent(event);
+
+    expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(TripLocationHistory);
+    expect(callbackFn.mock.lastCall[0].locationHistory[0]).toBeInstanceOf(EvamLocation);
+});
+
+
+it("should contain type Operation for when we dispatch a new CustomEvent of type \"newOrUpdatedOperationList\" with \"detail\" being a JSON", () => {
+
+    const evamApi = new EvamApi();
+
+    const detail = [{
+        "operationID": "1",
+        "name": "Trafikolycka",
+        "sendTime": 1697734938000,
+        "createdTime": 1697734958000,
+        "callCenterId": "18",
+        "caseFolderId": "1358263",
+        "radioGroupMain": "Sthm RAPS-01",
+        "radioGroupSecondary": "230 RtjIns-1",
+        "availablePriorities": [{"id": 1, "name": "PRIO 1"}, {"id": 2, "name": "PRIO 2"}, {
+            "id": 3,
+            "name": "PRIO 3"
+        }],
+        "vehicleStatus": {
+            "name": "Lastat",
+            "isStartStatus": false,
+            "isEndStatus": false,
+            "categoryType": "STATUS_MISSION",
+            "categoryName": "mission",
+            "successorName": "Lämnar",
+            "event": "EVENT_EXIT_SITE"
+        },
+        "destinationSiteLocation": {
+            "latitude": 59.368248333333334,
+            "longitude": 18.020505,
+            "street": "E4 Norrgående",
+            "locality": "Stockholm",
+            "municipality": "Stockholm"
+        },
+        "availableHospitalLocations": [{
+            "id": -1006239340,
+            "latitude": 59.36339,
+            "longitude": 17.967539,
+            "name": "My hospital",
+            "street1": "",
+            "city": "",
+            "region": "",
+            "postalCode": ""
+        }, {
+            "id": 105668922,
+            "latitude": 59.353016,
+            "longitude": 17.970813,
+            "name": "Karolinska",
+            "street1": "",
+            "city": "",
+            "region": "",
+            "postalCode": ""
+        }],
+        "header1": "Personbil",
+        "header2": "Övrigt",
+        "selectedPriority": 1,
+        "operationState": "ACTIVE"
+    }];
+
+    const callbackFn = jest.fn();
+
+    evamApi.onNewOrUpdatedOperationList(callbackFn);
+
+    const event = new CustomEvent("newOrUpdatedOperationList", {
+        detail
+    });
+    document.dispatchEvent(event);
+
+    const operationPassedToLastCall = callbackFn.mock.lastCall[0][0];
+    expect(operationPassedToLastCall).toBeInstanceOf(Operation);
+    expect(operationPassedToLastCall.vehicleStatus).toBeInstanceOf(VehicleStatus);
+    expect(operationPassedToLastCall.availableHospitalLocations[0]).toBeInstanceOf(HospitalLocation);
+    expect(operationPassedToLastCall.sendTime).toBeInstanceOf(Date);
+    expect(operationPassedToLastCall.createdTime).toBeInstanceOf(Date);
+});
+
+it("should call callbacks with type Battery for newOrUpdatedBattery event", () => {
+    const evamApi = new EvamApi();
+    const detail = Battery.fromJSON({
+        health: "GOOD",
+        plugged: "WIRELESS",
+        status: "DISCHARGING",
+        capacity: 0
+    });
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedBattery(callbackFn);
+    const event = new CustomEvent("newOrUpdatedBattery", {
+        detail
+    });
+    document.dispatchEvent(event);
+    const lastCallArg = callbackFn.mock.lastCall[0];
+
+    expect(lastCallArg).toBeInstanceOf(Battery);
+
+    expect(Object.values(BatteryHealth)).toContain(lastCallArg.health);
+    expect(Object.values(BatteryPlugged)).toContain(lastCallArg.plugged);
+    expect(Object.values(BatteryStatus)).toContain(lastCallArg.status);
+    expect(lastCallArg.capacity).toEqual(0);
+
+
+});
+
+it("should call callbacks with type DisplayMode for newOrUpdatedDisplayMode event", () => {
+    const evamApi = new EvamApi();
+    const detail = DisplayMode.DARK;
+    const callbackFn = jest.fn();
+    evamApi.onNewOrUpdatedDisplayMode(callbackFn);
+    const event = new CustomEvent("newOrUpdatedDisplayMode", {
+        detail
+    });
+    document.dispatchEvent(event);
+    expect(Object.values(DisplayMode)).toContain(callbackFn.mock.lastCall[0]);
 });

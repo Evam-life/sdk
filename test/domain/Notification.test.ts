@@ -1,12 +1,7 @@
-import {
-    convertedTripLocationHistory,
-    notification,
-    tripLocationHistory
-} from "../testdata";
+import {convertedNotification, notification} from "../testdata";
 
-import {EvamApi} from "../../src";
+import {EvamApi, EvamEvent, Location, Notification} from "../../src";
 import {publish, subscribe, unsubscribe} from "../../src/util/EventHelpers";
-import {EvamEvent, Notification, Location} from "../../src";
 import * as _ from "lodash";
 import {waitFor} from "@testing-library/react";
 import crypto from "crypto";
@@ -36,8 +31,19 @@ beforeEach(() => {
     unsubscribe(EvamEvent.VehicleServicesNotificationSent, currentCallbackForVehicleServicesNotificationSentEvent);
     evamApi.unsubscribeFromAllCallbacks();
     jest.resetAllMocks();
+    jest.resetModules()
 });
 
+it("tests that Notification fromJSON correctly assigns right values", () => {
+
+    expect(notification.notificationType).toEqual(convertedNotification.notificationType)
+    expect(notification.heading).toEqual(convertedNotification.heading)
+    expect(notification.description).toEqual(convertedNotification.description)
+    expect(notification.primaryButton.label).toEqual(convertedNotification.primaryButton.label)
+    expect(notification.secondaryButton.label).toEqual(convertedNotification.secondaryButton.label)
+    expect(notification.primaryButton.callback).toEqual(convertedNotification.primaryButton.callback)
+    expect(notification.secondaryButton.callback).toEqual(convertedNotification.secondaryButton.callback)
+});
 
 it("should trigger VehicleServicesNotificationSent event when sendNotification called", () => {
     const evamApi = new TestEvamApi();
@@ -140,19 +146,27 @@ it("notification triggers should not be called twice AND corresponding callbacks
     });
 });
 
-it("tests that Notification fromJSON correctly assigns right values", () => {
-    expect(convertedTripLocationHistory.locationHistory).not.toBeUndefined();
-    expect(convertedTripLocationHistory.etaSeconds).not.toBeUndefined();
-
-    expect(tripLocationHistory.locationHistory).toEqual(convertedTripLocationHistory.locationHistory);
-    expect(tripLocationHistory.etaSeconds).toEqual(convertedTripLocationHistory.etaSeconds);
-});
-
 it("tests that Notification fromJSON throws error when heading, description, notificationType or primaryButton is not present in JSON", () => {
-    const tripLocationHistoryWithoutLocationHistory = _.omit(notification, "locationHistory");
+    const notificationWithoutHeading = _.omit(notification, ["heading"]);
+    const notificationWithoutDescription = _.omit(notification, ["description"]);
+    const notificationWithoutNotificationType = _.omit(notification, ["notificationType"]);
+    const notificationWithoutPrimaryButton = _.omit(notification, ["primaryButton"]);
+
 
     expect(() => {
-        Location.fromJSON(tripLocationHistoryWithoutLocationHistory);
+        Location.fromJSON(notificationWithoutHeading);
+    }).toThrow();
+
+    expect(() => {
+        Location.fromJSON(notificationWithoutDescription);
+    }).toThrow();
+
+    expect(() => {
+        Location.fromJSON(notificationWithoutNotificationType);
+    }).toThrow();
+
+    expect(() => {
+        Location.fromJSON(notificationWithoutPrimaryButton);
     }).toThrow();
 
 });

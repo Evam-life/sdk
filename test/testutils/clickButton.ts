@@ -1,4 +1,4 @@
-import {act, Matcher, QueryByText, RenderResult} from "@testing-library/react";
+import {act, QueryByText, RenderResult} from "@testing-library/react";
 
 export async function clickButton(dom: RenderResult, button:  ReturnType<QueryByText<HTMLElement>>,
                                   delay: number) {

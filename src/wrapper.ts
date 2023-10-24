@@ -1,7 +1,7 @@
-import Adb from '@devicefarmer/adbkit';
-import Bluebird, {reject} from 'bluebird';
-import fs from 'fs'
-import glob from 'glob'
+import Adb from "@devicefarmer/adbkit";
+import Bluebird, {reject} from "bluebird";
+import fs from "fs";
+import glob from "glob";
 
 const client = Adb.createClient();
 

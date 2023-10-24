@@ -7,7 +7,8 @@ import {
     Battery,
     DeviceRole,
     DisplayMode,
-    EvamEvent, GRPC,
+    EvamEvent,
+    GRPC,
     InternetState,
     Location,
     Notification,
@@ -143,6 +144,7 @@ export class EvamApi {
     private static newOrUpdatedInternetStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedVehicleStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedTripLocationHistoryCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedOperationListCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
 
@@ -550,7 +552,7 @@ export class EvamApi {
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as Operation);
+                callback(Operation.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedOperation, c);
@@ -594,7 +596,7 @@ export class EvamApi {
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as Location);
+                callback(Location.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedLocation, c);
@@ -624,7 +626,7 @@ export class EvamApi {
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as VehicleState);
+                callback(VehicleState.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedVehicleState, c);
@@ -640,7 +642,8 @@ export class EvamApi {
     onNewOrUpdatedTripLocationHistory(callback: CallbackFunction<TripLocationHistory | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as TripLocationHistory);
+                const {detail} = (e as CustomEvent);
+                callback(TripLocationHistory.fromJSON(detail));
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, c);
@@ -656,9 +659,12 @@ export class EvamApi {
     onNewOrUpdatedOperationList(callback: CallbackFunction<Operation[] | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as Operation[]);
+                const detail = (e as CustomEvent).detail;
+                if (Array.isArray(detail)) {
+                    callback(detail.map<Operation>(Operation.fromJSON));
+                }
             };
-            EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
+            EvamApi.newOrUpdatedOperationListCallbacks.push(c);
             subscribe(EvamEvent.NewOrUpdatedOperationList, c);
         }
     }

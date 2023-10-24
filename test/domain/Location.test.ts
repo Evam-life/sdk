@@ -1,5 +1,5 @@
 import {Location} from "../../src";
-import * as _ from "lodash"
+import * as _ from "lodash";
 import {convertedLocation, location} from "../testdata";
 
 

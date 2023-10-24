@@ -1,3 +1,3 @@
-import {VehicleServicesNoRender} from './VehicleServicesNoRender'
+import {VehicleServicesNoRender} from "./VehicleServicesNoRender";
 
 export {VehicleServicesNoRender}

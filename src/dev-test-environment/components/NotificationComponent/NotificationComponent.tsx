@@ -1,5 +1,5 @@
 import React, {useRef, useState} from "react";
-import {Button, Card, Icon, CardBody, CardFooter, CardHeader, Heading, HStack, Text} from "@chakra-ui/react";
+import {Button, Card, CardBody, CardFooter, CardHeader, Heading, HStack, Icon, Text} from "@chakra-ui/react";
 import {VehicleServicesNoRender} from "../util";
 import {_InternalVehicleServicesNotification} from "../../../domain/_InternalVehicleServicesNotification";
 import {motion} from "framer-motion";
