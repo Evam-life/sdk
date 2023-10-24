@@ -514,7 +514,7 @@ export class EvamApi {
     getGRPC = () => EvamApi.evamData.grpc;
 
     /**
-     * Gets the device Id as defined in Android
+     * Gets the device ID as defined in Android
      */
     getDeviceId = () => EvamApi.evamData.deviceId;
 
@@ -839,5 +839,3 @@ export class EvamApi {
         subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
     };
 }
-
-
