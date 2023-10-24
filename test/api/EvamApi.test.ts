@@ -26,8 +26,7 @@ import {
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
-import {BatteryHealth, BatteryPlugged, BatteryStatus} from "../../src/domain";
-import {DisplayMode} from "../../sdk/domain";
+import {BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../../src/domain";
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -800,12 +799,12 @@ it("should contain type Operation for when we dispatch a new CustomEvent of type
     });
     document.dispatchEvent(event);
 
-    const operationPassedToLastCall = callbackFn.mock.lastCall[0][0]
+    const operationPassedToLastCall = callbackFn.mock.lastCall[0][0];
     expect(operationPassedToLastCall).toBeInstanceOf(Operation);
-    expect(operationPassedToLastCall.vehicleStatus).toBeInstanceOf(VehicleStatus)
+    expect(operationPassedToLastCall.vehicleStatus).toBeInstanceOf(VehicleStatus);
     expect(operationPassedToLastCall.availableHospitalLocations[0]).toBeInstanceOf(HospitalLocation);
     expect(operationPassedToLastCall.sendTime).toBeInstanceOf(Date);
-    expect(operationPassedToLastCall.createdTime).toBeInstanceOf(Date)
+    expect(operationPassedToLastCall.createdTime).toBeInstanceOf(Date);
 });
 
 it("should call callbacks with type Battery for newOrUpdatedBattery event", () => {
