@@ -616,9 +616,6 @@ describe("persistent storage", () => {
 
 
 });
-        });
-    });
-});
 
 it("should call callbacks with type Operation for newOrUpdatedOperation event", () => {
     const evamApi = new EvamApi();
