@@ -15,8 +15,8 @@
     "evamw": "sdk/wrapper.js"
   },
   "scripts": {
-    "test": "tsc && jest --no-cache --collect-coverage",
-    "test-without-coverage": "jest --silent=false",
+    "test": "jest --no-cache --collect-coverage",
+    "test-without-coverage": "npm run build && jest --silent=false",
     "clear-jest": "jest --clearCache",
     "build": "tsc --project tsconfig.json"
   },

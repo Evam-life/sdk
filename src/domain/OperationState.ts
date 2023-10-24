@@ -1,7 +1,7 @@
 enum OperationState {
-    ACTIVE,
-    AVAILABLE,
-    COMPLETE
+    ACTIVE = "ACTIVE",
+    AVAILABLE = "AVAILABLE",
+    COMPLETE = "COMPLETE"
 }
 
-export default OperationState
+export default OperationState;
