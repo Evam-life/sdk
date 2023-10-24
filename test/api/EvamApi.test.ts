@@ -21,7 +21,7 @@ import {
     TripLocationHistory,
     VehicleState,
     VehicleStatus,
-    Battery
+    Battery, HospitalLocation
 } from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
@@ -800,7 +800,12 @@ it("should contain type Operation for when we dispatch a new CustomEvent of type
     });
     document.dispatchEvent(event);
 
-    expect(callbackFn.mock.lastCall[0][0]).toBeInstanceOf(Operation);
+    const operationPassedToLastCall = callbackFn.mock.lastCall[0][0]
+    expect(operationPassedToLastCall).toBeInstanceOf(Operation);
+    expect(operationPassedToLastCall.vehicleStatus).toBeInstanceOf(VehicleStatus)
+    expect(operationPassedToLastCall.availableHospitalLocations[0]).toBeInstanceOf(HospitalLocation);
+    expect(operationPassedToLastCall.sendTime).toBeInstanceOf(Date);
+    expect(operationPassedToLastCall.createdTime).toBeInstanceOf(Date)
 });
 
 it("should call callbacks with type Battery for newOrUpdatedBattery event", () => {
@@ -825,6 +830,7 @@ it("should call callbacks with type Battery for newOrUpdatedBattery event", () =
     expect(Object.values(BatteryPlugged)).toContain(lastCallArg.plugged);
     expect(Object.values(BatteryStatus)).toContain(lastCallArg.status);
     expect(lastCallArg.capacity).toEqual(0);
+
 
 });
 
