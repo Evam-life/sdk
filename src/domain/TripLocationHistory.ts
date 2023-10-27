@@ -30,7 +30,7 @@ class TripLocationHistory {
                 tripLocationHistory.etaSeconds
             );
         } else {
-            throw Error("TripLocationHistory must be an array");
+            throw Error("TripLocationHistory.locationHistory must be an array");
         }
     }
 }
