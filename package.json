@@ -9,7 +9,8 @@
     "url": "https://github.com/Evam-life/sdk/"
   },
   "files": [
-    "sdk/"
+    "sdk/",
+    "src/"
   ],
   "bin": {
     "evamw": "sdk/wrapper.js"
