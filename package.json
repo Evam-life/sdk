@@ -13,7 +13,7 @@
     "src/"
   ],
   "bin": {
-    "evamw": "sdk/wrapper.js"
+    "evam-sideload": "sdk/wrapper.js"
   },
   "scripts": {
     "test": "npm run build & jest --no-cache --collect-coverage",
