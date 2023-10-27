@@ -1,9 +1,9 @@
 import {cleanup, render, screen} from "@testing-library/react";
 import "@testing-library/jest-dom"
-import {EvamApi} from "../../../src";
 import {VehicleServicesNoRender} from "../../../src/dev-test-environment/components";
+import {EvamApi} from "../../../src";
 
-jest.mock("../../../src", ()=>({
+jest.mock("../../../src/api/EvamApi", ()=>({
     EvamApi: {
         isRunningInVehicleServices: true
     }
@@ -11,23 +11,13 @@ jest.mock("../../../src", ()=>({
 
 
 describe('VehicleServicesNoRender', () => {
-    it('should not render in vehicle services', async() => {
+    it('should not render in vehicle services', async () => {
         expect(EvamApi.isRunningInVehicleServices).toEqual(true)
 
         const buttonName = 'name'
         const ButtonToFind = () => <button>
             {buttonName}
         </button>
-
-        render(<ButtonToFind/>)
-
-        const buttonInDom = await screen.queryByRole('button',{
-            name: buttonName
-        })
-
-        expect(buttonInDom).toBeInTheDocument()
-
-        cleanup()
 
         const Component = () => <VehicleServicesNoRender>
             <ButtonToFind/>

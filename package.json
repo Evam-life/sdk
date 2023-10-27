@@ -9,13 +9,14 @@
     "url": "https://github.com/Evam-life/sdk/"
   },
   "files": [
-    "sdk/"
+    "sdk/",
+    "src/"
   ],
   "bin": {
     "evamw": "sdk/wrapper.js"
   },
   "scripts": {
-    "test": "jest --no-cache --collect-coverage",
+    "test": "npm run build & jest --no-cache --collect-coverage",
     "test-without-coverage": "npm run build && jest --silent=false",
     "clear-jest": "jest --clearCache",
     "build": "tsc --project tsconfig.json"

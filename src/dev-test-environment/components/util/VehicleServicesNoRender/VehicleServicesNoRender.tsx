@@ -1,5 +1,5 @@
 import React, {PropsWithChildren} from "react";
-import {EvamApi} from "../../../../../src";
+import {EvamApi} from "../../../../api/EvamApi";
 
 // Object.defineProperty(globalThis, "crypto", {
 //     value: {
@@ -8,8 +8,6 @@ import {EvamApi} from "../../../../../src";
 // });
 
 const VehicleServicesNoRender: React.FC<PropsWithChildren> = ({children}) => {
-
-    console.log(EvamApi.isRunningInVehicleServices, 'from noRender')
 
     if (EvamApi.isRunningInVehicleServices) {
         return null;
