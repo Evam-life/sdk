@@ -11,7 +11,7 @@ class VehicleState {
      * @param vehicleLocation current vehicle location
      */
     constructor(
-        public timestamp:Date,
+        public timestamp: Date,
         public vehicleStatus: VehicleStatus | undefined,
         public activeCaseFullId: string | undefined,
         public vehicleLocation: Location | undefined
@@ -22,17 +22,17 @@ class VehicleState {
      * Create from JSON
      * @param vehicleState JSON object
      */
-    static fromJSON (vehicleState:any){
-        if(vehicleState.timestamp === undefined){
-            throw Error('Timestamp must be declared in VehicleState')
+    static fromJSON(vehicleState: any) {
+        if (vehicleState.timestamp === undefined) {
+            throw Error("Timestamp must be declared in VehicleState");
         }
         return new VehicleState(
             new Date(vehicleState.timestamp),
-            VehicleStatus.fromJSON(vehicleState.vehicleStatus),
+            (vehicleState.vehicleStatus === undefined) ? undefined : VehicleStatus.fromJSON(vehicleState.vehicleStatus),
             vehicleState.activeCaseFullId,
             vehicleState.vehicleLocation
-        )
+        );
     }
 }
 
-export {VehicleState}
+export {VehicleState};
