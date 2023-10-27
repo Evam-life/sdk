@@ -1,5 +1,5 @@
 import React, {PropsWithChildren} from "react";
-import {EvamApi} from "../../../../../src";
+import {EvamApi} from "../../../../api/EvamApi";
 
 // Object.defineProperty(globalThis, "crypto", {
 //     value: {
