@@ -9,8 +9,6 @@ import {EvamApi} from "../../../../api/EvamApi";
 
 const VehicleServicesNoRender: React.FC<PropsWithChildren> = ({children}) => {
 
-    console.log(EvamApi.isRunningInVehicleServices, 'from noRender')
-
     if (EvamApi.isRunningInVehicleServices) {
         return null;
     }
