@@ -239,7 +239,7 @@ export class EvamApi {
         get: (key: string): string => {
             if (EvamApi.isRunningInVehicleServices) {
                 // @ts-ignore
-                Android.getItem(key)
+                return Android.getItem(key)
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     if (this.getAppId() === undefined) {
