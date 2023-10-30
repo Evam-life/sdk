@@ -122,8 +122,10 @@ export class EvamApi {
 
             EvamApi.singletonExists = true;
 
-            //TODO
-            //Need to tell VS that we are now ready to receive software versions
+            if (EvamApi.isRunningInVehicleServices){
+                // @ts-ignore
+                Android.apiReady()
+            }
         }
     }
 
@@ -215,10 +217,10 @@ export class EvamApi {
          * @param key the identifying name of the item
          * @param value the value of the item
          */
-        set: (key: string, value: any) => {
+        set: (key: string, value: string) => {
             if (EvamApi.isRunningInVehicleServices) {
-                //TODO Set an item for local storage on vehicle services
-                //Android.setItem()
+                // @ts-ignore
+                Android.setItem(key, value)
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.set(key, value);
@@ -234,10 +236,10 @@ export class EvamApi {
          * Retrieves an item from Vehicle Services
          * @param key the identifying name of the item
          */
-        get: (key: string): any => {
+        get: (key: string): string => {
             if (EvamApi.isRunningInVehicleServices) {
-                //TODO get an item for local storage on vehicle services
-                //Android.getItem()
+                // @ts-ignore
+                Android.getItem(key)
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     if (this.getAppId() === undefined) {
@@ -253,8 +255,8 @@ export class EvamApi {
          */
         delete: (key: string) => {
             if (EvamApi.isRunningInVehicleServices) {
-                //TODO delete an item for local storage on vehicle services
-                //Android.deleteItem()
+                // @ts-ignore
+                Android.deleteItem(key)
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.delete(key);
@@ -271,8 +273,8 @@ export class EvamApi {
          */
         clear: () => {
             if (EvamApi.isRunningInVehicleServices) {
-                //TODO clear all items for local storage on vehicle services
-                //Android.clearItems()
+                // @ts-ignore
+                Android.clearItems()
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.clear();
@@ -299,14 +301,14 @@ export class EvamApi {
             return loc.id === id;
         });
         if (hl) {
-
-            const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
-            newActiveOperation.selectedHospital = hl.id;
-            this.injectOperation(newActiveOperation);
-
-            //TODO
-            //Android.setHospital
-
+            if (!EvamApi.isRunningInVehicleServices){
+                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+                newActiveOperation.selectedHospital = hl.id;
+                this.injectOperation(newActiveOperation);
+            } else {
+                // @ts-ignore
+                Android.setHospital(id)
+            }
         } else {
             throw Error("Hospital id not located within available hospitals");
         }
@@ -325,13 +327,15 @@ export class EvamApi {
                 return p.id === id;
             });
             if (p) {
-                const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
-                newActiveOperation.selectedPriority = p.id;
+                if (!EvamApi.isRunningInVehicleServices){
+                    const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
+                    newActiveOperation.selectedPriority = p.id;
 
-                this.injectOperation(newActiveOperation);
-                //TODO
-                //Android.setPriority
-
+                    this.injectOperation(newActiveOperation);
+                } else {
+                    // @ts-ignore
+                    Android.setPriority(id)
+                }
             } else {
                 throw Error("Cant set priority when priority is not an available priority");
             }

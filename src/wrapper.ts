@@ -49,7 +49,7 @@ const run = async () => {
             })
 
             // Push build directory
-            let res = glob("build/**", (er, files) => {
+            glob("build/**", (er, files) => {
                 files.forEach( async (file) => {
                     if (fs.lstatSync(file).isDirectory()){
                         const fileOnDevice = file.replace("build", "")
@@ -91,5 +91,5 @@ const run = async () => {
 }
 
 run()
-    .then(() => {console.log("Started installation")})
+    .then(() => {console.log("")})
     .catch((e) => {console.error(`Failed: ${e}`)})
