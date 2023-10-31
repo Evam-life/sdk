@@ -600,8 +600,8 @@ describe("persistent storage", () => {
         expect(evamApi.store.get(exampleItemTwo.key)).toBeNull();
 
         //set items
-        evamApi.store.set(exampleItemOne.key,exampleItemOne.value);
-        evamApi.store.set(exampleItemTwo.key,exampleItemTwo.value);
+        evamApi.store.set(exampleItemOne.key, exampleItemOne.value);
+        evamApi.store.set(exampleItemTwo.key, exampleItemTwo.value);
 
         //get items
         expect(evamApi.store.get(exampleItemOne.key)).toEqual(exampleItemOne.value);
@@ -622,10 +622,7 @@ it("should call callbacks with type Operation for newOrUpdatedOperation event", 
     const detail = operation;
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedActiveOperation(callbackFn);
-    const event = new CustomEvent("newOrUpdatedOperation", {
-        detail
-    });
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedOperation, detail);
     expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(Operation);
 });
 
@@ -636,10 +633,7 @@ it("should call callbacks with type Object for newOrUpdatedSettings event", () =
     };
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedSettings(callbackFn);
-    const event = new CustomEvent("newOrUpdatedSettings", {
-        detail
-    });
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedSettings, detail);
     expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(Object);
 });
 
@@ -648,10 +642,7 @@ it("should call callbacks with type DeviceRole for newOrUpdatedDeviceRole event"
     const detail: DeviceRole = DeviceRole.MAIN_DEVICE;
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedDeviceRole(callbackFn);
-    const event = new CustomEvent("newOrUpdatedDeviceRole", {
-        detail
-    });
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedDeviceRole, detail);
     expect(Object.values(DeviceRole)).toContain(callbackFn.mock.lastCall[0]);
 });
 
@@ -663,10 +654,7 @@ it("should call callbacks with type Location for newOrUpdatedLocation event", ()
     };
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedLocation(callbackFn);
-    const event = new CustomEvent("newOrUpdatedLocation", {
-        detail
-    });
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedLocation, detail);
     expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(EvamLocation);
 });
 
@@ -675,10 +663,7 @@ it("should call callbacks with type InternetState for newOrUpdatedInternetState 
     const detail = InternetState.CONNECTED_2G;
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedInternetState(callbackFn);
-    const event = new CustomEvent("newOrUpdatedInternetState", {
-        detail
-    });
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedInternetState, detail);
     expect(Object.values(InternetState)).toContain(callbackFn.mock.lastCall[0]);
 });
 
@@ -697,11 +682,7 @@ it("should call callbacks with type VehicleState for newOrUpdatedVehicleState ev
     const callbackFn = jest.fn();
 
     evamApi.onNewOrUpdatedVehicleState(callbackFn);
-    const event = new CustomEvent("newOrUpdatedVehicleState", {
-        detail
-    });
-
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedVehicleState, detail);
 
     expect(callbackFn.mock.lastCall[0].vehicleStatus).toBeInstanceOf(VehicleStatus);
     expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(VehicleState);
@@ -718,12 +699,7 @@ it("should contain type TripLocationHistory for when we dispatch a new CustomEve
 
     evamApi.onNewOrUpdatedTripLocationHistory(callbackFn);
 
-    const event = new CustomEvent("newOrUpdatedTripLocationHistory", {
-        detail
-    });
-
-    document.dispatchEvent(event);
-
+    publish(EvamEvent.NewOrUpdatedTripLocationHistory, detail);
     expect(callbackFn.mock.lastCall[0]).toBeInstanceOf(TripLocationHistory);
     expect(callbackFn.mock.lastCall[0].locationHistory[0]).toBeInstanceOf(EvamLocation);
 });
@@ -790,11 +766,7 @@ it("should contain type Operation for when we dispatch a new CustomEvent of type
     const callbackFn = jest.fn();
 
     evamApi.onNewOrUpdatedOperationList(callbackFn);
-
-    const event = new CustomEvent("newOrUpdatedOperationList", {
-        detail
-    });
-    document.dispatchEvent(event);
+    publish(EvamEvent.NewOrUpdatedOperationList, detail);
 
     const operationPassedToLastCall = callbackFn.mock.lastCall[0][0];
     expect(operationPassedToLastCall).toBeInstanceOf(Operation);
@@ -814,12 +786,10 @@ it("should call callbacks with type Battery for newOrUpdatedBattery event", () =
     });
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedBattery(callbackFn);
-    const event = new CustomEvent("newOrUpdatedBattery", {
-        detail
-    });
-    document.dispatchEvent(event);
-    const lastCallArg = callbackFn.mock.lastCall[0];
 
+    publish(EvamEvent.NewOrUpdatedBattery, detail);
+
+    const lastCallArg = callbackFn.mock.lastCall[0];
     expect(lastCallArg).toBeInstanceOf(Battery);
 
     expect(Object.values(BatteryHealth)).toContain(lastCallArg.health);
@@ -835,9 +805,7 @@ it("should call callbacks with type DisplayMode for newOrUpdatedDisplayMode even
     const detail = DisplayMode.DARK;
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedDisplayMode(callbackFn);
-    const event = new CustomEvent("newOrUpdatedDisplayMode", {
-        detail
-    });
-    document.dispatchEvent(event);
+
+    publish(EvamEvent.NewOrUpdatedDisplayMode, detail);
     expect(Object.values(DisplayMode)).toContain(callbackFn.mock.lastCall[0]);
 });
