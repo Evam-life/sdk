@@ -126,12 +126,13 @@ export class EvamApi {
             };
             const vehicleServicesVersionSetSubscription = (e: Event) => {
                 EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
-                vsLog("vsVersion set", (e as CustomEvent).detail)
+                vsLog("vsVersion set", (e as CustomEvent).detail);
                 unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
             };
 
             const deviceIdSetSubscription = (e: Event) => {
                 EvamApi.evamData.deviceId = (e as CustomEvent).detail as string;
+                vsLog("deviceId set", (e as CustomEvent).detail);
                 unsubscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
             };
 
@@ -152,13 +153,17 @@ export class EvamApi {
 
                 const appId = (e as CustomEvent).detail as string;
                 EvamApi.evamData.appId = appId;
+                vsLog("appId set", (e as CustomEvent).detail);
                 getAllItemsFromLocalStorage(appId);
                 unsubscribe(EvamEvent.AppIdSet, appIdSetSubscription);
             };
 
             subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
                 const {detail: callbackId} = (e as CustomEvent);
-                if (typeof callbackId === "string") EvamApi.triggerNotificationCallback(callbackId);
+                if (typeof callbackId === "string") {
+                    vsLog("triggerNotificationCallback", (e as CustomEvent).detail);
+                    EvamApi.triggerNotificationCallback(callbackId);
+                }
             });
 
             subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
@@ -168,48 +173,59 @@ export class EvamApi {
             subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
             subscribe(EvamEvent.NewOrUpdatedOperation, (e) => {
                 const {detail: op} = (e as CustomEvent);
+                vsLog("NewOrUpdatedOperation", op);
                 EvamApi.evamData.activeCase = op ? Operation.fromJSON(op) : undefined;
             });
 
             subscribe(EvamEvent.NewOrUpdatedSettings, (e) => {
+                vsLog("NewOrUpdatedSettings", (e as CustomEvent).detail);
                 EvamApi.evamData.settings = (e as CustomEvent).detail || undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedInternetState, (e) => {
                 const {detail: internetState} = (e as CustomEvent);
+                vsLog("NewOrUpdatedInternetState", internetState);
                 EvamApi.evamData.internetState = internetState ? internetState as InternetState : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedDeviceRole, (e) => {
                 const {detail: deviceRole} = (e as CustomEvent);
+                vsLog("NewOrUpdatedDeviceRole", deviceRole);
                 EvamApi.evamData.deviceRole = deviceRole ? deviceRole as DeviceRole : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedLocation, (e) => {
                 const {detail: location} = (e as CustomEvent);
+                vsLog("NewOrUpdatedLocation", location);
                 EvamApi.evamData.location = location ? Location.fromJSON(location) : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedVehicleState, (e) => {
                 const {detail: vehicleState} = (e as CustomEvent);
+                vsLog("NewOrUpdatedVehicleState", vehicleState);
                 EvamApi.evamData.vehicleState = vehicleState ? VehicleState.fromJSON(vehicleState) : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, (e) => {
                 const {detail: tlh} = (e as CustomEvent);
+                vsLog("NewOrUpdatedTripLocationHistory", tlh);
                 EvamApi.evamData.tripLocationHistory = tlh ? TripLocationHistory.fromJSON((e as CustomEvent).detail) : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedOperationList, (e) => {
                 const list = (e as CustomEvent).detail;
+                vsLog("NewOrUpdatedOperationList", list);
                 if (Array.isArray(list)) {
                     EvamApi.evamData.operationList = list.map(Operation.fromJSON);
                 }
             });
             subscribe(EvamEvent.NewOrUpdatedBattery, (e) => {
                 const {detail: battery} = (e as CustomEvent);
+                vsLog("NewOrUpdatedBattery", battery);
                 EvamApi.evamData.battery = battery ? Battery.fromJSON(battery) : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedDisplayMode, (e) => {
                 const {detail: displayMode} = (e as CustomEvent);
+                vsLog("NewOrUpdatedDisplayMode", displayMode);
                 EvamApi.evamData.displayMode = displayMode ? displayMode as DisplayMode : undefined;
             });
             subscribe(EvamEvent.GRPCEstablished, (e) => {
                 const {detail: grpc} = (e as CustomEvent);
+                vsLog("GRPCEstablished", grpc);
                 EvamApi.evamData.grpc = grpc || undefined;
             });
 
