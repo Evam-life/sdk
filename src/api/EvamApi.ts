@@ -47,6 +47,11 @@ class EvamData {
     }
 }
 
+const vsLog = (...args: Parameters<typeof console.log>) => {
+    if (EvamApi.isRunningInVehicleServices) {
+        console.log(args);
+    }
+};
 
 type CallbackFunction<T1, T2 = void> = (t: T1) => T2
 type CallbackFunctionArray = Array<CallbackFunction<Event>>;
@@ -111,14 +116,17 @@ export class EvamApi {
         if (!EvamApi.singletonExists) {
             const appVersionSetSubscription = (e: Event) => {
                 EvamApi.evamData.appVersion = (e as CustomEvent).detail as string;
+                vsLog("appVersion set", (e as CustomEvent).detail);
                 unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
             };
             const osVersionSetSubscription = (e: Event) => {
                 EvamApi.evamData.osVersion = (e as CustomEvent).detail;
+                vsLog("osVersion set", (e as CustomEvent).detail);
                 unsubscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
             };
             const vehicleServicesVersionSetSubscription = (e: Event) => {
                 EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
+                vsLog("vsVersion set", (e as CustomEvent).detail)
                 unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
             };
 
@@ -843,7 +851,7 @@ export class EvamApi {
 
         if (EvamApi.isRunningInVehicleServices) {
             //@ts-ignore
-            Android.sendNotification(vehicleServicesNotificationToSend);
+            Android.sendNotification(JSON.stringify(vehicleServicesNotificationToSend));
         }
 
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
