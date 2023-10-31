@@ -115,7 +115,7 @@ it("onNewOrUpdatedSettings doesn't trigger the callback after unsubscription fro
     evamApi.injectSettings(settings);
 
     await waitFor(() => {
-        expect(listener).toHaveBeenCalledTimes(1);
+        expect(listener).toHaveBeenCalledTimes(2);
     });
 
 });
@@ -139,7 +139,7 @@ it("onNewOrUpdatedSettings triggers multiple set callbacks", async () => {
 
     await waitFor(() => {
         listeners.forEach((listener) => {
-            expect(listener).toHaveBeenCalledTimes(1);
+            expect(listener).toHaveBeenCalledTimes(2);
         });
     });
 

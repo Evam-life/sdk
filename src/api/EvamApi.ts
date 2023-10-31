@@ -402,7 +402,7 @@ export class EvamApi {
      * @param id the id of the hospital to be set
      */
     setHospital(id: number) {
-        if (EvamApi.evamData.activeCase.availableHospitalLocations === undefined || EvamApi.evamData.activeCase.availableHospitalLocations.length === 0) {
+        if (EvamApi.evamData.activeCase?.availableHospitalLocations === undefined || EvamApi.evamData.activeCase?.availableHospitalLocations.length === 0) {
             throw Error("Current Operation has no available hospitals.");
         }
         const hl = EvamApi.evamData.activeCase.availableHospitalLocations.find((loc) => {
@@ -667,6 +667,9 @@ export class EvamApi {
                 callback(Operation.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedOperation, {
+                detail: EvamApi.evamData.activeCase
+            }));
             subscribe(EvamEvent.NewOrUpdatedOperation, c);
         }
     }
@@ -681,6 +684,9 @@ export class EvamApi {
                 callback((e as CustomEvent).detail as object);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedSettings, {
+                detail: EvamApi.evamData.settings
+            }));
             subscribe(EvamEvent.NewOrUpdatedSettings, c);
         }
     }
@@ -696,6 +702,9 @@ export class EvamApi {
                 callback((e as CustomEvent).detail as DeviceRole);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedDeviceRole, {
+                detail: EvamApi.evamData.deviceRole
+            }));
             subscribe(EvamEvent.NewOrUpdatedDeviceRole, c);
         }
     }
@@ -711,6 +720,9 @@ export class EvamApi {
                 callback(Location.fromJSON((e as CustomEvent).detail));
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedLocation, {
+                detail: EvamApi.evamData.location
+            }));
             subscribe(EvamEvent.NewOrUpdatedLocation, c);
         }
     }
@@ -726,6 +738,9 @@ export class EvamApi {
                 callback((e as CustomEvent).detail as InternetState);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedInternetState, {
+                detail: EvamApi.evamData.internetState
+            }));
             subscribe(EvamEvent.NewOrUpdatedInternetState, c);
         }
     }
@@ -740,7 +755,10 @@ export class EvamApi {
             const c = (e: Event) => {
                 callback(VehicleState.fromJSON((e as CustomEvent).detail));
             };
-            EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
+            EvamApi.newOrUpdatedVehicleStateCallbacks.push(c)
+            c(new CustomEvent(EvamEvent.NewOrUpdatedVehicleState, {
+                detail: EvamApi.evamData.vehicleState
+            }));
             subscribe(EvamEvent.NewOrUpdatedVehicleState, c);
         }
     }
@@ -758,6 +776,9 @@ export class EvamApi {
                 callback(TripLocationHistory.fromJSON(detail));
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedTripLocationHistory, {
+                detail: EvamApi.evamData.tripLocationHistory
+            }))
             subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, c);
         }
     }
@@ -777,6 +798,9 @@ export class EvamApi {
                 }
             };
             EvamApi.newOrUpdatedOperationListCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedOperationList, {
+                detail: EvamApi.evamData.operationList
+            }))
             subscribe(EvamEvent.NewOrUpdatedOperationList, c);
         }
     }
@@ -792,6 +816,9 @@ export class EvamApi {
                 callback((e as CustomEvent).detail as Battery);
             };
             EvamApi.newOrUpdatedBatteryCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedBattery, {
+                detail: EvamApi.evamData.battery
+            }))
             subscribe(EvamEvent.NewOrUpdatedBattery, c);
         }
     }
@@ -808,6 +835,9 @@ export class EvamApi {
                 callback((e as CustomEvent).detail as DisplayMode);
             };
             EvamApi.newOrUpdatedDisplayModeCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedDisplayMode, {
+                detail: EvamApi.evamData.displayMode
+            }))
             subscribe(EvamEvent.NewOrUpdatedDisplayMode, c);
         }
     }
