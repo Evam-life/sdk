@@ -17,9 +17,7 @@ import {
     VehicleState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
-import {
-    _InternalVehicleServicesNotification
-} from "../domain/_InternalVehicleServicesNotification";
+import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 
@@ -111,20 +109,95 @@ export class EvamApi {
 
     constructor() {
         if (!EvamApi.singletonExists) {
-            EvamApi.subscribeToVehicleServiceNotifications();
+            const appVersionSetSubscription = (e: Event) => {
+                EvamApi.evamData.appVersion = (e as CustomEvent).detail as string;
+                unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
+            };
+            const osVersionSetSubscription = (e: Event) => {
+                EvamApi.evamData.osVersion = (e as CustomEvent).detail;
+                unsubscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
+            };
+            const vehicleServicesVersionSetSubscription = (e: Event) => {
+                EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
+                unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+            };
 
-            EvamApi.subscribeToAppVersionSet(); //The subscribeTo* commands unsubscribe automatically when such versions or objects have been set
-            EvamApi.subscribeToOSVersionSet();
-            EvamApi.subscribeToVehicleServicesVersionSet();
-            EvamApi.subscribeToDeviceIdSet();
-            EvamApi.subscribeToAppIdSet();
-            EvamApi.subscribeToGRPCEstablished();
+            const deviceIdSetSubscription = (e: Event) => {
+                EvamApi.evamData.deviceId = (e as CustomEvent).detail as string;
+                unsubscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
+            }
+
+            const appIdSetSubscription = (e: Event) => {
+
+                const getAllItemsFromLocalStorage = (id: string) => {
+                    for (const key in localStorage) {
+                        //reg ex pattern
+                        const pattern: RegExp = new RegExp(`^${id}.*`);
+                        if (key.match(pattern)) {
+                            const value = localStorage.getItem(key);
+                            if (EvamApi.persistentStorageMap !== null) {
+                                EvamApi.persistentStorageMap.set(key, value);
+                            }
+                        }
+                    }
+                }
+
+                const appId = (e as CustomEvent).detail as string;
+                EvamApi.evamData.appId = appId;
+                getAllItemsFromLocalStorage(appId);
+                unsubscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+            };
+
+            subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
+                const callbackId = (e as CustomEvent).detail;
+                EvamApi.triggerNotificationCallback(callbackId);
+            })
+            subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
+            subscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
+            subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
+            subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
+            subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+            subscribe(EvamEvent.NewOrUpdatedOperation, (e) => {
+                EvamApi.evamData.activeCase = Operation.fromJSON((e as CustomEvent).detail);
+            });
+            subscribe(EvamEvent.NewOrUpdatedSettings, (e) => {
+                EvamApi.evamData.settings = (e as CustomEvent).detail;
+            });
+            subscribe(EvamEvent.NewOrUpdatedInternetState, (e) => {
+                EvamApi.evamData.internetState = (e as CustomEvent).detail as InternetState;
+            });
+            subscribe(EvamEvent.NewOrUpdatedDeviceRole, (e) => {
+                EvamApi.evamData.deviceRole = (e as CustomEvent).detail as DeviceRole;
+            });
+            subscribe(EvamEvent.NewOrUpdatedLocation, (e) => {
+                EvamApi.evamData.location = Location.fromJSON((e as CustomEvent).detail);
+            });
+            subscribe(EvamEvent.NewOrUpdatedVehicleState, (e) => {
+                EvamApi.evamData.vehicleState = VehicleState.fromJSON((e as CustomEvent).detail);
+            });
+            subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, (e) => {
+                EvamApi.evamData.tripLocationHistory = TripLocationHistory.fromJSON((e as CustomEvent).detail);
+            });
+            subscribe(EvamEvent.NewOrUpdatedOperationList, (e) => {
+                const list = (e as CustomEvent).detail;
+                if (Array.isArray(list)) {
+                    EvamApi.evamData.operationList = list.map(Operation.fromJSON);
+                }
+            });
+            subscribe(EvamEvent.NewOrUpdatedBattery, (e) => {
+                EvamApi.evamData.battery = Battery.fromJSON((e as CustomEvent).detail);
+            });
+            subscribe(EvamEvent.NewOrUpdatedDisplayMode, (e) => {
+                EvamApi.evamData.displayMode = (e as CustomEvent).detail as DisplayMode;
+            });
+            subscribe(EvamEvent.GRPCEstablished, (e) => {
+                EvamApi.evamData.grpc = (e as CustomEvent).detail;
+            });
 
             EvamApi.singletonExists = true;
-
-            if (EvamApi.isRunningInVehicleServices){
+            if (EvamApi.isRunningInVehicleServices) {
                 // @ts-ignore
-                Android.apiReady()
+                Android.apiReady();
             }
         }
     }
@@ -220,7 +293,7 @@ export class EvamApi {
         set: (key: string, value: string) => {
             if (EvamApi.isRunningInVehicleServices) {
                 // @ts-ignore
-                Android.setItem(key, value)
+                Android.setItem(key, value);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.set(key, value);
@@ -239,7 +312,7 @@ export class EvamApi {
         get: (key: string): string => {
             if (EvamApi.isRunningInVehicleServices) {
                 // @ts-ignore
-                return Android.getItem(key)
+                return Android.getItem(key);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     if (this.getAppId() === undefined) {
@@ -256,7 +329,7 @@ export class EvamApi {
         delete: (key: string) => {
             if (EvamApi.isRunningInVehicleServices) {
                 // @ts-ignore
-                Android.deleteItem(key)
+                Android.deleteItem(key);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.delete(key);
@@ -274,7 +347,7 @@ export class EvamApi {
         clear: () => {
             if (EvamApi.isRunningInVehicleServices) {
                 // @ts-ignore
-                Android.clearItems()
+                Android.clearItems();
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.clear();
@@ -301,13 +374,13 @@ export class EvamApi {
             return loc.id === id;
         });
         if (hl) {
-            if (!EvamApi.isRunningInVehicleServices){
+            if (!EvamApi.isRunningInVehicleServices) {
                 const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                 newActiveOperation.selectedHospital = hl.id;
                 this.injectOperation(newActiveOperation);
             } else {
                 // @ts-ignore
-                Android.setHospital(id)
+                Android.setHospital(id);
             }
         } else {
             throw Error("Hospital id not located within available hospitals");
@@ -327,14 +400,14 @@ export class EvamApi {
                 return p.id === id;
             });
             if (p) {
-                if (!EvamApi.isRunningInVehicleServices){
+                if (!EvamApi.isRunningInVehicleServices) {
                     const newActiveOperation = _.clone(EvamApi.evamData.activeCase);
                     newActiveOperation.selectedPriority = p.id;
 
                     this.injectOperation(newActiveOperation);
                 } else {
                     // @ts-ignore
-                    Android.setPriority(id)
+                    Android.setPriority(id);
                 }
             } else {
                 throw Error("Cant set priority when priority is not an available priority");
@@ -757,6 +830,11 @@ export class EvamApi {
             } : undefined
         };
 
+        if (EvamApi.isRunningInVehicleServices) {
+            //@ts-ignore
+            Android.sendNotification(vehicleServicesNotificationToSend);
+        }
+
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
     }
 
@@ -780,72 +858,4 @@ export class EvamApi {
         }
     };
 
-    private static subscribeToGRPCEstablished = () => {
-        subscribe(EvamEvent.GRPCEstablished, (e) => {
-            EvamApi.evamData.grpc = (e as CustomEvent).detail;
-        });
-    };
-
-    private static subscribeToVehicleServiceNotifications = () => {
-        subscribe(EvamEvent.VehicleServicesNotificationCallbackTriggered, (e) => {
-            const callbackId = (e as CustomEvent).detail;
-            EvamApi.triggerNotificationCallback(callbackId);
-        });
-    };
-
-    private static subscribeToOSVersionSet = () => {
-        const osVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.osVersion = (e as CustomEvent).detail;
-            unsubscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
-        };
-        subscribe(EvamEvent.OSVersionSet, osVersionSetSubscription);
-    };
-
-    private static subscribeToAppVersionSet = () => {
-        const appVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.appVersion = (e as CustomEvent).detail as string;
-            unsubscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
-        };
-        subscribe(EvamEvent.AppVersionSet, appVersionSetSubscription);
-    };
-
-    private static subscribeToVehicleServicesVersionSet = () => {
-        const vehicleServicesVersionSetSubscription = (e: Event) => {
-            EvamApi.evamData.vsVersion = (e as CustomEvent).detail as string;
-            unsubscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
-        };
-        subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
-    };
-
-    private static subscribeToDeviceIdSet = () => {
-        const deviceIdSetSubscription = (e: Event) => {
-            EvamApi.evamData.deviceId = (e as CustomEvent).detail as string;
-            unsubscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
-        };
-        subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
-    };
-
-
-    private static subscribeToAppIdSet = () => {
-
-        const getAllItemsFromLocalStorage = (id: string) => {
-            for (const key in localStorage) {
-                //reg ex pattern
-                const pattern: RegExp = new RegExp(`^${id}.*`);
-                if (key.match(pattern)) {
-                    const value = localStorage.getItem(key);
-                    if (EvamApi.persistentStorageMap !== null) {
-                        EvamApi.persistentStorageMap.set(key, value);
-                    }
-                }
-            }
-        };
-        const appIdSetSubscription = (e: Event) => {
-            const appId = (e as CustomEvent).detail as string;
-            EvamApi.evamData.appId = appId;
-            getAllItemsFromLocalStorage(appId);
-            unsubscribe(EvamEvent.AppIdSet, appIdSetSubscription);
-        };
-        subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
-    };
 }
