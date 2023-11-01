@@ -4,14 +4,13 @@ import {EvamEvent} from "../domain";
 
 class AndroidWrapper {
 
-    public static isRunningInVehicleServices : boolean = ((): boolean => {
+    public static isRunningInVehicleServices: boolean = ((): boolean => {
         try {
             //@ts-ignore
             const android = Android;
             if ((android !== undefined)) {
                 return true;
             }
-            //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
             return false;
         } catch {
             return false;
@@ -77,7 +76,7 @@ class AndroidWrapper {
     public setPriority = (id: number) => {
         if (AndroidWrapper.isRunningInVehicleServices) {
             //@ts-ignore
-            AndroidWrapper.setPriority(id);
+            Android.setPriority(id);
         }
     };
 
