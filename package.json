@@ -4,7 +4,11 @@
   "description": "SDK for the Evam platform",
   "main": "sdk/index.js",
   "homepage": "https://evam.life",
-  "keywords": ["Evam", "first-responders", "sdk"],
+  "keywords": [
+    "Evam",
+    "first-responders",
+    "sdk"
+  ],
   "repository": {
     "url": "https://github.com/Evam-life/sdk/"
   },

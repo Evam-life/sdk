@@ -20,6 +20,7 @@ import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
+import AndroidWrapper from "./AndroidWrapper";
 
 /**
  * @hidden
@@ -111,6 +112,7 @@ type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 export class EvamApi {
 
     private static singletonExists = false;
+    private androidWrapper = new AndroidWrapper();
 
     constructor() {
         if (!EvamApi.singletonExists) {
@@ -171,6 +173,7 @@ export class EvamApi {
             subscribe(EvamEvent.VehicleServicesVersionSet, vehicleServicesVersionSetSubscription);
             subscribe(EvamEvent.DeviceIdSet, deviceIdSetSubscription);
             subscribe(EvamEvent.AppIdSet, appIdSetSubscription);
+
             subscribe(EvamEvent.NewOrUpdatedOperation, (e) => {
                 const {detail: op} = (e as CustomEvent);
                 vsLog("NewOrUpdatedOperation", op);
@@ -229,11 +232,11 @@ export class EvamApi {
                 EvamApi.evamData.grpc = grpc || undefined;
             });
 
+            if (!AndroidWrapper.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
+
             EvamApi.singletonExists = true;
-            if (EvamApi.isRunningInVehicleServices) {
-                // @ts-ignore
-                Android.apiReady();
-            }
+
+            this.androidWrapper.apiReady();
         }
     }
 
@@ -270,22 +273,7 @@ export class EvamApi {
     /**
      * True if Vehicle Services environment is detected, False otherwise (development environment).
      */
-        //@ts-ignore
-    public static readonly isRunningInVehicleServices: boolean = ((): boolean => {
-        try {
-            //@ts-ignore
-            const android = Android;
-            if ((android !== undefined)) {
-                return true;
-            }
-            //Now that we are not in Vehicle Services the EvamApi will be handling local storage.
-            EvamApi.persistentStorageMap = new Map([]);
-            return false;
-        } catch {
-            EvamApi.persistentStorageMap = new Map([]);
-            return false;
-        }
-    })(); //<-- Notice we are calling this function and not just defining it. isRunningInVehicleServices is not a function
+    public static readonly isRunningInVehicleServices: boolean = AndroidWrapper.isRunningInVehicleServices;
 
     /**
      * Unsubscribes all registered callbacks from Vehicle Service events.
@@ -327,8 +315,8 @@ export class EvamApi {
          */
         set: (key: string, value: string) => {
             if (EvamApi.isRunningInVehicleServices) {
-                // @ts-ignore
-                Android.setItem(key, value);
+
+                this.androidWrapper.setItem(key, value);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.set(key, value);
@@ -346,8 +334,7 @@ export class EvamApi {
          */
         get: (key: string): string => {
             if (EvamApi.isRunningInVehicleServices) {
-                // @ts-ignore
-                return Android.getItem(key);
+                return this.androidWrapper.getItem(key);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     if (this.getAppId() === undefined) {
@@ -363,8 +350,8 @@ export class EvamApi {
          */
         delete: (key: string) => {
             if (EvamApi.isRunningInVehicleServices) {
-                // @ts-ignore
-                Android.deleteItem(key);
+
+                this.androidWrapper.deleteItem(key);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.delete(key);
@@ -381,8 +368,7 @@ export class EvamApi {
          */
         clear: () => {
             if (EvamApi.isRunningInVehicleServices) {
-                // @ts-ignore
-                Android.clearItems();
+                this.androidWrapper.clearItems();
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.clear();
@@ -414,8 +400,7 @@ export class EvamApi {
                 newActiveOperation.selectedHospital = hl.id;
                 this.injectOperation(newActiveOperation);
             } else {
-                // @ts-ignore
-                Android.setHospital(id);
+                this.androidWrapper.setHospital(id);
             }
         } else {
             throw Error("Hospital id not located within available hospitals");
@@ -441,8 +426,7 @@ export class EvamApi {
 
                     this.injectOperation(newActiveOperation);
                 } else {
-                    // @ts-ignore
-                    Android.setPriority(id);
+                    this.androidWrapper.setPriority(id);
                 }
             } else {
                 throw Error("Cant set priority when priority is not an available priority");
@@ -664,7 +648,8 @@ export class EvamApi {
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback(Operation.fromJSON((e as CustomEvent).detail));
+                const op = (e as CustomEvent).detail;
+                callback(op ? Operation.fromJSON(op) : undefined);
             };
             EvamApi.newOrUpdatedOperationCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedOperation, {
@@ -681,7 +666,8 @@ export class EvamApi {
     onNewOrUpdatedSettings(callback: CallbackFunction<any | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as object);
+                const settings = (e as CustomEvent).detail;
+                callback(settings ? settings : undefined);
             };
             EvamApi.newOrUpdatedSettingsCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedSettings, {
@@ -699,7 +685,8 @@ export class EvamApi {
     onNewOrUpdatedDeviceRole(callback: CallbackFunction<DeviceRole | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as DeviceRole);
+                const deviceRole = (e as CustomEvent).detail;
+                callback(deviceRole ? deviceRole as DeviceRole : undefined);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedDeviceRole, {
@@ -717,7 +704,8 @@ export class EvamApi {
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback(Location.fromJSON((e as CustomEvent).detail));
+                const loc = (e as CustomEvent).detail;
+                callback(loc ? Location.fromJSON(loc) : undefined);
             };
             EvamApi.newOrUpdatedLocationCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedLocation, {
@@ -735,7 +723,8 @@ export class EvamApi {
     onNewOrUpdatedInternetState(callback: CallbackFunction<InternetState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as InternetState);
+                const internetState = (e as CustomEvent).detail;
+                callback(internetState ? internetState as InternetState : undefined);
             };
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedInternetState, {
@@ -753,9 +742,10 @@ export class EvamApi {
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback(VehicleState.fromJSON((e as CustomEvent).detail));
+                const vehicleState = (e as CustomEvent).detail;
+                callback(vehicleState ? VehicleState.fromJSON(vehicleState) : undefined);
             };
-            EvamApi.newOrUpdatedVehicleStateCallbacks.push(c)
+            EvamApi.newOrUpdatedVehicleStateCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedVehicleState, {
                 detail: EvamApi.evamData.vehicleState
             }));
@@ -773,12 +763,12 @@ export class EvamApi {
         if (callback) {
             const c = (e: Event) => {
                 const {detail} = (e as CustomEvent);
-                callback(TripLocationHistory.fromJSON(detail));
+                callback(detail ? TripLocationHistory.fromJSON(detail) : undefined);
             };
             EvamApi.newOrUpdatedTripLocationHistoryCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedTripLocationHistory, {
                 detail: EvamApi.evamData.tripLocationHistory
-            }))
+            }));
             subscribe(EvamEvent.NewOrUpdatedTripLocationHistory, c);
         }
     }
@@ -792,15 +782,18 @@ export class EvamApi {
     onNewOrUpdatedOperationList(callback: CallbackFunction<Operation[] | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                const detail = (e as CustomEvent).detail;
-                if (Array.isArray(detail)) {
-                    callback(detail.map<Operation>(Operation.fromJSON));
+                const ol = (e as CustomEvent).detail;
+                if (Array.isArray(ol)) {
+                    callback(ol.map<Operation>(Operation.fromJSON));
+                } else if (ol === undefined) {
+                    callback(undefined);
                 }
+
             };
             EvamApi.newOrUpdatedOperationListCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedOperationList, {
                 detail: EvamApi.evamData.operationList
-            }))
+            }));
             subscribe(EvamEvent.NewOrUpdatedOperationList, c);
         }
     }
@@ -813,12 +806,13 @@ export class EvamApi {
     onNewOrUpdatedBattery(callback: CallbackFunction<Battery | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as Battery);
+                const battery = (e as CustomEvent).detail;
+                callback(battery ? battery as Battery : undefined);
             };
             EvamApi.newOrUpdatedBatteryCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedBattery, {
                 detail: EvamApi.evamData.battery
-            }))
+            }));
             subscribe(EvamEvent.NewOrUpdatedBattery, c);
         }
     }
@@ -832,12 +826,13 @@ export class EvamApi {
     onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
         if (callback) {
             const c = (e: Event) => {
-                callback((e as CustomEvent).detail as DisplayMode);
+                const displayMode = (e as CustomEvent).detail;
+                callback(displayMode ? displayMode as DisplayMode : undefined);
             };
             EvamApi.newOrUpdatedDisplayModeCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedDisplayMode, {
                 detail: EvamApi.evamData.displayMode
-            }))
+            }));
             subscribe(EvamEvent.NewOrUpdatedDisplayMode, c);
         }
     }
@@ -896,8 +891,7 @@ export class EvamApi {
         };
 
         if (EvamApi.isRunningInVehicleServices) {
-            //@ts-ignore
-            Android.sendNotification(JSON.stringify(vehicleServicesNotificationToSend));
+            this.androidWrapper.sendNotification(vehicleServicesNotificationToSend);
         }
 
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
