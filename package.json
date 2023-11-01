@@ -79,6 +79,16 @@
       "sdk"
     ],
     "rules": {
+      "import/no-named-as-default": [
+        "error",
+        {
+          "importedNames": {
+            "@mui/icons-material": [
+              "Android"
+            ]
+          }
+        }
+      ],
       "import/no-unresolved": [
         "error",
         {

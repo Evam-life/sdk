@@ -20,7 +20,7 @@ import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
-import AndroidWrapper from "./AndroidWrapper";
+import {isRunningInVehicleServices, androidNativeHelpers} from "./AndroidNativeHelpers";
 
 /**
  * @hidden
@@ -112,7 +112,7 @@ type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 export class EvamApi {
 
     private static singletonExists = false;
-    private androidWrapper = new AndroidWrapper();
+    public static isRunningInVehicleServices = isRunningInVehicleServices
 
     constructor() {
         if (!EvamApi.singletonExists) {
@@ -232,11 +232,11 @@ export class EvamApi {
                 EvamApi.evamData.grpc = grpc || undefined;
             });
 
-            if (!AndroidWrapper.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
+            if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
             EvamApi.singletonExists = true;
 
-            this.androidWrapper.apiReady();
+            androidNativeHelpers(EvamApi.isRunningInVehicleServices).apiReady();
         }
     }
 
@@ -268,12 +268,6 @@ export class EvamApi {
      * returns false.
      */
     private static persistentStorageMap: Map<string, any> | null = null;
-
-
-    /**
-     * True if Vehicle Services environment is detected, False otherwise (development environment).
-     */
-    public static readonly isRunningInVehicleServices: boolean = AndroidWrapper.isRunningInVehicleServices;
 
     /**
      * Unsubscribes all registered callbacks from Vehicle Service events.
@@ -316,7 +310,7 @@ export class EvamApi {
         set: (key: string, value: string) => {
             if (EvamApi.isRunningInVehicleServices) {
 
-                this.androidWrapper.setItem(key, value);
+                androidNativeHelpers(EvamApi.isRunningInVehicleServices).setItem(key, value);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.set(key, value);
@@ -334,7 +328,7 @@ export class EvamApi {
          */
         get: (key: string): string => {
             if (EvamApi.isRunningInVehicleServices) {
-                return this.androidWrapper.getItem(key);
+                return androidNativeHelpers(EvamApi.isRunningInVehicleServices).getItem(key);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     if (this.getAppId() === undefined) {
@@ -350,8 +344,7 @@ export class EvamApi {
          */
         delete: (key: string) => {
             if (EvamApi.isRunningInVehicleServices) {
-
-                this.androidWrapper.deleteItem(key);
+                androidNativeHelpers(EvamApi.isRunningInVehicleServices).deleteItem(key);
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.delete(key);
@@ -368,7 +361,7 @@ export class EvamApi {
          */
         clear: () => {
             if (EvamApi.isRunningInVehicleServices) {
-                this.androidWrapper.clearItems();
+                androidNativeHelpers(EvamApi.isRunningInVehicleServices).clearItems();
             } else {
                 if (EvamApi.persistentStorageMap !== null) {
                     EvamApi.persistentStorageMap.clear();
@@ -400,7 +393,7 @@ export class EvamApi {
                 newActiveOperation.selectedHospital = hl.id;
                 this.injectOperation(newActiveOperation);
             } else {
-                this.androidWrapper.setHospital(id);
+                androidNativeHelpers(EvamApi.isRunningInVehicleServices).setHospital(id);
             }
         } else {
             throw Error("Hospital id not located within available hospitals");
@@ -426,7 +419,7 @@ export class EvamApi {
 
                     this.injectOperation(newActiveOperation);
                 } else {
-                    this.androidWrapper.setPriority(id);
+                    androidNativeHelpers(EvamApi.isRunningInVehicleServices).setPriority(id);
                 }
             } else {
                 throw Error("Cant set priority when priority is not an available priority");
@@ -891,7 +884,7 @@ export class EvamApi {
         };
 
         if (EvamApi.isRunningInVehicleServices) {
-            this.androidWrapper.sendNotification(vehicleServicesNotificationToSend);
+            androidNativeHelpers(EvamApi.isRunningInVehicleServices).sendNotification(vehicleServicesNotificationToSend);
         }
 
         publish(EvamEvent.VehicleServicesNotificationSent, vehicleServicesNotificationToSend);
