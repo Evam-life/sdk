@@ -1,7 +1,7 @@
 import {EvamApi, Operation} from "../../src";
 import {notification, operationWithAvailableHospitals, operationWithAvailablePriorities} from "../testdata";
-import {publish} from "../../sdk/util/EventHelpers";
-import {EvamEvent} from "../../sdk";
+import {publish} from "../../src/util/EventHelpers";
+import {EvamEvent} from "../../src";
 
 const sendNotificationMock = jest.fn().mockImplementation(() => {
 });
