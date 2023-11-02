@@ -12,7 +12,7 @@ test:
     - tags
     - merge_requests
   script:
-    - npm install
+    - npm install --legacy-peer-deps
     - npm run build
     - npm test
   artifacts:

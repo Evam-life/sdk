@@ -4,7 +4,11 @@
   "description": "SDK for the Evam platform",
   "main": "sdk/index.js",
   "homepage": "https://evam.life",
-  "keywords": ["Evam", "first-responders", "sdk"],
+  "keywords": [
+    "Evam",
+    "first-responders",
+    "sdk"
+  ],
   "repository": {
     "url": "https://github.com/Evam-life/sdk/"
   },
@@ -13,7 +17,7 @@
     "src/"
   ],
   "bin": {
-    "evamw": "sdk/wrapper.js"
+    "evam-sideload": "sdk/wrapper.js"
   },
   "scripts": {
     "test": "npm run build & jest --no-cache --collect-coverage",
@@ -75,6 +79,16 @@
       "sdk"
     ],
     "rules": {
+      "import/no-named-as-default": [
+        "error",
+        {
+          "importedNames": {
+            "@mui/icons-material": [
+              "Android"
+            ]
+          }
+        }
+      ],
       "import/no-unresolved": [
         "error",
         {

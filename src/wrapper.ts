@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import Adb from "@devicefarmer/adbkit";
 import Bluebird, {reject} from "bluebird";
 import fs from "fs";
@@ -9,39 +10,55 @@ const client = Adb.createClient();
 const run = async () => {
     try {
         const devices = await client.listDevices();
-        if (devices.length == 0){
-            console.error("You do not have any connected device!")
+        if (devices.length === 0){
+            console.error(`Cannot communicate with Evam device. Make sure your device is connected.`)
             return
-        } else {
-            console.log("Running...")
+        }
+        if (!fs.existsSync('build/.')){
+            console.error("No build directory found, make sure to run 'npm run build'.")
+            return
         }
         await Bluebird.map(devices, async (device) => {
             const dev = await client.getDevice(device.id)
 
+            console.log(`Installing to ${dev.serial}...`)
+
             // Create development directory on device
-            const comCreateDir = await dev.shell("mkdir -p /data/local/tmp/life.evam.hydras/component/")
+            const comCreateDirWww = await dev.shell("mkdir -p /data/local/tmp/life.evam.hydras/dist/www/")
             await new Bluebird((resolve, reject) => {
-                comCreateDir.on('end', () => {
-                    console.log("Created local dir")
+                comCreateDirWww.on('end', () => {
+                    console.log("Created directory")
                     resolve()
                 })
-                comCreateDir.on('error', (e) => {
-                    console.error("Failed to create local dir")
+                comCreateDirWww.on('error', (e) => {
+                    console.error("Failed to create directory")
+                    reject(e)
+                })
+            })
+
+            const comCreateDirMeta = await dev.shell("mkdir -p /data/local/tmp/life.evam.hydras/dist/meta/")
+            await new Bluebird((resolve, reject) => {
+                comCreateDirMeta.on('end', () => {
+                    console.log("Created directory")
+                    resolve()
+                })
+                comCreateDirMeta.on('error', (e) => {
+                    console.error("Failed to create directory")
                     reject(e)
                 })
             })
 
             // Push build directory
-            if (!fs.existsSync('build/.')){
-                console.error("No build directory found, make sure to run 'npm run build'.")
-                return
-            }
             glob("build/**", (er, files) => {
                 files.forEach( async (file) => {
                     if (fs.lstatSync(file).isDirectory()){
                         const fileOnDevice = file.replace("build", "")
+                        let targetDir = "www"
+                        if (fileOnDevice.includes("evam.json")){
+                            targetDir = "meta"
+                        }
                         console.log(`Pushing ${fileOnDevice}`)
-                        const comCreateDir = await dev.shell(`mkdir -p /data/local/tmp/life.evam.hydras/dev/${fileOnDevice}`)
+                        const comCreateDir = await dev.shell(`mkdir -p /data/local/tmp/life.evam.hydras/dist/${targetDir}/${fileOnDevice}`)
                         await new Bluebird((resolve, reject) => {
                             comCreateDir.on('error', (e) => {
                                 console.error(`Failed to create ${file}`)
@@ -51,7 +68,12 @@ const run = async () => {
                     } else {
                         const fileOnDevice = file.replace("build", "")
                         console.log(`Pushing ${fileOnDevice}`)
-                        const comPush = await dev.push(file, `/data/local/tmp/life.evam.hydras/dev/${fileOnDevice}`)
+                        let targetDir = "www"
+                        if (fileOnDevice.includes("evam.json")){
+                            targetDir = "meta"
+                        }
+
+                        const comPush = await dev.push(file, `/data/local/tmp/life.evam.hydras/dist/${targetDir}/${fileOnDevice}`)
                         await new Bluebird((resolve, reject) => {
                             comPush.on('error', (e) => {
                                 console.error(`Failed pushing ${file}`)
@@ -59,15 +81,6 @@ const run = async () => {
                             })
                         })
                     }
-                })
-            })
-
-            // Hot reload trigger
-            const comHotReload = await dev.shell("echo r >> /data/local/tmp/.evam.stamp.txt")
-            await new Bluebird((resolve, reject) => {
-                comHotReload.on('error', (e) => {
-                    console.error("Failed to hot reload")
-                    reject(e)
                 })
             })
         })
@@ -78,5 +91,5 @@ const run = async () => {
 }
 
 run()
-    .then(() => {console.log("Done")})
+    .then(() => {console.log("")})
     .catch((e) => {console.error(`Failed: ${e}`)})
