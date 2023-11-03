@@ -184,7 +184,7 @@ const sign = () => {
 
     // Tarball
     createTar(
-        {file: `${evamManifest.version}.tar.gz`},
+        {file: `${evamManifest.version}.tar.gz`, gzip: true},
         [OUT_DIR]
     ).then(() => {
         let releaseSentences = [
