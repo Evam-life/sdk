@@ -4,6 +4,7 @@ import {DestinationControlPointLocation} from "./DestinationControlPointLocation
 import {HospitalLocation} from "./HospitalLocation";
 import {OperationPriority} from "./OperationPriority";
 import OperationState from "./OperationState";
+import {LeavePatientLocation} from "./LeavePatientLocation";
 
 class Operation {
 
@@ -86,7 +87,8 @@ class Operation {
         public caseInfo: string | undefined,
         public selectedHospital: number | undefined,
         public selectedPriority: number | undefined,
-        public operationState: OperationState
+        public operationState: OperationState,
+        public leavePatientLocation: LeavePatientLocation | undefined
     ) {
     }
 
@@ -94,8 +96,8 @@ class Operation {
      * Gets the full operation ID, e.g. '1:18:6546', composed by 'callCenterId:caseFolderId:operationID'.
      * @returns id The full operation ID
      */
-    getFullId(){
-        return `${this.callCenterId}:${this.caseFolderId}:${this.operationID}`
+    getFullId() {
+        return `${this.callCenterId}:${this.caseFolderId}:${this.operationID}`;
     }
 
     /**
@@ -144,7 +146,8 @@ class Operation {
             (data.selectedPriority !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.find((priority: any) => {
                 return (priority.id === data.selectedPriority);
             }) : undefined,
-            data.operationState);
+            data.operationState,
+            data.leavePatientLocation !== undefined ? LeavePatientLocation.fromJSON(data.leavePatientLocation) : undefined);
     }
 
 }
