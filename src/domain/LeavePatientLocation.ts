@@ -22,7 +22,6 @@ class LeavePatientLocation {
      * @param locality The locality name if available
      * @param municipality The municipality name if available
      * @param routeDirections The route directions text if available
-     * @param pickupTime The pickup time text if available
      * @param leaveTime the leave time of the patient
      */
     constructor(
@@ -32,7 +31,6 @@ class LeavePatientLocation {
         public locality: string | undefined,
         public municipality: string | undefined,
         public routeDirections: string | undefined,
-        public pickupTime: string | undefined,
         public leaveTime: string | undefined
     ) {
     }
@@ -52,7 +50,6 @@ class LeavePatientLocation {
             loc.locality,
             loc.municipality,
             loc.routeDirections,
-            loc.pickupTime,
             loc.leaveTime
         );
     }
