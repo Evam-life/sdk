@@ -16,7 +16,6 @@
 class LeavePatientLocation {
     /**
      * Location of a leave patient location
-     * @param locationId the identifier that the given location is represented by
      * @param latitude Latitude in decimal degrees
      * @param longitude Longitude in decimal degrees
      * @param street The street name if available
@@ -27,7 +26,6 @@ class LeavePatientLocation {
      * @param leaveTime the leave time of the patient
      */
     constructor(
-        public locationId: string,
         public latitude: number,
         public longitude: number,
         public street: string | undefined,
@@ -44,11 +42,10 @@ class LeavePatientLocation {
      * @param loc JSON object
      */
     static fromJSON(loc: any): LeavePatientLocation {
-        if (loc.latitude === undefined || loc.longitude === undefined || loc.locationId === undefined) {
-            throw Error("latitude, longitude, locationId must be defined for DestinationSiteLocation");
+        if (loc.latitude === undefined || loc.longitude === undefined) {
+            throw Error("latitude, longitude must be defined for DestinationSiteLocation");
         }
         return new LeavePatientLocation(
-            loc.locationId,
             loc.latitude,
             loc.longitude,
             loc.street,
