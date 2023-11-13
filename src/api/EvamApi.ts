@@ -20,7 +20,8 @@ import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
-import {isRunningInVehicleServices, androidNativeHelpers} from "./AndroidNativeHelpers";
+import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
+import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 
 /**
  * @hidden
@@ -112,7 +113,7 @@ type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 export class EvamApi {
 
     private static singletonExists = false;
-    public static isRunningInVehicleServices = isRunningInVehicleServices
+    public static isRunningInVehicleServices = isRunningInVehicleServices;
 
     constructor() {
         if (!EvamApi.singletonExists) {
@@ -909,5 +910,43 @@ export class EvamApi {
             }
         }
     };
+
+    /**
+     * Adds/Update a layer by its ID. Reusing a layerID causes the data to be replaced. A certified app can only update a layer it has created.
+     * This function adds a set of points on the map with text and icon at the specified lat and lon
+     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @param layerData array of points to be shown with text and icon
+     */
+    setNavLayerPoint = (id: string, layerData: LayerPointData[]) => {
+        publish(EvamEvent.NavLayerPointSet, {
+            id,
+            layerData
+        });
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).setNavLayerPoint(id, layerData);
+    };
+    
+    /**
+     * Adds/Update a layer by its ID. Reusing a layerID causes the data to be replaced. A certified app can only update a layer it has created.
+     * This function adds a set of shapes on the map with the text in its center.
+     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @param layerData array of shapes to be shown with text and shape color (format: "#AARRGGBB", just like the SC buttons)
+     */
+    setNavLayerShape = (id: string, layerData: LayerShapeData[]) => {
+        publish(EvamEvent.NavLayerShapeSet, {
+            id,
+            layerData
+        });
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).setNavLayerShape(id, layerData);
+    };
+
+    /**
+     * Deletes a layer by its ID. A certified app can only delete a layer it has created.
+     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     */
+    deleteNavLayer = (id: string) => {
+        publish(EvamEvent.NavLayerDeleted, id);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).deleteNavLayer(id);
+    };
+
 
 }

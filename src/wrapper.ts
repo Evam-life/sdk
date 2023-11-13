@@ -5,7 +5,6 @@ import fs from "fs";
 import glob from "glob";
 
 const client = Adb.createClient();
-
 /* istanbul ignore next */
 const run = async () => {
     try {
