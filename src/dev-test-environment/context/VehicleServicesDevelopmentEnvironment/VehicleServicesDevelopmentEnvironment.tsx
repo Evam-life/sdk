@@ -13,11 +13,13 @@ const VehicleServicesDevelopmentEnvironment: React.FC<PropsWithChildren> = ({chi
     //just render the app (this is for if we accidentally leave the VehicleServicesDevelopmentEnvironment component in
     if (EvamApi.isRunningInVehicleServices) return <>{children}</>;
 
-    return (<ChakraProvider>
-        <NotificationProvider>
-            {children}
-        </NotificationProvider>
-    </ChakraProvider>);
+    return (<>
+        <ChakraProvider disableGlobalStyle>
+            <NotificationProvider>
+                {children}
+            </NotificationProvider>
+        </ChakraProvider>
+    </>);
 
 
 };
