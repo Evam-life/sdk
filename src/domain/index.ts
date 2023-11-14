@@ -1,7 +1,10 @@
+export {Battery, BatteryHealth, BatteryPlugged, BatteryStatus} from "./Battery";
 export {DestinationControlPointLocation} from "./DestinationControlPointLocation";
 export {DestinationSiteLocation} from "./DestinationSiteLocation";
 export {DeviceRole} from "./DeviceRole";
+export {DisplayMode} from "./DisplayMode";
 export {EvamEvent} from "./EvamEvent";
+export {GRPC} from "./GRPC";
 export {HospitalLocation} from "./HospitalLocation";
 export {InternetState} from "./InternetState";
 export {Location} from "./Location";
@@ -14,6 +17,3 @@ export {SystemHealth} from "./SystemHealth";
 export {TripLocationHistory} from "./TripLocationHistory";
 export {VehicleState} from "./VehicleState";
 export {VehicleStatus} from "./VehicleStatus";
-export {BatteryHealth, BatteryPlugged, BatteryStatus, Battery} from "./Battery";
-export {DisplayMode} from "./DisplayMode";
-export {GRPC} from "./GRPC"
