@@ -8,10 +8,12 @@ export {GRPC} from "./GRPC";
 export {HospitalLocation} from "./HospitalLocation";
 export {InternetState} from "./InternetState";
 export {Location} from "./Location";
+export {LeavePatientLocation} from "./LeavePatientLocation";
 export {Notification} from "./Notification";
 export {NotificationType} from "./NotificationType";
 export {Operation} from "./Operation";
 export {OperationPriority} from "./OperationPriority";
+export {OperationState} from './OperationState'
 export {Patient} from "./Patient";
 export {SystemHealth} from "./SystemHealth";
 export {TripLocationHistory} from "./TripLocationHistory";

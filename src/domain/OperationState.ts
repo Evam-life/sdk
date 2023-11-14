@@ -4,4 +4,4 @@ enum OperationState {
     COMPLETE = "COMPLETE"
 }
 
-export default OperationState;
+export {OperationState};
