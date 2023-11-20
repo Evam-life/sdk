@@ -915,7 +915,7 @@ export class EvamApi {
      * Adds/Update a layer by its ID. Reusing a layerID causes the data to be replaced. A certified app can only update a layer it has created.
      * This function adds a set of points on the map with text and icon at the specified lat and lon
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
-     * @param layerData array of points to be shown with text and icon
+     * @param layerData array of points to be shown with text and icon. Note that the icon of the first element will be used for all points.
      * @requires Permissions NAVIGATION_PRIVATE_LAYERS
      * @preview This function is currently available in the Development Environment only.
      */
