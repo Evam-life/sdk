@@ -723,7 +723,7 @@ export class EvamApi {
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedInternetState, {
                 detail: EvamApi.evamData.internetState
-            }));
+            }))
             subscribe(EvamEvent.NewOrUpdatedInternetState, c);
         }
     }

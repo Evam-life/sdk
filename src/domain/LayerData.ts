@@ -1,6 +1,9 @@
 import {Location} from "./Location";
 
-type LatLon = Omit<Location, 'timestamp'>
+type LatLon = {
+    latitude: number,
+    longitude: number
+}
 
 type LayerPointData = {
     point: LatLon,
@@ -9,8 +12,8 @@ type LayerPointData = {
 }
 
 type LayerShapeData = {
-    point: LatLon,
     points: LatLon[],
+    text: string,
     color: string
 }
 

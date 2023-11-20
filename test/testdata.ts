@@ -12,9 +12,9 @@ import {
     SystemHealth,
     TripLocationHistory,
     VehicleState,
-    VehicleStatus
+    VehicleStatus,
+    OperationState
 } from "../src";
-import OperationState from "../src/domain/OperationState";
 import {Battery, BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../src/domain";
 
 export const vehicleStatus = {

@@ -327,24 +327,21 @@ it("setHospital correctly calls the injectOperation with the right data", async 
 
     expect(hospitalToSetId).not.toBeUndefined();
 
-    if (hospitalToSetId !== undefined) {
-        expect(() => {
-            evamApi.setHospital(hospitalToSetId);
-        }).toThrow();
-
-        expect(injectOperationSpy).not.toHaveBeenCalled();
-
-        expect(convertedOperationWithAvailableHospitals.selectedHospital).toEqual(undefined);
-        evamApi.injectOperation(convertedOperationWithAvailableHospitals);
+    expect(() => {
         evamApi.setHospital(hospitalToSetId);
+    }).toThrow();
 
-        await waitFor(() => {
-            expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
-                selectedHospital: hospitalToSetId
-            }));
-        });
+    expect(injectOperationSpy).not.toHaveBeenCalled();
 
-    }
+    expect(convertedOperationWithAvailableHospitals.selectedHospital).toEqual(undefined);
+    evamApi.injectOperation(convertedOperationWithAvailableHospitals);
+    evamApi.setHospital(hospitalToSetId);
+
+    await waitFor(() => {
+        expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+            selectedHospital: hospitalToSetId
+        }));
+    });
 
 });
 
@@ -357,25 +354,23 @@ it("setPriority correctly calls the injectOperation with the right data", async 
 
     expect(priorityToSetId).not.toBeUndefined();
 
-    if (priorityToSetId !== undefined) {
-        expect(() => {
-            evamApi.setPriority(priorityToSetId);
-        }).toThrow();
-
-        expect(injectOperationSpy).not.toHaveBeenCalled();
-
-        expect(convertedOperationWithAvailablePriorities.selectedPriority).toEqual(undefined);
-        evamApi.injectOperation(convertedOperationWithAvailablePriorities);
+    expect(() => {
         evamApi.setPriority(priorityToSetId);
+    }).toThrow();
 
-        await waitFor(() => {
-            expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
-                selectedPriority: priorityToSetId
-            }));
-        });
-    }
+    expect(injectOperationSpy).not.toHaveBeenCalled();
 
+    expect(convertedOperationWithAvailablePriorities.selectedPriority).toEqual(undefined);
+    evamApi.injectOperation(convertedOperationWithAvailablePriorities);
+    evamApi.setPriority(priorityToSetId);
+
+    await waitFor(() => {
+        expect(injectOperationSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+            selectedPriority: priorityToSetId
+        }));
+    });
 });
+
 
 describe("software versions", () => {
 
@@ -808,4 +803,8 @@ it("should call callbacks with type DisplayMode for newOrUpdatedDisplayMode even
 
     publish(EvamEvent.NewOrUpdatedDisplayMode, detail);
     expect(Object.values(DisplayMode)).toContain(callbackFn.mock.lastCall[0]);
+});
+
+it("", () => {
+
 });

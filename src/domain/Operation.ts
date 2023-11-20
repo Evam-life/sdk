@@ -3,7 +3,7 @@ import {DestinationSiteLocation} from "./DestinationSiteLocation";
 import {DestinationControlPointLocation} from "./DestinationControlPointLocation";
 import {HospitalLocation} from "./HospitalLocation";
 import {OperationPriority} from "./OperationPriority";
-import OperationState from "./OperationState";
+import {OperationState} from "./OperationState";
 import {LeavePatientLocation} from "./LeavePatientLocation";
 
 class Operation {

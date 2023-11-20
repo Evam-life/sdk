@@ -2,6 +2,7 @@ import React, {PropsWithChildren} from "react";
 import {ChakraProvider} from "@chakra-ui/react";
 import {NotificationProvider} from "./NotificationProvider";
 import {EvamApi} from "../../../api/EvamApi";
+import MapDrawer from "../../components/MapDrawer/MapDrawer";
 
 /**
  * The VehicleServicesDevelopmentEnvironment provides a notification environment for you to test sending notifications in vehicle services.
@@ -16,6 +17,7 @@ const VehicleServicesDevelopmentEnvironment: React.FC<PropsWithChildren> = ({chi
     return (<>
         <ChakraProvider disableGlobalStyle>
             <NotificationProvider>
+                <MapDrawer/>
                 {children}
             </NotificationProvider>
         </ChakraProvider>
