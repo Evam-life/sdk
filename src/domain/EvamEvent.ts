@@ -21,6 +21,9 @@ enum EvamEvent {
     AppVersionSet = "appVersionSet",
     DeviceIdSet = "deviceIdSet",
     AppIdSet = "appIdSet",
+    NavLayerPointSet = "navLayerPointSet",
+    NavLayerShapeSet = "navLayerShapeSet",
+    NavLayerDeleted = "navLayerDeleted",
     _testEvent = "_testEvent"
 }
 

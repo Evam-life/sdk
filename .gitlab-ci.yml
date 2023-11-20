@@ -33,4 +33,4 @@ deploy-npm:
     - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
     - npm install
     - npm run build
-    - npm publish --access public
+    - bash -c 'if [[ "$CI_COMMIT_TAG" == *"beta"* ]]; then echo "Pushing beta" && npm publish --access public --tag beta; else echo "Pushing prod" && npm publish --access public; fi'
