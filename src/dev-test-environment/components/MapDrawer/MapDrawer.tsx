@@ -14,6 +14,7 @@ import {
 } from "./data/layer/style/layerLayout";
 import MapComponent from "./MapComponent";
 import useMapEvents from "./hooks/useMapEvents";
+import {useFeatureFlag} from "../../context/FeatureFlags";
 
 mapboxgl.accessToken = "pk.eyJ1Ijoia2Fpbi1ldmFtIiwiYSI6ImNsb3lhczE5eDAyMDIya2xtcHFwczFlZTgifQ.arDGvCMwYNu80PElCsm7sQ"; //TODO fix this before merge
 
@@ -96,13 +97,13 @@ const MapDrawer: FC = () => {
 
             }
         }
-    }, [deleteAllLayersById])
+    }, [deleteAllLayersById]);
 
     useMapEvents({
         onNavLayerPointSet: handleNavLayerPointSet,
         onNavLayerDeleted: handleNavLayerDeleted,
         onNavLayerShapeSet: handleNavLayerShapeSet
-    })
+    });
 
     useEffect(() => {
         if (map.current) return;
@@ -133,7 +134,7 @@ const MapDrawer: FC = () => {
                 setLat(d.target.getCenter().lat);
                 setLng(d.target.getCenter().lng);
             });
-        }, 4000)
+        }, 5000);
         return () => clearTimeout(id);
     });
 
