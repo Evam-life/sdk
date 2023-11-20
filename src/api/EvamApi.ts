@@ -916,6 +916,8 @@ export class EvamApi {
      * This function adds a set of points on the map with text and icon at the specified lat and lon
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
      * @param layerData array of points to be shown with text and icon
+     * @requires Permissions NAVIGATION_PRIVATE_LAYERS
+     * @preview This function is currently available in the Development Environment only.
      */
     setNavLayerPoint = (id: string, layerData: LayerPointData[]) => {
         publish(EvamEvent.NavLayerPointSet, {
@@ -930,6 +932,8 @@ export class EvamApi {
      * This function adds a set of shapes on the map with the text in its center.
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
      * @param layerData array of shapes to be shown with text and shape color (format: "#AARRGGBB", just like the SC buttons)
+     * @requires Permissions NAVIGATION_PRIVATE_LAYERS
+     * @preview This function is currently available in the Development Environment only.
      */
     setNavLayerShape = (id: string, layerData: LayerShapeData[]) => {
         publish(EvamEvent.NavLayerShapeSet, {
@@ -942,6 +946,8 @@ export class EvamApi {
     /**
      * Deletes a layer by its ID. A certified app can only delete a layer it has created.
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @requires Permissions NAVIGATION_PRIVATE_LAYERS
+     * @preview This function is currently available in the Development Environment only.
      */
     deleteNavLayer = (id: string) => {
         publish(EvamEvent.NavLayerDeleted, id);
