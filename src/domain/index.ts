@@ -19,3 +19,4 @@ export {SystemHealth} from "./SystemHealth";
 export {TripLocationHistory} from "./TripLocationHistory";
 export {VehicleState} from "./VehicleState";
 export {VehicleStatus} from "./VehicleStatus";
+export {RakelState} from "./RakelState"

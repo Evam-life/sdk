@@ -14,7 +14,7 @@ import {
     Notification,
     Operation,
     TripLocationHistory,
-    VehicleState
+    VehicleState, VehicleStatus, RakelState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -43,7 +43,9 @@ class EvamData {
         public deviceId?: string | undefined,
         public displayMode?: DisplayMode | undefined,
         public grpc?: GRPC | undefined,
-        public appId?: string | undefined
+        public appId?: string | undefined,
+        public rakelState?: RakelState | undefined,
+        public availableVehicleStatusList?: VehicleStatus[] | undefined
     ) {
 
     }
@@ -217,6 +219,13 @@ export class EvamApi {
                     EvamApi.evamData.operationList = list.map(Operation.fromJSON);
                 }
             });
+            subscribe(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, (e) => {
+                const list = (e as CustomEvent).detail;
+                vsLog("NewOrUpdatedAvailableVehicleStatusList", list);
+                if (Array.isArray(list)) {
+                    EvamApi.evamData.availableVehicleStatusList = list.map(VehicleStatus.fromJSON);
+                }
+            });
             subscribe(EvamEvent.NewOrUpdatedBattery, (e) => {
                 const {detail: battery} = (e as CustomEvent);
                 vsLog("NewOrUpdatedBattery", battery);
@@ -231,6 +240,11 @@ export class EvamApi {
                 const {detail: grpc} = (e as CustomEvent);
                 vsLog("GRPCEstablished", grpc);
                 EvamApi.evamData.grpc = grpc || undefined;
+            });
+            subscribe(EvamEvent.NewOrUpdateRakelState, (e) => {
+                const {detail: rakelState} = (e as CustomEvent);
+                vsLog("RakelState", rakelState);
+                EvamApi.evamData.rakelState = rakelState || undefined;
             });
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
@@ -261,6 +275,8 @@ export class EvamApi {
     private static newOrUpdatedOperationListCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedRakelStateCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -293,6 +309,8 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
         clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedRakelStateCallbacks, EvamEvent.NewOrUpdateRakelState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
 
         EvamApi.notificationCallbacks.clear();
 
@@ -438,6 +456,32 @@ export class EvamApi {
             publish(EvamEvent.NewOrUpdatedLocation, location);
         } else {
             throw Error("Injecting an Location is not allowed in the Vehicle Services environment.");
+        }
+    }
+
+    /**
+     * Manually inject the Available Vehicle Status list to EvamApi (Only available in development.)
+     * @param vehicleStatusList the list of available Vehicle Statuses
+     */
+    injectAvailableVehicleStatusList(vehicleStatusList: VehicleStatus[]){
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.availableVehicleStatusList = vehicleStatusList;
+            publish(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, vehicleStatusList);
+        } else {
+            throw Error("Injecting an AvailableVehicleStatusList is not allowed in the Vehicle Services environment.");
+        }
+    }
+
+    /**
+     * Manually inject the Rakel State to EvamApi (Only available in development.)
+     * @param rakelState The Rakel State
+     */
+    injectRakelState(rakelState: RakelState){
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.rakelState = rakelState;
+            publish(EvamEvent.NewOrUpdateRakelState, rakelState);
+        } else {
+            throw Error("Injecting a RakelState is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -828,6 +872,49 @@ export class EvamApi {
                 detail: EvamApi.evamData.displayMode
             }));
             subscribe(EvamEvent.NewOrUpdatedDisplayMode, c);
+        }
+    }
+
+    /**
+     * Used to assign a callback when the rakel state is created or updated
+     * @requires Permissions RAKEL_STATE_READ
+     * @param callback The callback with (optional) argument Rakel state. Use this to access the Rakel state.
+     */
+    onNewOrUpdatedRakelState(callback: CallbackFunction<RakelState | undefined>){
+        if (callback) {
+            const c = (e: Event) => {
+                const rakelState = (e as CustomEvent).detail;
+                callback(rakelState ? rakelState as RakelState : undefined);
+            };
+            EvamApi.newOrUpdatedRakelStateCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdateRakelState, {
+                detail: EvamApi.evamData.rakelState
+            }));
+            subscribe(EvamEvent.NewOrUpdateRakelState, c);
+        }
+    }
+
+    /**
+     * Used to assign a callback when the list of available Vehicle Statuses is created or updated
+     * @requires Permissions AVAILABLE_VEHICLE_STATUS_LIST_READ
+     * @param callback The callback with (optional) argument available Vehicle Status list. Use this to access the available Vehicle Statuses.
+     */
+    onNewOrUpdatedAvailableVehicleStatusList(callback: CallbackFunction<VehicleStatus[] | undefined>){
+        if (callback){
+            const c = (e: Event) => {
+                const vl = (e as CustomEvent).detail;
+                if (Array.isArray(vl)) {
+                    callback(vl.map<VehicleStatus>(VehicleStatus.fromJSON));
+                } else if (vl === undefined) {
+                    callback(undefined);
+                }
+
+            };
+            EvamApi.newOrUpdatedAvailableVehicleStatusList.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, {
+                detail: EvamApi.evamData.availableVehicleStatusList
+            }));
+            subscribe(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, c);
         }
     }
 
