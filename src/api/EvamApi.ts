@@ -898,6 +898,7 @@ export class EvamApi {
     /**
      * Used to assign a callback when the list of available Vehicle Statuses is created or updated
      * @requires Permissions AVAILABLE_VEHICLE_STATUS_LIST_READ
+     * @preview This function is currently available in the Development Environment only.
      * @param callback The callback with (optional) argument available Vehicle Status list. Use this to access the available Vehicle Statuses.
      */
     onNewOrUpdatedAvailableVehicleStatusList(callback: CallbackFunction<VehicleStatus[] | undefined>){
