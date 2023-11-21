@@ -6,7 +6,7 @@ class TripLocationHistory {
      * An array of locations represents the history of the trip
      * @param locationHistory location array
      * @param etaSeconds 'estimated time of arrival' in seconds
-     * @param distanceToDestinationMeters Remaining driving distance until destination in meters
+     * @param distanceToDestinationMeters Remaining driving distance until destination in meters (PREVIEW)
      */
     constructor(
         public locationHistory: Array<Location>,

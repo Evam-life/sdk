@@ -475,6 +475,7 @@ export class EvamApi {
     /**
      * Manually inject the Rakel State to EvamApi (Only available in development.)
      * @param rakelState The Rakel State
+     * @preview This function is currently available in the Development Environment only.
      */
     injectRakelState(rakelState: RakelState){
         if (!EvamApi.isRunningInVehicleServices) {

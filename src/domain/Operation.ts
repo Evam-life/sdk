@@ -13,7 +13,7 @@ class Operation {
      * @param name The operation name
      * @param sendTime The time at which the operation was sent
      * @param createdTime The time at which the operation was created
-     * @param acceptedTime The time at which the operation was accepted
+     * @param acceptedTime The time at which the operation was accepted (PREVIEW)
      * @param endTime The time at which the operation ended, `undefined` still ongoing
      * @param callCenterId The Call Center ID
      * @param caseFolderId The Case folder ID
