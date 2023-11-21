@@ -475,7 +475,6 @@ export class EvamApi {
     /**
      * Manually inject the Rakel State to EvamApi (Only available in development.)
      * @param rakelState The Rakel State
-     * @preview This function is currently available in the Development Environment only.
      */
     injectRakelState(rakelState: RakelState){
         if (!EvamApi.isRunningInVehicleServices) {
@@ -880,6 +879,7 @@ export class EvamApi {
      * Used to assign a callback when the rakel state is created or updated
      * @requires Permissions RAKEL_STATE_READ
      * @param callback The callback with (optional) argument Rakel state. Use this to access the Rakel state.
+     * @preview This function is currently available in the Development Environment only.
      */
     onNewOrUpdatedRakelState(callback: CallbackFunction<RakelState | undefined>){
         if (callback) {
