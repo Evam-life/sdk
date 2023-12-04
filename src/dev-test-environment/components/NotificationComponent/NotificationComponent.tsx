@@ -9,13 +9,11 @@ interface NotificationComponentProps {
     notification: _InternalVehicleServicesNotification,
     onTrigger: (uuid: string) => void,
     onRemove: (thisNotification: _InternalVehicleServicesNotification) => void
-    type?: NotificationType
 }
 
 
 const NotificationComponent: React.FC<NotificationComponentProps> = ({
                                                                          notification,
-                                                                         type = NotificationType.ACTION_HUN,
                                                                          onTrigger,
                                                                          onRemove
                                                                      }) => {
