@@ -14,13 +14,14 @@ import {
     Notification,
     Operation,
     TripLocationHistory,
-    VehicleState
+    VehicleState, VehicleStatus, RakelState
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
-import {isRunningInVehicleServices, androidNativeHelpers} from "./AndroidNativeHelpers";
+import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
+import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 
 /**
  * @hidden
@@ -42,7 +43,9 @@ class EvamData {
         public deviceId?: string | undefined,
         public displayMode?: DisplayMode | undefined,
         public grpc?: GRPC | undefined,
-        public appId?: string | undefined
+        public appId?: string | undefined,
+        public rakelState?: RakelState | undefined,
+        public availableVehicleStatusList?: VehicleStatus[] | undefined
     ) {
 
     }
@@ -112,7 +115,7 @@ type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 export class EvamApi {
 
     private static singletonExists = false;
-    public static isRunningInVehicleServices = isRunningInVehicleServices
+    public static isRunningInVehicleServices = isRunningInVehicleServices;
 
     constructor() {
         if (!EvamApi.singletonExists) {
@@ -216,6 +219,13 @@ export class EvamApi {
                     EvamApi.evamData.operationList = list.map(Operation.fromJSON);
                 }
             });
+            subscribe(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, (e) => {
+                const list = (e as CustomEvent).detail;
+                vsLog("NewOrUpdatedAvailableVehicleStatusList", list);
+                if (Array.isArray(list)) {
+                    EvamApi.evamData.availableVehicleStatusList = list.map(VehicleStatus.fromJSON);
+                }
+            });
             subscribe(EvamEvent.NewOrUpdatedBattery, (e) => {
                 const {detail: battery} = (e as CustomEvent);
                 vsLog("NewOrUpdatedBattery", battery);
@@ -230,6 +240,11 @@ export class EvamApi {
                 const {detail: grpc} = (e as CustomEvent);
                 vsLog("GRPCEstablished", grpc);
                 EvamApi.evamData.grpc = grpc || undefined;
+            });
+            subscribe(EvamEvent.NewOrUpdateRakelState, (e) => {
+                const {detail: rakelState} = (e as CustomEvent);
+                vsLog("RakelState", rakelState);
+                EvamApi.evamData.rakelState = rakelState || undefined;
             });
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
@@ -260,6 +275,8 @@ export class EvamApi {
     private static newOrUpdatedOperationListCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedBatteryCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedRakelStateCallbacks: CallbackFunctionArray = [];
+    private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -292,6 +309,8 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
         clearCallbacksAndArray(EvamApi.newOrUpdatedBatteryCallbacks, EvamEvent.NewOrUpdatedBattery);
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedRakelStateCallbacks, EvamEvent.NewOrUpdateRakelState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
 
         EvamApi.notificationCallbacks.clear();
 
@@ -437,6 +456,32 @@ export class EvamApi {
             publish(EvamEvent.NewOrUpdatedLocation, location);
         } else {
             throw Error("Injecting an Location is not allowed in the Vehicle Services environment.");
+        }
+    }
+
+    /**
+     * Manually inject the Available Vehicle Status list to EvamApi (Only available in development.)
+     * @param vehicleStatusList the list of available Vehicle Statuses
+     */
+    injectAvailableVehicleStatusList(vehicleStatusList: VehicleStatus[]){
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.availableVehicleStatusList = vehicleStatusList;
+            publish(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, vehicleStatusList);
+        } else {
+            throw Error("Injecting an AvailableVehicleStatusList is not allowed in the Vehicle Services environment.");
+        }
+    }
+
+    /**
+     * Manually inject the Rakel State to EvamApi (Only available in development.)
+     * @param rakelState The Rakel State
+     */
+    injectRakelState(rakelState: RakelState){
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.rakelState = rakelState;
+            publish(EvamEvent.NewOrUpdateRakelState, rakelState);
+        } else {
+            throw Error("Injecting a RakelState is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -722,7 +767,7 @@ export class EvamApi {
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedInternetState, {
                 detail: EvamApi.evamData.internetState
-            }));
+            }))
             subscribe(EvamEvent.NewOrUpdatedInternetState, c);
         }
     }
@@ -831,6 +876,51 @@ export class EvamApi {
     }
 
     /**
+     * Used to assign a callback when the rakel state is created or updated
+     * @requires Permissions RAKEL_STATE_READ
+     * @param callback The callback with (optional) argument Rakel state. Use this to access the Rakel state.
+     * @preview This function is currently available in the Development Environment only.
+     */
+    onNewOrUpdatedRakelState(callback: CallbackFunction<RakelState | undefined>){
+        if (callback) {
+            const c = (e: Event) => {
+                const rakelState = (e as CustomEvent).detail;
+                callback(rakelState ? rakelState as RakelState : undefined);
+            };
+            EvamApi.newOrUpdatedRakelStateCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdateRakelState, {
+                detail: EvamApi.evamData.rakelState
+            }));
+            subscribe(EvamEvent.NewOrUpdateRakelState, c);
+        }
+    }
+
+    /**
+     * Used to assign a callback when the list of available Vehicle Statuses is created or updated
+     * @requires Permissions AVAILABLE_VEHICLE_STATUS_LIST_READ
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument available Vehicle Status list. Use this to access the available Vehicle Statuses.
+     */
+    onNewOrUpdatedAvailableVehicleStatusList(callback: CallbackFunction<VehicleStatus[] | undefined>){
+        if (callback){
+            const c = (e: Event) => {
+                const vl = (e as CustomEvent).detail;
+                if (Array.isArray(vl)) {
+                    callback(vl.map<VehicleStatus>(VehicleStatus.fromJSON));
+                } else if (vl === undefined) {
+                    callback(undefined);
+                }
+
+            };
+            EvamApi.newOrUpdatedAvailableVehicleStatusList.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, {
+                detail: EvamApi.evamData.availableVehicleStatusList
+            }));
+            subscribe(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, c);
+        }
+    }
+
+    /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
      * @requires Permissions SEND_NOTIFICATION
      * @param notification The notification to be sent
@@ -909,5 +999,49 @@ export class EvamApi {
             }
         }
     };
+
+    /**
+     * Adds/Update a layer by its ID. Reusing a layerID causes the data to be replaced. A certified app can only update a layer it has created.
+     * This function adds a set of points on the map with text and icon at the specified lat and lon
+     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @param layerData array of points to be shown with text and icon. Note that the icon of the first element will be used for all points.
+     * @requires Permissions NAVIGATION_PRIVATE_LAYERS
+     * @preview This function is currently available in the Development Environment only.
+     */
+    setNavLayerPoint = (id: string, layerData: LayerPointData[]) => {
+        publish(EvamEvent.NavLayerPointSet, {
+            id,
+            layerData
+        });
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).setNavLayerPoint(id, layerData);
+    };
+    
+    /**
+     * Adds/Update a layer by its ID. Reusing a layerID causes the data to be replaced. A certified app can only update a layer it has created.
+     * This function adds a set of shapes on the map with the text in its center.
+     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @param layerData array of shapes to be shown with text and shape color (format: "#AARRGGBB", just like the SC buttons)
+     * @requires Permissions NAVIGATION_PRIVATE_LAYERS
+     * @preview This function is currently available in the Development Environment only.
+     */
+    setNavLayerShape = (id: string, layerData: LayerShapeData[]) => {
+        publish(EvamEvent.NavLayerShapeSet, {
+            id,
+            layerData
+        });
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).setNavLayerShape(id, layerData);
+    };
+
+    /**
+     * Deletes a layer by its ID. A certified app can only delete a layer it has created.
+     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @requires Permissions NAVIGATION_PRIVATE_LAYERS
+     * @preview This function is currently available in the Development Environment only.
+     */
+    deleteNavLayer = (id: string) => {
+        publish(EvamEvent.NavLayerDeleted, id);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).deleteNavLayer(id);
+    };
+
 
 }

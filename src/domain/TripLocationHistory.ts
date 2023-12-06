@@ -6,10 +6,12 @@ class TripLocationHistory {
      * An array of locations represents the history of the trip
      * @param locationHistory location array
      * @param etaSeconds 'estimated time of arrival' in seconds
+     * @param distanceToDestinationMeters Remaining driving distance until destination in meters (PREVIEW)
      */
     constructor(
         public locationHistory: Array<Location>,
-        public etaSeconds: number | undefined
+        public etaSeconds: number | undefined,
+        public distanceToDestinationMeters: number | undefined
     ) {
     }
 
@@ -27,7 +29,8 @@ class TripLocationHistory {
             const locationHistoryMapped: Array<Location> = locationHistory.map<Location>(Location.fromJSON);
             return new TripLocationHistory(
                 locationHistoryMapped,
-                tripLocationHistory.etaSeconds
+                tripLocationHistory.etaSeconds,
+                tripLocationHistory.distanceToDestinationMeters
             );
         } else {
             throw Error("TripLocationHistory.locationHistory must be an array");

@@ -10,6 +10,8 @@ enum EvamEvent {
     NewOrUpdatedLocation = "newOrUpdatedLocation",
     NewOrUpdatedVehicleState = "newOrUpdatedVehicleState",
     NewOrUpdatedTripLocationHistory = "newOrUpdatedTripLocationHistory",
+    NewOrUpdateRakelState = "newOrUpdateRakelState",
+    NewOrUpdatedAvailableVehicleStatusList = "newOrUpdatedAvailableVehicleStatusList",
     VehicleServicesNotificationSent = "vehicleServicesNotificationSent",
     VehicleServicesNotificationCallbackTriggered = "vehicleServicesNotificationCallbackTriggered",
     GRPCEstablished = "gRPCEstablished",
@@ -21,6 +23,9 @@ enum EvamEvent {
     AppVersionSet = "appVersionSet",
     DeviceIdSet = "deviceIdSet",
     AppIdSet = "appIdSet",
+    NavLayerPointSet = "navLayerPointSet",
+    NavLayerShapeSet = "navLayerShapeSet",
+    NavLayerDeleted = "navLayerDeleted",
     _testEvent = "_testEvent"
 }
 

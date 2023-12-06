@@ -3,7 +3,7 @@ import {DestinationSiteLocation} from "./DestinationSiteLocation";
 import {DestinationControlPointLocation} from "./DestinationControlPointLocation";
 import {HospitalLocation} from "./HospitalLocation";
 import {OperationPriority} from "./OperationPriority";
-import OperationState from "./OperationState";
+import {OperationState} from "./OperationState";
 import {LeavePatientLocation} from "./LeavePatientLocation";
 
 class Operation {
@@ -13,6 +13,7 @@ class Operation {
      * @param name The operation name
      * @param sendTime The time at which the operation was sent
      * @param createdTime The time at which the operation was created
+     * @param acceptedTime The time at which the operation was accepted (PREVIEW)
      * @param endTime The time at which the operation ended, `undefined` still ongoing
      * @param callCenterId The Call Center ID
      * @param caseFolderId The Case folder ID
@@ -43,7 +44,7 @@ class Operation {
      * @param selectedHospital The id of the selected hospital [inside available hospitals]
      * @param selectedPriority The id of the selected priority [inside available priority]
      * @param operationState the current state of the operation (ACTIVE, AVAILABLE, COMPLETE)
-     * @param leavePatientLocation The Location of the leave-patient site ("to..." fields)
+     * @param leavePatientLocation The location of the leave-patient ('toCity', etc)
      */
     constructor(
         // Metadata
@@ -52,6 +53,7 @@ class Operation {
         public sendTime: Date | undefined,
         public createdTime: Date | undefined,
         public endTime: Date | undefined,
+        public acceptedTime: Date | undefined,
         // Rakel
         public callCenterId: string | undefined,
         public caseFolderId: string | undefined,
@@ -115,6 +117,7 @@ class Operation {
             data.sendTime !== undefined ? new Date(data.sendTime) : undefined,
             data.createdTime !== undefined ? new Date(data.createdTime) : undefined,
             data.endTime !== undefined ? new Date(data.endTime) : undefined,
+            data.acceptedTime !== undefined ? new Date(data.acceptedTime) : undefined,
             data.callCenterId,
             data.caseFolderId,
             data.transmitterCode,

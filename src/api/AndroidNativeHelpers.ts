@@ -1,4 +1,5 @@
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
+import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 
 const isRunningInVehicleServices = (() => {
     try {
@@ -8,7 +9,7 @@ const isRunningInVehicleServices = (() => {
     } catch {
         return false;
     }
-})()
+})();
 
 const androidNativeHelpers = (insideVs: boolean) => ({
     sendNotification: (notification: _InternalVehicleServicesNotification) => {
@@ -87,6 +88,36 @@ const androidNativeHelpers = (insideVs: boolean) => ({
             try {
                 //@ts-ignore
                 Android.setPriority(id);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    setNavLayerPoint: (id: string, layerData: LayerPointData[]) => {
+        if (insideVs) {
+            try {
+                //@ts-ignore
+                Android.setNavLayerPoint(id, layerData);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    setNavLayerShape: (id: string, layerData: LayerShapeData[]) => {
+        if (insideVs) {
+            try {
+                //@ts-ignore
+                Android.setNavLayerShape(id, layerData);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    deleteNavLayer: (id: string) => {
+        if (insideVs) {
+            try {
+                //@ts-ignore
+                Android.deleteNavLayer(id);
             } catch (e) {
                 console.error(e);
             }
