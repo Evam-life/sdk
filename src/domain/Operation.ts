@@ -43,6 +43,7 @@ class Operation {
      * @param selectedHospital The id of the selected hospital [inside available hospitals]
      * @param selectedPriority The id of the selected priority [inside available priority]
      * @param operationState the current state of the operation (ACTIVE, AVAILABLE, COMPLETE)
+     * @param leavePatientLocation The Location of the leave-patient site ("to..." fields)
      */
     constructor(
         // Metadata
@@ -140,12 +141,8 @@ class Operation {
             data.header2,
             data.eventInfo,
             data.caseInfo,
-            (data.selectedHospital !== undefined && Array.isArray(data.availableHospitalLocations)) ? data.availableHospitalLocations.find((ahl: any) => {
-                return (ahl === data.selectedHospital);
-            }) : undefined,
-            (data.selectedPriority !== undefined && Array.isArray(data.availablePriorities)) ? data.availablePriorities.find((priority: any) => {
-                return (priority.id === data.selectedPriority);
-            }) : undefined,
+            data.selectedHospital,
+            data.selectedPriority,
             data.operationState,
             data.leavePatientLocation !== undefined ? LeavePatientLocation.fromJSON(data.leavePatientLocation) : undefined);
     }
