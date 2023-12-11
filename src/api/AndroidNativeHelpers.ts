@@ -97,7 +97,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
         if (insideVs) {
             try {
                 //@ts-ignore
-                Android.setNavLayerPoint(id, layerData);
+                Android.setNavLayerPoint(id, JSON.stringify(layerData));
             } catch (e) {
                 console.error(e);
             }
@@ -107,7 +107,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
         if (insideVs) {
             try {
                 //@ts-ignore
-                Android.setNavLayerShape(id, layerData);
+                Android.setNavLayerShape(id, JSON.stringify(layerData));
             } catch (e) {
                 console.error(e);
             }
