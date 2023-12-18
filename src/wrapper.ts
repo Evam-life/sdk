@@ -48,6 +48,7 @@ const run = async () => {
             })
 
             // Push build directory
+            // TODO handle better when very many files
             glob("build/**", (er, files) => {
                 files.forEach( async (file) => {
                     if (fs.lstatSync(file).isDirectory()){
