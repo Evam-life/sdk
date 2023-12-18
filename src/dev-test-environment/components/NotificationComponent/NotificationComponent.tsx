@@ -1,8 +1,9 @@
-import React, {useRef, useState} from "react";
+import React, {useCallback, useMemo, useRef, useState} from "react";
 import {Button, Card, CardBody, CardFooter, CardHeader, Heading, HStack, Icon, Text} from "@chakra-ui/react";
-import {VehicleServicesNoRender} from "../util";
-import {_InternalVehicleServicesNotification} from "../../../domain/_InternalVehicleServicesNotification";
 import {motion} from "framer-motion";
+import {NotificationType} from "../../../domain";
+import {_InternalVehicleServicesNotification} from "../../../domain/_InternalVehicleServicesNotification";
+import {VehicleServicesNoRender} from "../util";
 
 interface NotificationComponentProps {
     notification: _InternalVehicleServicesNotification,
@@ -11,46 +12,54 @@ interface NotificationComponentProps {
 }
 
 
-const NotificationComponent: React.FC<NotificationComponentProps> = ({notification, onTrigger, onRemove}) => {
+const NotificationComponent: React.FC<NotificationComponentProps> = ({
+                                                                         notification,
+                                                                         onTrigger,
+                                                                         onRemove
+                                                                     }) => {
 
     const [willDelete, setWillDelete] = useState<boolean>(false);
     const constraintsRef = useRef(null);
 
-    const PrimaryButton: React.FC = () => (
-        <Button
-            color={"white"}
-            backgroundColor={"darkorange"}
-            borderRadius={"full"}
-            onClick={() => {
-                if (notification.primaryButton.callback !== undefined)
-                    onTrigger(notification.primaryButton.callback);
-            }}>
-            {notification.primaryButton.label}
-        </Button>
-    );
+    const PrimaryButton: React.FC = useMemo(() => {
+        return () => (
+            <Button
+                color={"white"}
+                backgroundColor={"darkorange"}
+                borderRadius={"full"}
+                onClick={() => {
+                    if (notification.primaryButton.callback !== undefined)
+                        onTrigger(notification.primaryButton.callback);
+                }}>
+                {notification.primaryButton.label}
+            </Button>
+        );
+    }, [notification.primaryButton.callback, notification.primaryButton.label, onTrigger]);
 
-    const SecondaryButton: React.FC = () => (
-        <Button
-            color={"white"}
-            backgroundColor={"black"}
-            border={"2px solid white"}
-            boxSizing={"border-box"}
-            borderRadius={"full"}
-            onClick={() => {
-                if (notification.secondaryButton!.callback !== undefined)
-                    onTrigger(notification.secondaryButton!.callback);
-            }}>
-            {notification.secondaryButton!.label}
-        </Button>
-    );
+    const SecondaryButton: React.FC = useMemo(() => {
+        return () => (
+            <Button
+                color={"white"}
+                backgroundColor={"black"}
+                border={"2px solid white"}
+                boxSizing={"border-box"}
+                borderRadius={"full"}
+                onClick={() => {
+                    if (notification.secondaryButton!.callback !== undefined)
+                        onTrigger(notification.secondaryButton!.callback);
+                }}>
+                {notification.secondaryButton!.label}
+            </Button>
+        );
+    }, [notification.secondaryButton, onTrigger]);
 
-    const getFormattedTime = () => {
+    const formattedTime = useMemo(() => {
         const hours = new Date().getHours().toString();
         const minutes = new Date().getMinutes().toString().padStart(2, "0");
         return `Evam Development Environment • ${hours}:${minutes}`;
-    };
+    }, []);
 
-    const handleDragStart = (e: any, info: { point: { x: any; }; offset: { x: any; }; }) => {
+    const handleDragStart = useCallback((e: any, info: { point: { x: any; }; offset: { x: any; }; }) => {
         if (typeof window !== "undefined") {
             const viewportWidth = window.innerWidth;
             const dropPositionX = info.point.x + info.offset.x;
@@ -60,9 +69,9 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
                 setWillDelete(false);
             }
         }
-    };
+    }, [willDelete]);
 
-    const handleDragEnd = (e: any, info: { point: { x: any; }; offset: { x: any; }; }) => {
+    const handleDragEnd = useCallback((e: any, info: { point: { x: any; }; offset: { x: any; }; }) => {
         if (typeof window !== "undefined") {
             const viewportWidth = window.innerWidth;
             const dropPositionX = info.point.x + info.offset.x;
@@ -71,7 +80,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
             }
             setWillDelete(false);
         }
-    };
+    }, [notification, onRemove]);
 
     const dragMotionProps = {
         drag: "x",
@@ -106,7 +115,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({notificati
                                     d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                             </Icon>
                             <Heading size={"sm"} color={"gray"} fontWeight={"none"}>
-                                {getFormattedTime()}
+                                {formattedTime}
                             </Heading>
                         </HStack>
                     </CardHeader>
