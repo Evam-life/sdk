@@ -1,6 +1,9 @@
 import {Operation} from "../../src";
 import * as _ from "lodash";
-import {convertedOperation, operation} from "../testdata";
+import {
+    convertedOperationWithAvailableAndSelectedHospitalsAndPrios as convertedOperation,
+    operationWithAvailableAndSelectedHospitalsAndPrios as operation
+} from "../testdata";
 
 it("tests that Operation fromJSON correctly assigns right values", () => {
 
@@ -21,6 +24,8 @@ it("tests that Operation fromJSON correctly assigns right values", () => {
     expect(operation.destinationSiteLocation).toEqual(convertedOperation.destinationSiteLocation);
     expect(new Date(operation.sendTime)).toEqual(convertedOperation.sendTime);
     expect(new Date(operation.createdTime)).toEqual(convertedOperation.createdTime);
+    expect(operation.selectedHospital).toEqual(convertedOperation.selectedHospital)
+    expect(operation.selectedPriority).toEqual(convertedOperation.selectedPriority)
 });
 
 it("tests that getFullId returns the full id", () => {

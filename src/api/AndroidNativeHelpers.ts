@@ -1,5 +1,6 @@
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
+import {triggerAndroid} from "../util/triggerAndroid";
 
 const isRunningInVehicleServices = (() => {
     try {
@@ -11,12 +12,19 @@ const isRunningInVehicleServices = (() => {
     }
 })();
 
+/**
+ *
+ * This is a helper method which triggers the 'triggerAndroid' method.
+ * This method allows you to pass serializable data to the arguments whereas triggerAndroid only accepts primitives.
+ * @ignore
+ * @param insideVs boolean for if you are in VehicleServices or not
+ */
 const androidNativeHelpers = (insideVs: boolean) => ({
     sendNotification: (notification: _InternalVehicleServicesNotification) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.sendNotification(JSON.stringify(notification));
+                const arg = JSON.stringify(notification);
+                triggerAndroid("sendNotification", arg);
             } catch (e) {
                 console.error(e);
             }
@@ -25,8 +33,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     apiReady: () => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.apiReady();
+                triggerAndroid("apiReady");
             } catch (e) {
                 console.error(e);
             }
@@ -35,8 +42,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     setItem: (key: string, value: string) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.setItem(key, value);
+                triggerAndroid("setItem", key, value);
             } catch (e) {
                 console.error(e);
             }
@@ -45,8 +51,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     getItem: (key: string) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                return Android.getItem(key);
+                return triggerAndroid("getItem", key);
             } catch (e) {
                 console.error(e);
             }
@@ -56,8 +61,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     deleteItem: (key: string) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.deleteItem(key);
+                triggerAndroid("deleteItem", key);
             } catch (e) {
                 console.error(e);
             }
@@ -66,8 +70,8 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     clearItems: () => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.clearItems();
+                console.log('this called')
+                triggerAndroid("clearItems");
             } catch (e) {
                 console.error(e);
             }
@@ -76,8 +80,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     setHospital: (id: number) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.setHospital(id);
+                triggerAndroid("setHospital", id);
             } catch (e) {
                 console.error(e);
             }
@@ -86,8 +89,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     setPriority: (id: number) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.setPriority(id);
+                triggerAndroid("setPriority", id);
             } catch (e) {
                 console.error(e);
             }
@@ -96,8 +98,8 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     setNavLayerPoint: (id: string, layerData: LayerPointData[]) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.setNavLayerPoint(id, layerData);
+                const arg = JSON.stringify(layerData);
+                triggerAndroid("setNavLayerPoint", id, arg);
             } catch (e) {
                 console.error(e);
             }
@@ -106,8 +108,8 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     setNavLayerShape: (id: string, layerData: LayerShapeData[]) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.setNavLayerShape(id, layerData);
+                const arg = JSON.stringify(layerData);
+                triggerAndroid("setNavLayerShape", id, arg);
             } catch (e) {
                 console.error(e);
             }
@@ -116,8 +118,7 @@ const androidNativeHelpers = (insideVs: boolean) => ({
     deleteNavLayer: (id: string) => {
         if (insideVs) {
             try {
-                //@ts-ignore
-                Android.deleteNavLayer(id);
+                triggerAndroid("deleteNavLayer", id);
             } catch (e) {
                 console.error(e);
             }

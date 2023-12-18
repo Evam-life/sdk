@@ -43,7 +43,7 @@ export const operation = {
     },
     name: "Brand i bilen",
     sendTime: (new Date()).getTime() / 1000,
-    createdTime: (new Date()).getTime() / 1000,
+    createdTime: (new Date()).getTime() / 1000
 };
 
 export const operation2 = {
@@ -92,6 +92,31 @@ export const operationWithAvailableHospitals = {
     ..._.clone(operation),
     availableHospitalLocations: [hospitalLocation]
 };
+
+export const operationWithAvailableAndSelectedHospitalsAndPrios = {
+    ..._.clone(operation),
+    availablePriorities: [
+        { id: 1, name: "PRIO 1" },
+        { id: 2, name: "PRIO 2" },
+        { id: 3, name: "PRIO 3" },
+    ],
+    selectedPriority: 1,
+    availableHospitalLocations: [
+        {
+            id: 1,
+            name: "Karolinska Universitetssjukhuset",
+            latitude: 59.352602,
+            longitude: 18.033239,
+        },
+        {
+            id: 2,
+            name: "Capio Sankt Görans Sjukhus",
+            latitude: 59.334129,
+            longitude: 18.020126,
+        },
+    ],
+    selectedHospital: 1
+}
 
 export const destinationControlPointLocation = {
     latitude: 59.3538975,
@@ -191,5 +216,6 @@ export const convertedOperationPriority = OperationPriority.fromJSON(operationPr
 export const convertedDestinationControlPointLocation = DestinationControlPointLocation.fromJSON(destinationControlPointLocation);
 export const convertedOperationWithAvailablePriorities = Operation.fromJSON(operationWithAvailablePriorities);
 export const convertedOperationWithAvailableHospitals = Operation.fromJSON(operationWithAvailableHospitals);
+export const convertedOperationWithAvailableAndSelectedHospitalsAndPrios = Operation.fromJSON(operationWithAvailableAndSelectedHospitalsAndPrios)
 export const convertedSystemHealth = SystemHealth.fromJSON(systemHealth);
 export const convertedNotification = Notification.fromJSON(notification);
