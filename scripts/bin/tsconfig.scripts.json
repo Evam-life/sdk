@@ -1,0 +1,22 @@
+{
+  "include": [
+    "."
+  ],
+  "compilerOptions": {
+    "target": "es6",
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext",
+    "outDir": "../../bin",
+    "declaration": false,
+    "sourceMap": true,
+    "allowJs": true,
+    "lib": [
+      "es2022"
+    ]
+  }
+}

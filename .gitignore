@@ -1,8 +1,15 @@
+/bin/
 dist
-sdk
 node_modules
-coverage
-build
 docs
+
+# intelliJ
+.idea
+
+# tarball
 evam-life-sdk-*.tgz
-.idea/*
+
+# testing
+coverage
+dependency_graph.png
+

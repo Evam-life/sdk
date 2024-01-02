@@ -1,0 +1,12 @@
+{
+  "plugin": [
+    "typedoc-plugin-zod"
+  ],
+  "out": "docs",
+  "cleanOutputDir": true,
+  "entryPoints": [
+    "src/index.ts",
+    "src/types/interfaces/VehicleServicesEventPayloadInterface.ts"
+  ],
+  "$schema": "https://typedoc.org/schema.json"
+}

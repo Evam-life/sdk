@@ -1,53 +1,18 @@
-import {
-    Battery,
-    DestinationControlPointLocation,
-    DestinationSiteLocation,
-    DeviceRole,
-    EvamEvent,
-    HospitalLocation,
-    InternetState,
-    Location,
-    Notification,
-    NotificationType,
-    Operation,
-    OperationPriority,
-    Patient,
-    SystemHealth,
-    TripLocationHistory,
-    VehicleState,
-    VehicleStatus,
-    OperationState,
-    LeavePatientLocation,
-    RakelState,
-    RawRakelAction
-} from "./domain";
+import * as enums from "@/data/enum";
+import * as arrays from "@/data/array";
 
-import {EvamApi} from "./api/EvamApi";
-import {VehicleServicesDevelopmentEnvironment} from "./dev-test-environment";
-
-export {
-    Battery,
-    DestinationControlPointLocation,
-    DestinationSiteLocation,
-    DeviceRole,
-    EvamEvent,
-    HospitalLocation,
-    InternetState,
-    Location,
-    Notification,
-    NotificationType,
-    Operation,
-    OperationPriority,
-    Patient,
-    SystemHealth,
-    TripLocationHistory,
-    VehicleState,
-    VehicleStatus,
-    VehicleServicesDevelopmentEnvironment,
-    OperationState,
-    LeavePatientLocation,
-    RakelState,
-    RawRakelAction
+/**
+ * A convenient set of utilities for use in production
+ * @ignore
+ */
+export const VehicleServicesUtils = {
+  /**
+   * A collection of different arrays for values of different types within the SDK.
+   */
+  iterators: {
+    ...arrays,
+    ...enums,
+  },
 };
-
-export {EvamApi};
+export * from "@/types"; // export all types that users can use (ignore _internal)
+export * from "@/api"; // export the EvamApi class

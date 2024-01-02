@@ -1,27 +1,30 @@
 {
   "compilerOptions": {
+    "target": "es2016",
     "module": "commonjs",
-   "esModuleInterop": true,
-    "target": "es2019",
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "jsx": "react-jsx",
-    "outDir": "sdk",
-    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
     "paths": {
-      "*": [
-        "/node_modules/*",
-        "/usr/local/lib/node_modules/*"
+      "@/*": [
+        "./src/*"
+      ],
+      "@/tests/*": [
+        "./__tests__/*"
       ]
     },
-    "plugins": [
-    ]
+    "isolatedModules": true,
+    "strictPropertyInitialization": true
   },
   "include": [
-    "src/**/*"
+    "src",
+    "__tests__",
   ],
   "exclude": [
-    "sdk/**/*"
+    "node_modules",
+    "scripts"
   ]
 }
