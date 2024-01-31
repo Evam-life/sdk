@@ -22,6 +22,7 @@ import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
+import { RawRakelAction } from "../domain/RawRakelAction";
 
 /**
  * @hidden
@@ -45,7 +46,8 @@ class EvamData {
         public grpc?: GRPC | undefined,
         public appId?: string | undefined,
         public rakelState?: RakelState | undefined,
-        public availableVehicleStatusList?: VehicleStatus[] | undefined
+        public availableVehicleStatusList?: VehicleStatus[] | undefined,
+        public rakelMessages?: string[] | undefined 
     ) {
 
     }
@@ -246,6 +248,11 @@ export class EvamApi {
                 vsLog("RakelState", rakelState);
                 EvamApi.evamData.rakelState = rakelState || undefined;
             });
+            subscribe(EvamEvent.NewOrUpdatedRakelMessages, (e) => {
+                const {detail: rakelMessages} = (e as CustomEvent);
+                vsLog("RakelMessages", rakelMessages);
+                EvamApi.evamData.rakelMessages = rakelMessages || undefined
+            })
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
@@ -277,6 +284,7 @@ export class EvamApi {
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedRakelStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
+    private static newOrUpdatedRakelMessages: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -311,6 +319,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelStateCallbacks, EvamEvent.NewOrUpdateRakelState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedRakelMessages, EvamEvent.NewOrUpdatedRakelMessages);
 
         EvamApi.notificationCallbacks.clear();
 
@@ -645,6 +654,20 @@ export class EvamApi {
     }
 
     /**
+     * Inject a list of raw Rakel messages as they would be received from the radio. 
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param rakelMessages list of raw Rakel messages.
+     */
+    injectRakelMessages(rakelMessages: string[]) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.rakelMessages = rakelMessages;
+            publish(EvamEvent.NewOrUpdatedRakelMessages, rakelMessages);
+        } else {
+            throw Error("Injecting rakel messaged is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
+    /**
      * Gets the address for the GRPC proxy
      */
     getGRPC = () => EvamApi.evamData.grpc;
@@ -921,6 +944,31 @@ export class EvamApi {
     }
 
     /**
+     * Used to assign a callback when the incoming Rakel messages are updated.
+     * The messages are piped though in the raw form as they are received from the radio. 
+     * @requires Permissions RAKEL_COMMUNICATION_READ
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument Rakel messages. Use this to access the incoming Rakel messages.
+     */
+    onNewOrUpdatedRakelMessages(callback: CallbackFunction<string[] | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const messages = (e as CustomEvent).detail
+                if (Array.isArray(messages)) {
+                    callback(messages);
+                } else if (messages === undefined) {
+                    callback(undefined);
+                }
+            };
+            EvamApi.newOrUpdatedRakelMessages.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedRakelMessages, {
+                detail: EvamApi.evamData.rakelMessages
+            }));
+            subscribe(EvamEvent.NewOrUpdatedRakelMessages, c);
+        }
+    }
+
+    /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
      * @requires Permissions SEND_NOTIFICATION
      * @param notification The notification to be sent
@@ -1044,4 +1092,14 @@ export class EvamApi {
     };
 
 
+    /**
+     * Sends a RawRakelAction to the Rakel radio.
+     * @param rawRakelAction the RawRakelAction to be sent to the radio.
+     * @requires Permissions RAKEL_RAW_COMMAND_SEND
+     * @preview This function is currently available in the Development Environment only.
+     */
+    sendRawRakelAction = (rawRakelAction: RawRakelAction) => {
+        publish(EvamEvent.RawRakelActionSent, rawRakelAction);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).sendRawRakelAction(rawRakelAction)
+    }
 }
