@@ -2,6 +2,7 @@ import {EvamApi, Operation} from "../../src";
 import {notification, operationWithAvailableHospitals, operationWithAvailablePriorities} from "../testdata";
 import {publish} from "../../src/util/EventHelpers";
 import {EvamEvent} from "../../src";
+import { RawRakelAction } from "../../src/domain/RawRakelAction";
 
 const sendNotificationMock = jest.fn().mockImplementation(() => {
 });
@@ -19,6 +20,8 @@ const setHospitalMock = jest.fn().mockImplementation((id: number) => {
 });
 const setPriorityMock = jest.fn().mockImplementation((id: number) => {
 });
+const sendRakelActionMock = jest.fn().mockImplementation((rakelString: string) => {
+});
 
 jest.mock("uuid", () => ({
     ...jest.requireActual("uuid"),
@@ -35,7 +38,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         deleteItem: deleteItemMock,
         clearItems: clearItemsMock,
         setHospital: setHospitalMock,
-        setPriority: setPriorityMock
+        setPriority: setPriorityMock,
+        sendRawRakelAction: sendRakelActionMock
     })),
     isRunningInVehicleServices: true,
 }));
@@ -113,6 +117,17 @@ describe("AndroidWrapper in Vehicle Services", () => {
         expect(setPriorityMock).not.toHaveBeenCalled();
         evamApi.setPriority(id)
         expect(setPriorityMock).toHaveBeenCalledWith(id);
+    });
+
+    it ("should use evamApi.sendRawRakelAction as a lightweight wrapper around Android.sendRawRakelAction when in VS", () => {
+        const evamApi = new EvamApi();
+        const rawRakelAction = new RawRakelAction([
+            "AT",
+            "ATE",
+            "AT+CTGS,1,9899565\n0x1a"
+        ]);    
+        evamApi.sendRawRakelAction(rawRakelAction);
+        expect(sendRakelActionMock).toHaveBeenCalledWith(rawRakelAction);
     });
 
 });
