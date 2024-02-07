@@ -1098,7 +1098,6 @@ export class EvamApi {
      * Sends a RawRakelAction to the Rakel radio.
      * @param rawRakelAction the RawRakelAction to be sent to the radio.
      * @requires Permissions RAKEL_RAW_COMMAND_SEND
-     * @preview This function is currently available in the Development Environment only.
      */
     sendRawRakelAction = (rawRakelAction: RawRakelAction) => {
         publish(EvamEvent.RawRakelActionSent, rawRakelAction);
