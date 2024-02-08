@@ -20,3 +20,4 @@ export {TripLocationHistory} from "./TripLocationHistory";
 export {VehicleState} from "./VehicleState";
 export {VehicleStatus} from "./VehicleStatus";
 export {RakelState} from "./RakelState"
+export {RawRakelAction} from "./RawRakelAction"

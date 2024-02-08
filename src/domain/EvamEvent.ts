@@ -26,6 +26,8 @@ enum EvamEvent {
     NavLayerPointSet = "navLayerPointSet",
     NavLayerShapeSet = "navLayerShapeSet",
     NavLayerDeleted = "navLayerDeleted",
+    RawRakelActionSent = "rawRakelActionSent",
+    NewOrUpdatedRakelMessages = "newOrUpdatedRakelMessages",
     _testEvent = "_testEvent"
 }
 

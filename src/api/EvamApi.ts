@@ -22,6 +22,7 @@ import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
+import {RawRakelAction} from "../domain/RawRakelAction";
 
 /**
  * @hidden
@@ -45,7 +46,8 @@ class EvamData {
         public grpc?: GRPC | undefined,
         public appId?: string | undefined,
         public rakelState?: RakelState | undefined,
-        public availableVehicleStatusList?: VehicleStatus[] | undefined
+        public availableVehicleStatusList?: VehicleStatus[] | undefined,
+        public rakelMessages?: string[] | undefined
     ) {
 
     }
@@ -246,6 +248,11 @@ export class EvamApi {
                 vsLog("RakelState", rakelState);
                 EvamApi.evamData.rakelState = rakelState || undefined;
             });
+            subscribe(EvamEvent.NewOrUpdatedRakelMessages, (e) => {
+                const {detail: rakelMessages} = (e as CustomEvent);
+                vsLog("RakelMessages", rakelMessages);
+                EvamApi.evamData.rakelMessages = rakelMessages || undefined;
+            });
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
@@ -277,6 +284,7 @@ export class EvamApi {
     private static newOrUpdatedDisplayModeCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedRakelStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
+    private static newOrUpdatedRakelMessages: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -311,6 +319,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedDisplayModeCallbacks, EvamEvent.NewOrUpdatedDisplayMode);
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelStateCallbacks, EvamEvent.NewOrUpdateRakelState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedRakelMessages, EvamEvent.NewOrUpdatedRakelMessages);
 
         EvamApi.notificationCallbacks.clear();
 
@@ -463,7 +472,7 @@ export class EvamApi {
      * Manually inject the Available Vehicle Status list to EvamApi (Only available in development.)
      * @param vehicleStatusList the list of available Vehicle Statuses
      */
-    injectAvailableVehicleStatusList(vehicleStatusList: VehicleStatus[]){
+    injectAvailableVehicleStatusList(vehicleStatusList: VehicleStatus[]) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.availableVehicleStatusList = vehicleStatusList;
             publish(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, vehicleStatusList);
@@ -476,7 +485,7 @@ export class EvamApi {
      * Manually inject the Rakel State to EvamApi (Only available in development.)
      * @param rakelState The Rakel State
      */
-    injectRakelState(rakelState: RakelState){
+    injectRakelState(rakelState: RakelState) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.rakelState = rakelState;
             publish(EvamEvent.NewOrUpdateRakelState, rakelState);
@@ -645,6 +654,20 @@ export class EvamApi {
     }
 
     /**
+     * Inject a list of raw Rakel messages as they would be received from the radio.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param rakelMessages list of raw Rakel messages.
+     */
+    injectRakelMessages(rakelMessages: string[]) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.rakelMessages = rakelMessages;
+            publish(EvamEvent.NewOrUpdatedRakelMessages, rakelMessages);
+        } else {
+            throw Error("Injecting rakel messaged is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
+    /**
      * Gets the address for the GRPC proxy
      */
     getGRPC = () => EvamApi.evamData.grpc;
@@ -767,7 +790,7 @@ export class EvamApi {
             EvamApi.newOrUpdatedInternetStateCallbacks.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedInternetState, {
                 detail: EvamApi.evamData.internetState
-            }))
+            }));
             subscribe(EvamEvent.NewOrUpdatedInternetState, c);
         }
     }
@@ -881,7 +904,7 @@ export class EvamApi {
      * @param callback The callback with (optional) argument Rakel state. Use this to access the Rakel state.
      * @preview This function is currently available in the Development Environment only.
      */
-    onNewOrUpdatedRakelState(callback: CallbackFunction<RakelState | undefined>){
+    onNewOrUpdatedRakelState(callback: CallbackFunction<RakelState | undefined>) {
         if (callback) {
             const c = (e: Event) => {
                 const rakelState = (e as CustomEvent).detail;
@@ -901,8 +924,8 @@ export class EvamApi {
      * @preview This function is currently available in the Development Environment only.
      * @param callback The callback with (optional) argument available Vehicle Status list. Use this to access the available Vehicle Statuses.
      */
-    onNewOrUpdatedAvailableVehicleStatusList(callback: CallbackFunction<VehicleStatus[] | undefined>){
-        if (callback){
+    onNewOrUpdatedAvailableVehicleStatusList(callback: CallbackFunction<VehicleStatus[] | undefined>) {
+        if (callback) {
             const c = (e: Event) => {
                 const vl = (e as CustomEvent).detail;
                 if (Array.isArray(vl)) {
@@ -917,6 +940,33 @@ export class EvamApi {
                 detail: EvamApi.evamData.availableVehicleStatusList
             }));
             subscribe(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, c);
+        }
+    }
+
+    /**
+     * Used to assign a callback when the incoming Rakel messages are updated.
+     * The messages are piped though in the raw form as they are received from the radio.
+     * @requires Permissions RAKEL_COMMUNICATION_READ
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument Rakel messages. Use this to access the incoming Rakel messages.
+     */
+    onNewOrUpdatedRakelMessages(callback: CallbackFunction<string[] | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const messages = (e as CustomEvent).detail;
+                if (Array.isArray(messages)) {
+                    callback(messages);
+                    //the reason we check for null here is that dispatching an undefined detail to an event becomes null
+                    //this is silly legacy JS stuff
+                } else if (messages === undefined || messages === null) {
+                    callback(undefined);
+                }
+            };
+            EvamApi.newOrUpdatedRakelMessages.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedRakelMessages, {
+                detail: EvamApi.evamData.rakelMessages
+            }));
+            subscribe(EvamEvent.NewOrUpdatedRakelMessages, c);
         }
     }
 
@@ -1015,7 +1065,7 @@ export class EvamApi {
         });
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).setNavLayerPoint(id, layerData);
     };
-    
+
     /**
      * Adds/Update a layer by its ID. Reusing a layerID causes the data to be replaced. A certified app can only update a layer it has created.
      * This function adds a set of shapes on the map with the text in its center.
@@ -1044,4 +1094,13 @@ export class EvamApi {
     };
 
 
+    /**
+     * Sends a RawRakelAction to the Rakel radio.
+     * @param rawRakelAction the RawRakelAction to be sent to the radio.
+     * @requires Permissions RAKEL_RAW_COMMAND_SEND
+     */
+    sendRawRakelAction = (rawRakelAction: RawRakelAction) => {
+        publish(EvamEvent.RawRakelActionSent, rawRakelAction);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).sendRawRakelAction(rawRakelAction);
+    };
 }

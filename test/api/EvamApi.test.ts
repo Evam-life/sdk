@@ -21,7 +21,7 @@ import {
     TripLocationHistory,
     VehicleState,
     VehicleStatus,
-    Battery, HospitalLocation
+    Battery, HospitalLocation, RakelState
 } from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
@@ -58,7 +58,8 @@ it("all inject methods allow undefined", () => {
         injectInternetState,
         injectDisplayMode,
         injectBattery,
-        injectDeviceRole
+        injectDeviceRole,
+        injectRakelState
     } = evamApi;
 
     expect(() => {
@@ -72,6 +73,7 @@ it("all inject methods allow undefined", () => {
         injectDisplayMode(undefined);
         injectBattery(undefined);
         injectDeviceRole(undefined);
+        injectRakelState(undefined);
     }).not.toThrow();
 });
 
@@ -484,7 +486,7 @@ describe("gRPC", () => {
     const evamApi = new TestEvamApi();
     const gRPCAddress = "https://localhost:...";
 
-    it("it is undefined by default", () => {
+    it("is undefined by default", () => {
         expect(evamApi.getGRPC()).toBeUndefined();
     });
 
@@ -805,6 +807,40 @@ it("should call callbacks with type DisplayMode for newOrUpdatedDisplayMode even
     expect(Object.values(DisplayMode)).toContain(callbackFn.mock.lastCall[0]);
 });
 
-it("", () => {
+describe("rakel state", () => {
+    const evamApi = new EvamApi();
 
+    it("should set the rakel when injected", () => {
+        const lstnr = jest.fn();
+        expect(lstnr).not.toHaveBeenCalled();
+        evamApi.onNewOrUpdatedRakelState(lstnr);
+        expect(lstnr).toHaveBeenCalledWith(undefined);
+        const rakelStateJSON = {
+            msisdn: "msisdn",
+            issi: "issi",
+            gssi: "gssi"
+        };
+        evamApi.injectRakelState(RakelState.fromJSON(rakelStateJSON));
+        expect(lstnr).toHaveBeenLastCalledWith(rakelStateJSON);
+    });
+});
+
+describe("rakel messages", () => {
+    const evamApi = new EvamApi();
+
+    it("should set the rakel when injected", () => {
+        const lstnr = jest.fn();
+        expect(lstnr).not.toHaveBeenCalled();
+        evamApi.onNewOrUpdatedRakelMessages(lstnr);
+        expect(lstnr).toHaveBeenCalledWith(undefined);
+        const rawRakelMessages: string[] = [
+                "AT",
+                "OK",
+                "+CMGS, 232, 16",
+                "OK"
+            ]
+        ;
+        evamApi.injectRakelMessages(rawRakelMessages);
+        expect(lstnr).toHaveBeenLastCalledWith(rawRakelMessages);
+    });
 });
