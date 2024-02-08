@@ -18,7 +18,8 @@ import {
     VehicleStatus,
     OperationState,
     LeavePatientLocation,
-    RakelState
+    RakelState,
+    RawRakelAction
 } from "./domain";
 
 import {EvamApi} from "./api/EvamApi";
@@ -45,7 +46,8 @@ export {
     VehicleServicesDevelopmentEnvironment,
     OperationState,
     LeavePatientLocation,
-    RakelState
+    RakelState,
+    RawRakelAction
 };
 
 export {EvamApi};

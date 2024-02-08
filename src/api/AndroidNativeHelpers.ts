@@ -1,5 +1,6 @@
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
+import { RawRakelAction } from "../domain/RawRakelAction";
 import {triggerAndroid} from "../util/triggerAndroid";
 
 const isRunningInVehicleServices = (() => {
@@ -121,6 +122,16 @@ const androidNativeHelpers = (insideVs: boolean) => ({
                 triggerAndroid("deleteNavLayer", id);
             } catch (e) {
                 console.error(e);
+            }
+        }
+    },
+    sendRawRakelAction: (rawRakelAction: RawRakelAction) => {
+        if (insideVs) {
+            try {
+                const data = JSON.stringify(rawRakelAction)
+                triggerAndroid("sendRawRakelAction", data);
+            } catch (e) {
+                console.error(e)
             }
         }
     }

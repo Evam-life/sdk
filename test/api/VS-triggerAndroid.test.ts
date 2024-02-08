@@ -3,6 +3,7 @@ import {triggerAndroid} from "../../src/util/triggerAndroid";
 import {_InternalVehicleServicesNotification} from "../../src/domain/_InternalVehicleServicesNotification";
 import {NotificationType} from "../../src";
 import {LayerPointData, LayerShapeData} from "../../sdk/domain/LayerData";
+import { RawRakelAction } from "../../src/domain/RawRakelAction";
 
 jest.mock("../../src/util/triggerAndroid", () => ({
     triggerAndroid: jest.fn()
@@ -91,6 +92,16 @@ describe("triggerAndroid method calls triggerAndroid with primitive types", () =
         const id = "id";
         androidNativeHelpers(true).deleteNavLayer(id);
         expect(triggerAndroid).toHaveBeenCalledWith("deleteNavLayer", id);
+    });
+
+    it("sendRawRakelAction", () => {
+        const rawRakelAction = new RawRakelAction([
+            "AT",
+            "ATE",
+            "AT+CTGS,1,9899565\n0x1a"
+        ]);
+        androidNativeHelpers(true).sendRawRakelAction(rawRakelAction);
+        expect(triggerAndroid).toHaveBeenCalledWith("sendRawRakelAction", JSON.stringify(rawRakelAction));
     });
 
 });
