@@ -11,15 +11,15 @@ class OperationUnit {
      * @param status The current Status, also corresponds to the Status for Assigned Resource from SOS
      * @param role The role of the unit
      * @param source The source of the unit
-     * @param eta The estimated time of arrival of the unit in milliseconds
-     * @param reportedInArea Corresponds to reportedInArea for Assigned Resource from SOS.
+     * @param eta The estimated time of arrival in epoch milliseconds UTC timezone
+     * @param reportedInArea Corresponds to reportedInArea for Assigned Resource from SOS
      */
     constructor(
         public unitId: string,
         public status: string | undefined,
         public role: string | undefined,
         public source: OperationUnitSource | undefined,
-        public eta: number | undefined,
+        public eta: Date | undefined,
         public reportedInArea: string | undefined
     ) {}
 
@@ -40,7 +40,7 @@ class OperationUnit {
             data.status,
             data.role,
             data.source,
-            data.eta,
+            data.eta !== undefined ? new Date(data.eta) : undefined,
             data.reportedInArea
         )
     }
