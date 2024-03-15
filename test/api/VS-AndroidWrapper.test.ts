@@ -40,7 +40,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         clearItems: clearItemsMock,
         setHospital: setHospitalMock,
         setPriority: setPriorityMock,
-        sendRawRakelAction: sendRakelActionMock
+        sendRawRakelAction: sendRakelActionMock,
+        putAppInForeground: putAppInForeground
     })),
     isRunningInVehicleServices: true,
 }));
