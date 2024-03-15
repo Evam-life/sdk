@@ -1103,4 +1103,11 @@ export class EvamApi {
         publish(EvamEvent.RawRakelActionSent, rawRakelAction);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).sendRawRakelAction(rawRakelAction);
     };
+
+    /**
+     * Opens the app in foreground in Vehicle Services.
+     */
+    putAppInForeground = () => {
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).putAppInForeground();
+    }
 }

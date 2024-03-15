@@ -104,4 +104,8 @@ describe("triggerAndroid method calls triggerAndroid with primitive types", () =
         expect(triggerAndroid).toHaveBeenCalledWith("sendRawRakelAction", JSON.stringify(rawRakelAction));
     });
 
+    it("putAppInForeground", () => {
+        androidNativeHelpers(true).putAppInForeground();
+        expect(triggerAndroid).toHaveBeenCalledWith("putAppInForeground");
+    })
 });

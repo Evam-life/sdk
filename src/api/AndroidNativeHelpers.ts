@@ -134,6 +134,11 @@ const androidNativeHelpers = (insideVs: boolean) => ({
                 console.error(e)
             }
         }
+    },
+    putAppInForeground: () => {
+        if (insideVs) {
+            triggerAndroid("putAppInForeground");
+        }
     }
 });
 
