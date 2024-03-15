@@ -16,6 +16,8 @@ import {
     OperationState
 } from "../src";
 import {Battery, BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../src/domain";
+import { OperationUnit } from "../src/domain/OperationUnit";
+import { OperationUnitSource } from "../src/domain/OperationUnitSource";
 
 export const vehicleStatus = {
     name: 59.3538975,
@@ -118,6 +120,12 @@ export const operationWithAvailableAndSelectedHospitalsAndPrios = {
     selectedHospital: 1
 }
 
+export const operationwithUnitsAndAssingedResourcesMissionNo = {
+    ..._.clone(operation),
+    operationUnits: [{unitId: "111-111111", status: "Framme", role: "Ambulance", source: "RAKEL", eta: 3600_000, reportedInArea: "Stockholm"},{unitId: "222-2222222", status: "Disponibel", role: "Ambulance", source: "RAKEL", eta: 5600_000, reportedInArea: "Solna"}],
+    assignedResourceMissionNo: "2"
+}
+
 export const destinationControlPointLocation = {
     latitude: 59.3538975,
     longitude: 17.9721877,
@@ -216,6 +224,7 @@ export const convertedOperationPriority = OperationPriority.fromJSON(operationPr
 export const convertedDestinationControlPointLocation = DestinationControlPointLocation.fromJSON(destinationControlPointLocation);
 export const convertedOperationWithAvailablePriorities = Operation.fromJSON(operationWithAvailablePriorities);
 export const convertedOperationWithAvailableHospitals = Operation.fromJSON(operationWithAvailableHospitals);
-export const convertedOperationWithAvailableAndSelectedHospitalsAndPrios = Operation.fromJSON(operationWithAvailableAndSelectedHospitalsAndPrios)
+export const convertedOperationWithAvailableAndSelectedHospitalsAndPrios = Operation.fromJSON(operationWithAvailableAndSelectedHospitalsAndPrios);
+export const convertedOperationWithUnitsAndAssignedResourceMissionNo = Operation.fromJSON(operationwithUnitsAndAssingedResourcesMissionNo);
 export const convertedSystemHealth = SystemHealth.fromJSON(systemHealth);
 export const convertedNotification = Notification.fromJSON(notification);

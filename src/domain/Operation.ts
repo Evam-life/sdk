@@ -5,6 +5,7 @@ import {HospitalLocation} from "./HospitalLocation";
 import {OperationPriority} from "./OperationPriority";
 import {OperationState} from "./OperationState";
 import {LeavePatientLocation} from "./LeavePatientLocation";
+import { OperationUnit } from "./OperationUnit";
 
 class Operation {
 
@@ -45,6 +46,8 @@ class Operation {
      * @param selectedPriority The id of the selected priority [inside available priority]
      * @param operationState the current state of the operation (ACTIVE, AVAILABLE, COMPLETE)
      * @param leavePatientLocation The location of the leave-patient ('toCity', etc)
+     * @param assignedResourceMissionNo The Assigned Resource Mission No value from SOS
+     * @param operationUnits A list of the units that include the Assigned Resource values from SOS and the Units from the cloud
      */
     constructor(
         // Metadata
@@ -91,7 +94,9 @@ class Operation {
         public selectedHospital: number | undefined,
         public selectedPriority: number | undefined,
         public operationState: OperationState,
-        public leavePatientLocation: LeavePatientLocation | undefined
+        public leavePatientLocation: LeavePatientLocation | undefined,
+        public assignedResourceMissionNo: string | undefined,
+        public operationUnits: Array<OperationUnit> | undefined
     ) {
     }
 
@@ -147,7 +152,9 @@ class Operation {
             data.selectedHospital,
             data.selectedPriority,
             data.operationState,
-            data.leavePatientLocation !== undefined ? LeavePatientLocation.fromJSON(data.leavePatientLocation) : undefined);
+            data.leavePatientLocation !== undefined ? LeavePatientLocation.fromJSON(data.leavePatientLocation) : undefined,
+            data.assignedResourceMissionNo,
+            (data.operationUnits !== undefined && Array.isArray(data.operationUnits)) ? data.operationUnits.map((unitData: object) => OperationUnit.fromJSON(unitData)) : undefined)
     }
 
 }
