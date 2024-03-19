@@ -818,7 +818,8 @@ describe("rakel state", () => {
         const rakelStateJSON = {
             msisdn: "msisdn",
             issi: "issi",
-            gssi: "gssi"
+            gssi: "gssi",
+            isHealthy: false
         };
         evamApi.injectRakelState(RakelState.fromJSON(rakelStateJSON));
         expect(lstnr).toHaveBeenLastCalledWith(rakelStateJSON);
