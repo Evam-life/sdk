@@ -22,7 +22,7 @@ class RakelState {
      */
     static fromJSON(data: any) {
         return new RakelState(
-            data?.msisdn, data?.issi, data?.gssi, data?.isHealthy
+            data?.msisdn, data?.issi, data?.gssi, data?.isHealthy || false
         )
     }
 }
