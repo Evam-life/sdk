@@ -6,6 +6,7 @@ const androidSetNavLayerPoint = jest.fn();
 const androidSetNavLayerShape = jest.fn();
 const androidDeleteNavLayer = jest.fn();
 const sendRawRakelAction = jest.fn();
+const putAppInForeground = jest.fn();
 
 jest.mock("../../src/api/AndroidNativeHelpers", () => ({
     ...jest.requireActual("../../src/api/AndroidNativeHelpers"),
@@ -21,7 +22,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         setNavLayerPoint: androidSetNavLayerPoint,
         setNavLayerShape: androidSetNavLayerShape,
         deleteNavLayer: androidDeleteNavLayer,
-        sendRawRakelAction: sendRawRakelAction
+        sendRawRakelAction: sendRawRakelAction,
+        putAppInForeground: putAppInForeground
     }))
 }));
 describe("evam api map methods", () => {
@@ -47,5 +49,7 @@ describe("evam api map methods", () => {
         ]); 
         evamApi.sendRawRakelAction(rawRakelAction);
         expect(sendRawRakelAction).toHaveBeenCalledWith(rawRakelAction)
+        evamApi.putAppInForeground();
+        expect(putAppInForeground).toHaveBeenCalled();
     });
 });

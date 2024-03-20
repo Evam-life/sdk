@@ -22,6 +22,7 @@ const setPriorityMock = jest.fn().mockImplementation((id: number) => {
 });
 const sendRakelActionMock = jest.fn().mockImplementation((rakelString: string) => {
 });
+const putAppInForeground = jest.fn().mockImplementation(() => {});
 
 jest.mock("uuid", () => ({
     ...jest.requireActual("uuid"),
@@ -39,7 +40,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         clearItems: clearItemsMock,
         setHospital: setHospitalMock,
         setPriority: setPriorityMock,
-        sendRawRakelAction: sendRakelActionMock
+        sendRawRakelAction: sendRakelActionMock,
+        putAppInForeground: putAppInForeground
     })),
     isRunningInVehicleServices: true,
 }));
@@ -128,6 +130,12 @@ describe("AndroidWrapper in Vehicle Services", () => {
         ]);    
         evamApi.sendRawRakelAction(rawRakelAction);
         expect(sendRakelActionMock).toHaveBeenCalledWith(rawRakelAction);
+    });
+
+    it ("should use evamApi.putAppInForeground as a lightweight wrapper around Android.putAppInForeground when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.putAppInForeground();
+        expect(putAppInForeground).toHaveBeenCalled();
     });
 
 });

@@ -5,11 +5,13 @@ class RakelState {
      * @param issi The radio ISSI
      * @param msisdn The radio MSISDN
      * @param gssi The radio GSSI
+     * @param isHealthy flag for the health of the radio communication
      */
     constructor(
         public msisdn: string | undefined,
         public issi: string | undefined,
-        public gssi: string | undefined
+        public gssi: string | undefined,
+        public isHealthy: boolean
     ) {
     }
 
@@ -20,7 +22,7 @@ class RakelState {
      */
     static fromJSON(data: any) {
         return new RakelState(
-            data?.msisdn, data?.issi, data?.gssi
+            data?.msisdn, data?.issi, data?.gssi, data?.isHealthy || false
         )
     }
 }
