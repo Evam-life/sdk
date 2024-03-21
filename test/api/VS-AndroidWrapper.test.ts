@@ -24,6 +24,8 @@ const sendRakelActionMock = jest.fn().mockImplementation((rakelString: string) =
 });
 const putAppInForeground = jest.fn().mockImplementation(() => {});
 
+const removeNotification = jest.fn().mockImplementation((notificationId: string) => {});
+
 jest.mock("uuid", () => ({
     ...jest.requireActual("uuid"),
     v4: jest.fn().mockImplementation(() => {
@@ -41,7 +43,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         setHospital: setHospitalMock,
         setPriority: setPriorityMock,
         sendRawRakelAction: sendRakelActionMock,
-        putAppInForeground: putAppInForeground
+        putAppInForeground: putAppInForeground,
+        removeNotification: removeNotification
     })),
     isRunningInVehicleServices: true,
 }));
@@ -136,6 +139,12 @@ describe("AndroidWrapper in Vehicle Services", () => {
         const evamApi = new EvamApi();
         evamApi.putAppInForeground();
         expect(putAppInForeground).toHaveBeenCalled();
+    });
+
+    it ("should use evamApi.removeNotification as a lightweight wrapper around Android.removeNotification when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.removeNotification("notification-1");
+        expect(removeNotification).toHaveBeenCalledWith("notification-1");
     });
 
 });

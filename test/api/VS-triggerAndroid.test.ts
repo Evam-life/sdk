@@ -107,5 +107,10 @@ describe("triggerAndroid method calls triggerAndroid with primitive types", () =
     it("putAppInForeground", () => {
         androidNativeHelpers(true).putAppInForeground();
         expect(triggerAndroid).toHaveBeenCalledWith("putAppInForeground");
+    });
+
+    it("removeNotification", () => {
+        androidNativeHelpers(true).removeNotification("notification-1");
+        expect(triggerAndroid).toHaveBeenLastCalledWith("removeNotification", "notification-1");
     })
 });

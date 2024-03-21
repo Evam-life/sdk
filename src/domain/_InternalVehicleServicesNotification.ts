@@ -16,7 +16,8 @@ class _InternalVehicleServicesNotification {
         public secondaryButton: {
             label: string,
             callback: string
-        } | undefined
+        } | undefined,
+        public notificationId?: string,
     ) {
     }
 }

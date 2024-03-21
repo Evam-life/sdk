@@ -38,6 +38,7 @@ class Notification {
 
     /**
      * Notification to appear in vehicle services
+     * @param notificationId unique notification id that is optional and used if the app also needs to remove a notification
      * @param heading the main title of the notification
      * @param description extra detail regarding the notification
      * @param notificationType how the notification is displayed
@@ -49,7 +50,8 @@ class Notification {
         public description: string,
         public notificationType: NotificationType,
         public primaryButton: NotificationButton,
-        public secondaryButton: NotificationButton | undefined
+        public secondaryButton: NotificationButton | undefined,
+        public notificationId?: string,
     ) {
     }
 
@@ -70,7 +72,8 @@ class Notification {
             notification.description,
             convertedNotificationType,
             NotificationButton.fromJSON(notification.primaryButton),
-            notification.secondaryButton ? NotificationButton.fromJSON(notification.secondaryButton) : undefined
+            notification.secondaryButton ? NotificationButton.fromJSON(notification.secondaryButton) : undefined,
+            notification.notificationId || undefined
         );
 
     }
