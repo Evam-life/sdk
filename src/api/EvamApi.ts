@@ -977,6 +977,7 @@ export class EvamApi {
      */
     sendNotification(notification: Notification) {
         const {
+            notificationId,
             heading,
             description,
             notificationType,
@@ -1020,7 +1021,8 @@ export class EvamApi {
             secondaryButton: secondaryButton ? {
                 label: secondaryButton.label,
                 callback: secondaryButtonCallbackUUID
-            } : undefined
+            } : undefined,
+            notificationId
         };
 
         if (EvamApi.isRunningInVehicleServices) {
@@ -1109,5 +1111,14 @@ export class EvamApi {
      */
     putAppInForeground = () => {
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).putAppInForeground();
+    }
+
+    /**
+     * Removes the notification by given id.
+     * @param notificationId The notification id 
+     */
+    removeNotification = (notificationId: string) => {
+        publish(EvamEvent.RemoveNotification, notificationId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).removeNotification(notificationId);
     }
 }

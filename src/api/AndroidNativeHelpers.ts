@@ -139,6 +139,15 @@ const androidNativeHelpers = (insideVs: boolean) => ({
         if (insideVs) {
             triggerAndroid("putAppInForeground");
         }
+    },
+    removeNotification: (notificationId: string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("removeNotification", notificationId);
+            } catch(e) {
+                console.error(e);
+            }
+        }
     }
 });
 

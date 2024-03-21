@@ -11,7 +11,8 @@ interface AndroidMethodArgumentMap {
     setNavLayerShape: readonly [string, string],
     deleteNavLayer: readonly [string]
     sendRawRakelAction: readonly [string],
-    putAppInForeground: readonly []
+    putAppInForeground: readonly [],
+    removeNotification: readonly [string]
 }
 
 export {

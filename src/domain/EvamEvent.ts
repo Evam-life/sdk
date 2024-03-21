@@ -28,6 +28,7 @@ enum EvamEvent {
     NavLayerDeleted = "navLayerDeleted",
     RawRakelActionSent = "rawRakelActionSent",
     NewOrUpdatedRakelMessages = "newOrUpdatedRakelMessages",
+    RemoveNotification = "removeNotification",
     _testEvent = "_testEvent"
 }
 
