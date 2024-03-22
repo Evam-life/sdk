@@ -4,7 +4,7 @@ class Location {
      * Location on a map
      * @param latitude latitude coordinate of the location
      * @param longitude longitude coordinate of the location
-     * @param timestamp time the location was provided
+     * @param timestamp time the location was provided (ERRATA: this can in some cases be a number instead of a Date)
      */
     constructor(
         public latitude: number,
