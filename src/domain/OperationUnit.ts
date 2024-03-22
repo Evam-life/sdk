@@ -38,7 +38,7 @@ class OperationUnit {
             data.status,
             data.role,
             source,
-            (data.eta !== undefined && data.eta > 0) ? new Date(data.eta*1000) : undefined,
+            (data.eta !== undefined && data.eta > 0) ? new Date(data.eta) : undefined,
             data.reportedInArea
         )
     }
