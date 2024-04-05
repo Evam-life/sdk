@@ -23,6 +23,7 @@ import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 import {RawRakelAction} from "../domain/RawRakelAction";
+import { PhoneCall } from "../domain/PhoneCall";
 
 /**
  * @hidden
@@ -47,7 +48,8 @@ class EvamData {
         public appId?: string | undefined,
         public rakelState?: RakelState | undefined,
         public availableVehicleStatusList?: VehicleStatus[] | undefined,
-        public rakelMessages?: string[] | undefined
+        public rakelMessages?: string[] | undefined,
+        public phoneCalls?: PhoneCall[] | undefined
     ) {
 
     }
@@ -253,6 +255,11 @@ export class EvamApi {
                 vsLog("RakelMessages", rakelMessages);
                 EvamApi.evamData.rakelMessages = rakelMessages || undefined;
             });
+            subscribe(EvamEvent.NewOrUpdatedCalls, (e) => {
+                const {detail: phoneCalls} = (e as CustomEvent);
+                vsLog("PhoneCalls", phoneCalls);
+                EvamApi.evamData.phoneCalls = phoneCalls || undefined;
+            });
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
@@ -285,6 +292,8 @@ export class EvamApi {
     private static newOrUpdatedRakelStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
     private static newOrUpdatedRakelMessages: CallbackFunctionArray = [];
+    private static newOrUpdatedCalls: CallbackFunctionArray = [];
+
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -320,6 +329,8 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelStateCallbacks, EvamEvent.NewOrUpdateRakelState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelMessages, EvamEvent.NewOrUpdatedRakelMessages);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedCalls, EvamEvent.NewOrUpdatedCalls);
+
 
         EvamApi.notificationCallbacks.clear();
 
@@ -667,6 +678,15 @@ export class EvamApi {
         }
     }
 
+    injectCalls(calls: PhoneCall[]) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.phoneCalls = calls;
+            publish(EvamEvent.NewOrUpdatedCalls, calls);
+        } else {
+            throw Error("Injecting rakel messaged is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
     /**
      * Gets the address for the GRPC proxy
      */
@@ -970,6 +990,24 @@ export class EvamApi {
         }
     }
 
+    onNewOrUpdatedCalls(callback: CallbackFunction<PhoneCall[] | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const calls = (e as CustomEvent).detail;
+                if (Array.isArray(calls)) {
+                    callback(calls);
+                } else if (calls === undefined || calls === null) {
+                    callback(undefined);
+                }
+            };
+            EvamApi.newOrUpdatedCalls.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedCalls, {
+                detail: EvamApi.evamData.phoneCalls
+            }));
+            subscribe(EvamEvent.NewOrUpdatedCalls, c);
+        }
+    }
+
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
      * @requires Permissions SEND_NOTIFICATION
@@ -1120,5 +1158,41 @@ export class EvamApi {
     removeNotification = (notificationId: string) => {
         publish(EvamEvent.RemoveNotification, notificationId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).removeNotification(notificationId);
+    }
+
+
+    makeCall = (number: string) => {
+        publish(EvamEvent.MakeCall, number);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).makeCall(number);
+    }
+
+    answerCall = (callId: string) => {
+        publish(EvamEvent.AnswerCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).answerCall(callId);
+    }
+
+    hangUpCall = (callId: string) => {
+        publish(EvamEvent.HangUpCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).hangUpCall(callId);
+    }
+
+    holdCall = (callId: string) => {
+        publish(EvamEvent.HoldCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).holdCall(callId);
+    }
+
+    unholdCall = (callId: string) => {
+        publish(EvamEvent.UnholdCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).unholdCall(callId);
+    }
+
+    muteMicrophone = () => {
+        publish(EvamEvent.MuteMicrophone, undefined);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).muteMicrophone();
+    }
+    
+    unmuteMicrophone = () => {
+        publish(EvamEvent.UnmuteMicrophone, undefined);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
     }
 }

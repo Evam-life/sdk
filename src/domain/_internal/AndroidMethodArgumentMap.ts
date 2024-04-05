@@ -13,6 +13,13 @@ interface AndroidMethodArgumentMap {
     sendRawRakelAction: readonly [string],
     putAppInForeground: readonly [],
     removeNotification: readonly [string]
+    makeCall: readonly [string],
+    answerCall: readonly [string],
+    hangUpCall: readonly [string],
+    holdCall: readonly [string],
+    unholdCall: readonly [string],
+    muteMicrophone: readonly [],
+    unmuteMicrophone: readonly []
 }
 
 export {
