@@ -27,7 +27,7 @@ const isWindows = process.platform === "win32";
   );
 
   console.log(
-    `Creating a new certified app in ${chalk.green(`${process.cwd()}/${projectName}`)}`,
+    `Creating a new certified app in ${chalk.green(path.join(process.cwd(), projectName))}`,
   );
   await emitter.clone(projectName);
 
@@ -39,12 +39,12 @@ const isWindows = process.platform === "win32";
         path.join(process.cwd(), projectName, "public", "evam.json"),
         path.join(process.cwd(), projectName, "index.html"),
       ],
-      from: "certified-app-template",
+      from: /certified-app-template/g,
       to: projectName,
     });
   } catch (e) {
     console.warn(
-      chalk.yellow`Failed to replace default project name, make sure you update the application ID in ${chalk.bold("public/evam.json")}. Continuing...`,
+      chalk.yellow`Failed to replace default project name, make sure you update the application ID in ${chalk.bold(path.join("public", "evam.json"))}. Continuing...`,
     );
   }
 
@@ -80,7 +80,7 @@ const isWindows = process.platform === "win32";
     console.warn(chalk.yellow`Git commands failed, continuing...`, e);
   }
 
-  console.log(`${chalk.green.bold("Success!")} Created ${projectName} at ${process.cwd()}/${projectName}
+  console.log(`${chalk.green.bold("Success!")} Created ${projectName} at ${path.join(process.cwd(), projectName)}
 Inside that directory, you can run several commands:
 
   ${chalk.cyan("npm run dev")}
