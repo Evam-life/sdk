@@ -64,8 +64,6 @@
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
-    "chalk": "^4.1.2",
-    "degit": "^2.8.4",
     "dpdm": "^3.14.0",
     "eledoc": "^0.2.1",
     "eslint": "^8.56.0",
@@ -95,7 +93,9 @@
     "lodash": "^4.17.21",
     "tar": "^6.2.1",
     "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "chalk": "^4.1.2",
+    "degit": "^2.8.4"
   },
   "jest": {
     "roots": [
