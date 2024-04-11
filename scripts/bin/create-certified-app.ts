@@ -31,28 +31,40 @@ const isWindows = process.platform === "win32";
   );
   await emitter.clone(projectName);
 
-  await replace({
-    disableGlobs: true,
-    files: [
-      path.join(process.cwd(), projectName, "package.json"),
-      path.join(process.cwd(), projectName, "public", "evam.json"),
-      path.join(process.cwd(), projectName, "index.html"),
-    ],
-    from: "certified-app-template",
-    to: projectName,
-  });
+  try {
+    await replace({
+      disableGlobs: true,
+      files: [
+        path.join(process.cwd(), projectName, "package.json"),
+        path.join(process.cwd(), projectName, "public", "evam.json"),
+        path.join(process.cwd(), projectName, "index.html"),
+      ],
+      from: "certified-app-template",
+      to: projectName,
+    });
+  } catch (e) {
+    console.warn(
+      chalk.yellow`Failed to replace default project name, make sure you update the application ID in ${chalk.bold("public/evam.json")}. Continuing...`,
+    );
+  }
 
   console.log("Installing packages using npm. This might take a while.");
-  await new Promise<void>((resolve, reject) => {
-    const npmInstall = spawn(isWindows ? "npm.cmd" : "npm", ["install"], {
-      cwd: projectName,
-      stdio: "inherit",
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const npmInstall = spawn(isWindows ? "npm.cmd" : "npm", ["install"], {
+        cwd: projectName,
+        stdio: "inherit",
+      });
+      npmInstall.on("close", code => {
+        if (code === 0) resolve();
+        reject();
+      });
     });
-    npmInstall.on("close", code => {
-      if (code === 0) resolve();
-      reject();
-    });
-  });
+  } catch (e) {
+    console.warn(
+      chalk.yellow`Failed to install packages using npm. You will have to run ${chalk.bold("npm install")} manually. Continuing...`,
+    );
+  }
   console.log(""); // Line break after npm output
 
   try {
@@ -65,10 +77,10 @@ const isWindows = process.platform === "win32";
     });
     console.log("Created git commit.");
   } catch (e) {
-    console.error("Git commands failed, continuing...", e);
+    console.warn(chalk.yellow`Git commands failed, continuing...`, e);
   }
 
-  console.log(`${chalk.bold("Success!")} Created ${projectName} at ${process.cwd()}/${projectName}
+  console.log(`${chalk.green.bold("Success!")} Created ${projectName} at ${process.cwd()}/${projectName}
 Inside that directory, you can run several commands:
 
   ${chalk.cyan("npm run dev")}
