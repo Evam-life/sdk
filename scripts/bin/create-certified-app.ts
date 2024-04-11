@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 import chalk from "chalk";
 import degit from "degit";
+import replace from "replace-in-file";
 
 import { promisify } from "node:util";
 import { exec as callbackExec, spawn } from "child_process";
 const exec = promisify(callbackExec);
 
 (async () => {
-  const projectName: string | undefined = process.argv[2];
+  let projectName: string | undefined = process.argv[2]
+    ?.trim()
+    ?.replace(" ", "-");
   if (!projectName) {
     console.error(
       `Please specify a project name:\n  ${chalk.cyan("create-certified-app")} ${chalk.green("<project name>")}`,
@@ -15,12 +18,25 @@ const exec = promisify(callbackExec);
     process.exit(1);
   }
 
-  const emitter = degit("Evam-life/sdk", {});
+  const emitter = degit(
+    "https://github.com/Evam-life/certified-app-template-react",
+    {},
+  );
 
   console.log(
     `Creating a new certified app in ${chalk.green(`${process.cwd()}/${projectName}`)}`,
   );
   await emitter.clone(projectName);
+
+  await replace({
+    files: [
+      `${process.cwd()}/${projectName}/package.json`,
+      `${process.cwd()}/${projectName}/public/evam.json`,
+      `${process.cwd()}/${projectName}/index.html`,
+    ],
+    from: "certified-app-template",
+    to: projectName,
+  });
 
   console.log("Installing packages using npm. This might take a while.");
   await new Promise<void>((resolve, reject) => {
