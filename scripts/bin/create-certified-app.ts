@@ -4,6 +4,7 @@ import degit from "degit";
 import replace from "replace-in-file";
 
 import { promisify } from "node:util";
+import path from "node:path";
 import { exec as callbackExec, spawn } from "child_process";
 const exec = promisify(callbackExec);
 
@@ -30,9 +31,9 @@ const exec = promisify(callbackExec);
 
   await replace({
     files: [
-      `${process.cwd()}/${projectName}/package.json`,
-      `${process.cwd()}/${projectName}/public/evam.json`,
-      `${process.cwd()}/${projectName}/index.html`,
+      path.join(process.cwd(), projectName, "package.json"),
+      path.join(process.cwd(), projectName, "public", "evam.json"),
+      path.join(process.cwd(), projectName, "index.html"),
     ],
     from: "certified-app-template",
     to: projectName,
