@@ -8,6 +8,8 @@ import path from "node:path";
 import { exec as callbackExec, spawn } from "child_process";
 const exec = promisify(callbackExec);
 
+const isWindows = process.platform === "win32";
+
 (async () => {
   let projectName: string | undefined = process.argv[2]
     ?.trim()
@@ -30,6 +32,7 @@ const exec = promisify(callbackExec);
   await emitter.clone(projectName);
 
   await replace({
+    disableGlobs: true,
     files: [
       path.join(process.cwd(), projectName, "package.json"),
       path.join(process.cwd(), projectName, "public", "evam.json"),
@@ -41,7 +44,7 @@ const exec = promisify(callbackExec);
 
   console.log("Installing packages using npm. This might take a while.");
   await new Promise<void>((resolve, reject) => {
-    const npmInstall = spawn("npm", ["install"], {
+    const npmInstall = spawn(isWindows ? "npm.cmd" : "npm", ["install"], {
       cwd: projectName,
       stdio: "inherit",
     });
