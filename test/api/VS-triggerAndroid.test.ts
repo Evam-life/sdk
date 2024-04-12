@@ -111,6 +111,48 @@ describe("triggerAndroid method calls triggerAndroid with primitive types", () =
 
     it("removeNotification", () => {
         androidNativeHelpers(true).removeNotification("notification-1");
-        expect(triggerAndroid).toHaveBeenLastCalledWith("removeNotification", "notification-1");
+        expect(triggerAndroid).toHaveBeenCalledWith("removeNotification", "notification-1");
     })
+
+
+    it("makeCall", () => {
+        androidNativeHelpers(true).makeCall("0702345678");
+        expect(triggerAndroid).toHaveBeenCalledWith("makeCall", "0702345678");
+    })
+
+
+    it("answerCall", () => {
+        androidNativeHelpers(true).answerCall("1");
+        expect(triggerAndroid).toHaveBeenCalledWith("answerCall", "1");
+    })
+
+
+
+    it("hangUpCall", () => {
+        androidNativeHelpers(true).hangUpCall("1");
+        expect(triggerAndroid).toHaveBeenCalledWith("hangUpCall", "1");
+    })
+
+
+    it("holdCall", () => {
+        androidNativeHelpers(true).holdCall("1");
+        expect(triggerAndroid).toHaveBeenCalledWith("holdCall", "1");
+    })
+
+
+    it("unholdCall", () => {
+        androidNativeHelpers(true).unholdCall("1");
+        expect(triggerAndroid).toHaveBeenCalledWith("unholdCall", "1");
+    })
+
+    it("muteMicrophone", () => {
+        androidNativeHelpers(true).muteMicrophone();
+        expect(triggerAndroid).toHaveBeenCalledWith("muteMicrophone");
+    })
+
+    it("unmuteMicrophone", () => {
+        androidNativeHelpers(true).unmuteMicrophone();
+        expect(triggerAndroid).toHaveBeenCalledWith("unmuteMicrophone");
+    })
+
 });

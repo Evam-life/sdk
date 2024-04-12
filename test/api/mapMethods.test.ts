@@ -7,6 +7,13 @@ const androidSetNavLayerShape = jest.fn();
 const androidDeleteNavLayer = jest.fn();
 const sendRawRakelAction = jest.fn();
 const putAppInForeground = jest.fn();
+const makeCall = jest.fn();
+const answerCall = jest.fn();
+const hangUpCall = jest.fn();
+const holdCall = jest.fn();
+const unholdCall = jest.fn();
+const muteMicrophone = jest.fn();
+const unmuteMicrophone = jest.fn();
 
 jest.mock("../../src/api/AndroidNativeHelpers", () => ({
     ...jest.requireActual("../../src/api/AndroidNativeHelpers"),
@@ -23,7 +30,14 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         setNavLayerShape: androidSetNavLayerShape,
         deleteNavLayer: androidDeleteNavLayer,
         sendRawRakelAction: sendRawRakelAction,
-        putAppInForeground: putAppInForeground
+        putAppInForeground: putAppInForeground,
+        makeCall: makeCall,
+        answerCall: answerCall,
+        hangUpCall: hangUpCall,
+        holdCall: holdCall,
+        unholdCall: unholdCall,
+        muteMicrophone: muteMicrophone,
+        unmuteMicrophone: unmuteMicrophone
     }))
 }));
 describe("evam api map methods", () => {
@@ -51,5 +65,25 @@ describe("evam api map methods", () => {
         expect(sendRawRakelAction).toHaveBeenCalledWith(rawRakelAction)
         evamApi.putAppInForeground();
         expect(putAppInForeground).toHaveBeenCalled();
+        evamApi.makeCall("07012345678");
+        expect(makeCall).toHaveBeenCalledWith("07012345678");
+
+        evamApi.answerCall("1");
+        expect(answerCall).toHaveBeenCalledWith("1");
+
+        evamApi.hangUpCall("1");
+        expect(hangUpCall).toHaveBeenCalledWith("1");
+
+        evamApi.holdCall("1");
+        expect(holdCall).toHaveBeenCalledWith("1");
+
+        evamApi.unholdCall("1");
+        expect(unholdCall).toHaveBeenCalledWith("1");
+
+        evamApi.muteMicrophone();
+        expect(muteMicrophone).toHaveBeenCalledWith();
+
+        evamApi.unmuteMicrophone();
+        expect(unmuteMicrophone).toHaveBeenCalledWith();
     });
 });

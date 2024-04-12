@@ -26,6 +26,14 @@ const putAppInForeground = jest.fn().mockImplementation(() => {});
 
 const removeNotification = jest.fn().mockImplementation((notificationId: string) => {});
 
+const makeCall = jest.fn().mockImplementation((number: string) => {});
+const answerCall = jest.fn().mockImplementation((id: string) => {});
+const hangUpCall = jest.fn().mockImplementation((id: string) => {});
+const holdCall = jest.fn().mockImplementation((id: string) => {});
+const unholdCall = jest.fn().mockImplementation((id: string) => {});
+const muteMicrophone = jest.fn().mockImplementation(() => {});
+const unmuteMicrophone = jest.fn().mockImplementation(() => {});
+
 jest.mock("uuid", () => ({
     ...jest.requireActual("uuid"),
     v4: jest.fn().mockImplementation(() => {
@@ -44,7 +52,14 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         setPriority: setPriorityMock,
         sendRawRakelAction: sendRakelActionMock,
         putAppInForeground: putAppInForeground,
-        removeNotification: removeNotification
+        removeNotification: removeNotification,
+        makeCall: makeCall,
+        answerCall: answerCall,
+        hangUpCall: hangUpCall,
+        holdCall: holdCall,
+        unholdCall: unholdCall,
+        muteMicrophone: muteMicrophone,
+        unmuteMicrophone: unmuteMicrophone
     })),
     isRunningInVehicleServices: true,
 }));
@@ -145,6 +160,51 @@ describe("AndroidWrapper in Vehicle Services", () => {
         const evamApi = new EvamApi();
         evamApi.removeNotification("notification-1");
         expect(removeNotification).toHaveBeenCalledWith("notification-1");
+    });
+
+    it ("should use evamApi.makeCall as a lightweight wrapper around Android.makeCall when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.makeCall("07012345678");
+        expect(makeCall).toHaveBeenCalledWith("07012345678");
+    });
+
+    it ("should use evamApi.answerCall as a lightweight wrapper around Android.answerCall when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.answerCall("1");
+        expect(answerCall).toHaveBeenCalledWith("1");
+    });
+
+
+    it ("should use evamApi.hangUpCall as a lightweight wrapper around Android.hangUpCall when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.hangUpCall("1");
+        expect(hangUpCall).toHaveBeenCalledWith("1");
+    });
+
+
+    it ("should use evamApi.holdCall as a lightweight wrapper around Android.holdCall when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.holdCall("1");
+        expect(holdCall).toHaveBeenCalledWith("1");
+    });
+
+    it ("should use evamApi.unholdCall as a lightweight wrapper around Android.unholdCall when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.unholdCall("1");
+        expect(unholdCall).toHaveBeenCalledWith("1");
+    });
+
+    it ("should use evamApi.muteMicrophone as a lightweight wrapper around Android.muteMicrophone when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.muteMicrophone();
+        expect(muteMicrophone).toHaveBeenCalled();
+    });
+
+
+    it ("should use evamApi.unmuteMicrophone as a lightweight wrapper around Android.unmuteMicrophone when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.unmuteMicrophone();
+        expect(unmuteMicrophone).toHaveBeenCalled();
     });
 
 });

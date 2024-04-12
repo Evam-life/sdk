@@ -28,6 +28,8 @@ import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
 import {BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../../src/domain";
 import { PhoneCall } from "../../src/domain/PhoneCall";
+import { PhoneCallState } from "../../src/domain/PhoneCallState";
+import { CallDisconnectCause } from "../../src/domain/CallDisconnectCause"
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -864,7 +866,8 @@ describe("telephony", () => {
             {
                 callId: "1",
                 callNumber: "07012345678",
-                callState: "RINGING"
+                callState: PhoneCallState.RINGING,
+                disconnectCause: CallDisconnectCause.UNKNOWN
             }
         ];
         evamApi.injectCalls(calls);
@@ -875,7 +878,7 @@ describe("telephony", () => {
         const listener = jest.fn();
         expect(listener).not.toHaveBeenCalled();
         evamApi.onNewOrUpdatedMuteState(listener);
-        expect(listener).toHaveBeenCalledWith(undefined);
+        expect(listener).toHaveBeenCalledWith(null);
         evamApi.injectMuteState(true);
         expect(listener).toHaveBeenCalledWith(true);
         evamApi.injectMuteState(false);

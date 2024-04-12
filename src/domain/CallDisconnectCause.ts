@@ -64,3 +64,5 @@ enum CallDisconnectCause {
          */
         UNKNOWN = "UNKNOWN"
 }
+
+export {CallDisconnectCause}
