@@ -49,7 +49,8 @@ class EvamData {
         public rakelState?: RakelState | undefined,
         public availableVehicleStatusList?: VehicleStatus[] | undefined,
         public rakelMessages?: string[] | undefined,
-        public phoneCalls?: PhoneCall[] | undefined
+        public phoneCalls?: PhoneCall[] | undefined,
+        public isMuted?: boolean | undefined,
     ) {
 
     }
@@ -293,6 +294,7 @@ export class EvamApi {
     private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
     private static newOrUpdatedRakelMessages: CallbackFunctionArray = [];
     private static newOrUpdatedCalls: CallbackFunctionArray = [];
+    private static newOrUpdatedMuteState: CallbackFunctionArray = [];
 
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
@@ -330,6 +332,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelMessages, EvamEvent.NewOrUpdatedRakelMessages);
         clearCallbacksAndArray(EvamApi.newOrUpdatedCalls, EvamEvent.NewOrUpdatedCalls);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedMuteState, EvamEvent.NewOrUpdatedMuteState);
 
 
         EvamApi.notificationCallbacks.clear();
@@ -1005,6 +1008,20 @@ export class EvamApi {
                 detail: EvamApi.evamData.phoneCalls
             }));
             subscribe(EvamEvent.NewOrUpdatedCalls, c);
+        }
+    }
+
+    onNewOrUpdatedMuteState(callback: CallbackFunction<boolean | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const isMuted = (e as CustomEvent).detail;
+                callback(isMuted);
+            };
+            EvamApi.newOrUpdatedMuteState.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedMuteState, {
+                detail: EvamApi.evamData.isMuted
+            }));
+            subscribe(EvamEvent.NewOrUpdatedMuteState, c);
         }
     }
 
