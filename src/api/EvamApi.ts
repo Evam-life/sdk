@@ -686,7 +686,16 @@ export class EvamApi {
             EvamApi.evamData.phoneCalls = calls;
             publish(EvamEvent.NewOrUpdatedCalls, calls);
         } else {
-            throw Error("Injecting rakel messaged is not allowed in the VS environment, use a web browser instead");
+            throw Error("Injecting calls is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
+    injectMuteState(isMuted: boolean) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.isMuted = isMuted;
+            publish(EvamEvent.NewOrUpdatedMuteState, isMuted);
+        } else {
+            throw Error("Injecting mute state is not allowed in the VS environment, use a web browser instead");
         }
     }
 
