@@ -20,8 +20,8 @@ test:
 
 deploy-npm:
   stage: deploy
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "master"
   script:
     - git config --global user.email "info@evam.life"
     - git config --global user.name "Evam Bot"
@@ -30,4 +30,18 @@ deploy-npm:
     - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
     - npm install
     - npm run build
-    - bash -c 'if [[ "$CI_COMMIT_TAG" == *"beta"* ]]; then echo "Pushing beta" && npm publish --access public --tag beta; else echo "Pushing prod" && npm publish --access public; fi'
+    - npm publish --access public
+
+deploy-npm-preview:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_BRANCH != "master"
+  script:
+    - git config --global user.email "info@evam.life"
+    - git config --global user.name "Evam Bot"
+    - npm config set registry https://registry.npmjs.org/
+    - npm version "$CI_COMMIT_TAG"
+    - echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
+    - npm install
+    - npm run build
+    - npm publish --access public --tag preview
