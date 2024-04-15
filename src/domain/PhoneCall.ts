@@ -3,6 +3,14 @@ import { CallDisconnectCause } from "./CallDisconnectCause";
 
 
 class PhoneCall {
+
+    /**
+     * Model class for the phone call.
+     * @param callId the unique id of the call 
+     * @param callNumber the phone number that the call is connecting to
+     * @param callState the state of the call. See {@link PhoneCallState}
+     * @param disconnectCause The cause of the termination of a call. See {@link CallDisconnectCause}.
+     */
     constructor(
         public callId: string,
         public callNumber: string,

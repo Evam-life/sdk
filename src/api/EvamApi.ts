@@ -681,6 +681,11 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Inject a list of {@link PhoneCall} as they are sent from Vehicle Services.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param calls the calls to be injected.
+     */
     injectCalls(calls: PhoneCall[]) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.phoneCalls = calls;
@@ -690,6 +695,11 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Injects the mute state of the microphone.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param isMuted true if the microphone is muted.
+     */
     injectMuteState(isMuted: boolean) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.isMuted = isMuted;
@@ -1002,6 +1012,12 @@ export class EvamApi {
         }
     }
 
+     /**
+     * Used to assign a callback when the phone calls are updated.
+     * @requires Permissions TELEPHONY
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument array of {@link PhoneCall}. Use this to access the current phone calls.
+     */
     onNewOrUpdatedCalls(callback: CallbackFunction<PhoneCall[] | undefined>) {
         if (callback) {
             const c = (e: Event) => {
@@ -1020,6 +1036,12 @@ export class EvamApi {
         }
     }
 
+     /**
+     * Used to assign a callback when the device's microphone mute state is updated.
+     * @requires Permissions TELEPHONY
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument boolean. Use this to access the current microphone mute state.
+     */
     onNewOrUpdatedMuteState(callback: CallbackFunction<boolean | undefined>) {
         if (callback) {
             const c = (e: Event) => {
@@ -1187,36 +1209,62 @@ export class EvamApi {
     }
 
 
+    /**
+     * Initiates a new call to the given {@argument number}.
+     * @param number the phone number to call
+     */
     makeCall = (number: string) => {
         publish(EvamEvent.MakeCall, number);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).makeCall(number);
     }
 
+    /**
+     * Answers a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to answer.
+     */
     answerCall = (callId: string) => {
         publish(EvamEvent.AnswerCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).answerCall(callId);
     }
 
+    /**
+     * Hangs up or canceles a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to be canceled.
+     */
     hangUpCall = (callId: string) => {
         publish(EvamEvent.HangUpCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).hangUpCall(callId);
     }
 
+    /**
+     * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to hold.
+     */
     holdCall = (callId: string) => {
         publish(EvamEvent.HoldCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).holdCall(callId);
     }
 
+    /**
+     * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to be resumed.
+     */
     unholdCall = (callId: string) => {
         publish(EvamEvent.UnholdCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unholdCall(callId);
     }
 
+    /**
+     * Mutes the microphone of the device.
+     */
     muteMicrophone = () => {
         publish(EvamEvent.MuteMicrophone, undefined);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).muteMicrophone();
     }
     
+    /**
+     * Unmutes the microphone of the device.
+     */
     unmuteMicrophone = () => {
         publish(EvamEvent.UnmuteMicrophone, undefined);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
