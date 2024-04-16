@@ -148,6 +148,69 @@ const androidNativeHelpers = (insideVs: boolean) => ({
                 console.error(e);
             }
         }
+    },
+    makeCall: (number:string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("makeCall", number);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    answerCall: (callId :string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("answerCall", callId);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    hangUpCall: (callId :string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("hangUpCall", callId);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    holdCall: (callId :string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("holdCall", callId);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    unholdCall: (callId :string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("unholdCall", callId);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    muteMicrophone: () => {
+        if (insideVs) {
+            try {
+                triggerAndroid("muteMicrophone");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    unmuteMicrophone: () => {
+        if (insideVs) {
+            try {
+                triggerAndroid("unmuteMicrophone");
+            } catch (e) {
+                console.error(e);
+            }
+        }
     }
 });
 

@@ -23,6 +23,7 @@ import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 import {RawRakelAction} from "../domain/RawRakelAction";
+import { PhoneCall } from "../domain/PhoneCall";
 
 /**
  * @hidden
@@ -47,7 +48,9 @@ class EvamData {
         public appId?: string | undefined,
         public rakelState?: RakelState | undefined,
         public availableVehicleStatusList?: VehicleStatus[] | undefined,
-        public rakelMessages?: string[] | undefined
+        public rakelMessages?: string[] | undefined,
+        public phoneCalls?: PhoneCall[] | undefined,
+        public isMuted?: boolean | undefined,
     ) {
 
     }
@@ -253,6 +256,11 @@ export class EvamApi {
                 vsLog("RakelMessages", rakelMessages);
                 EvamApi.evamData.rakelMessages = rakelMessages || undefined;
             });
+            subscribe(EvamEvent.NewOrUpdatedCalls, (e) => {
+                const {detail: phoneCalls} = (e as CustomEvent);
+                vsLog("PhoneCalls", phoneCalls);
+                EvamApi.evamData.phoneCalls = phoneCalls || undefined;
+            });
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
@@ -285,6 +293,9 @@ export class EvamApi {
     private static newOrUpdatedRakelStateCallbacks: CallbackFunctionArray = [];
     private static newOrUpdatedAvailableVehicleStatusList: CallbackFunctionArray = [];
     private static newOrUpdatedRakelMessages: CallbackFunctionArray = [];
+    private static newOrUpdatedCalls: CallbackFunctionArray = [];
+    private static newOrUpdatedMuteState: CallbackFunctionArray = [];
+
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -320,6 +331,9 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelStateCallbacks, EvamEvent.NewOrUpdateRakelState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAvailableVehicleStatusList, EvamEvent.NewOrUpdatedAvailableVehicleStatusList);
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelMessages, EvamEvent.NewOrUpdatedRakelMessages);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedCalls, EvamEvent.NewOrUpdatedCalls);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedMuteState, EvamEvent.NewOrUpdatedMuteState);
+
 
         EvamApi.notificationCallbacks.clear();
 
@@ -668,6 +682,34 @@ export class EvamApi {
     }
 
     /**
+     * Inject a list of {@link PhoneCall} as they are sent from Vehicle Services.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param calls the calls to be injected.
+     */
+    injectCalls(calls: PhoneCall[]) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.phoneCalls = calls;
+            publish(EvamEvent.NewOrUpdatedCalls, calls);
+        } else {
+            throw Error("Injecting calls is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
+    /**
+     * Injects the mute state of the microphone.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param isMuted true if the microphone is muted.
+     */
+    injectMuteState(isMuted: boolean) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.isMuted = isMuted;
+            publish(EvamEvent.NewOrUpdatedMuteState, isMuted);
+        } else {
+            throw Error("Injecting mute state is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
+    /**
      * Gets the address for the GRPC proxy
      */
     getGRPC = () => EvamApi.evamData.grpc;
@@ -970,6 +1012,50 @@ export class EvamApi {
         }
     }
 
+     /**
+     * Used to assign a callback when the phone calls are updated.
+     * @requires Permissions TELEPHONY
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument array of {@link PhoneCall}. Use this to access the current phone calls.
+     */
+    onNewOrUpdatedCalls(callback: CallbackFunction<PhoneCall[] | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const calls = (e as CustomEvent).detail;
+                if (Array.isArray(calls)) {
+                    callback(calls);
+                } else if (calls === undefined || calls === null) {
+                    callback(undefined);
+                }
+            };
+            EvamApi.newOrUpdatedCalls.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedCalls, {
+                detail: EvamApi.evamData.phoneCalls
+            }));
+            subscribe(EvamEvent.NewOrUpdatedCalls, c);
+        }
+    }
+
+     /**
+     * Used to assign a callback when the device's microphone mute state is updated.
+     * @requires Permissions TELEPHONY
+     * @preview This function is currently available in the Development Environment only.
+     * @param callback The callback with (optional) argument boolean. Use this to access the current microphone mute state.
+     */
+    onNewOrUpdatedMuteState(callback: CallbackFunction<boolean | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const isMuted = (e as CustomEvent).detail;
+                callback(isMuted);
+            };
+            EvamApi.newOrUpdatedMuteState.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedMuteState, {
+                detail: EvamApi.evamData.isMuted
+            }));
+            subscribe(EvamEvent.NewOrUpdatedMuteState, c);
+        }
+    }
+
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
      * @requires Permissions SEND_NOTIFICATION
@@ -1120,5 +1206,67 @@ export class EvamApi {
     removeNotification = (notificationId: string) => {
         publish(EvamEvent.RemoveNotification, notificationId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).removeNotification(notificationId);
+    }
+
+
+    /**
+     * Initiates a new call to the given {@argument number}.
+     * @param number the phone number to call
+     */
+    makeCall = (number: string) => {
+        publish(EvamEvent.MakeCall, number);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).makeCall(number);
+    }
+
+    /**
+     * Answers a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to answer.
+     */
+    answerCall = (callId: string) => {
+        publish(EvamEvent.AnswerCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).answerCall(callId);
+    }
+
+    /**
+     * Hangs up or canceles a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to be canceled.
+     */
+    hangUpCall = (callId: string) => {
+        publish(EvamEvent.HangUpCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).hangUpCall(callId);
+    }
+
+    /**
+     * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to hold.
+     */
+    holdCall = (callId: string) => {
+        publish(EvamEvent.HoldCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).holdCall(callId);
+    }
+
+    /**
+     * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to be resumed.
+     */
+    unholdCall = (callId: string) => {
+        publish(EvamEvent.UnholdCall, callId);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).unholdCall(callId);
+    }
+
+    /**
+     * Mutes the microphone of the device.
+     */
+    muteMicrophone = () => {
+        publish(EvamEvent.MuteMicrophone, undefined);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).muteMicrophone();
+    }
+    
+    /**
+     * Unmutes the microphone of the device.
+     */
+    unmuteMicrophone = () => {
+        publish(EvamEvent.UnmuteMicrophone, undefined);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
     }
 }

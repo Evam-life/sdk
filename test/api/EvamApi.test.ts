@@ -27,6 +27,9 @@ import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
 import {BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../../src/domain";
+import { PhoneCall } from "../../src/domain/PhoneCall";
+import { PhoneCallState } from "../../src/domain/PhoneCallState";
+import { CallDisconnectCause } from "../../src/domain/CallDisconnectCause"
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -59,7 +62,9 @@ it("all inject methods allow undefined", () => {
         injectDisplayMode,
         injectBattery,
         injectDeviceRole,
-        injectRakelState
+        injectRakelState,
+        injectCalls,
+        injectMuteState
     } = evamApi;
 
     expect(() => {
@@ -74,6 +79,8 @@ it("all inject methods allow undefined", () => {
         injectBattery(undefined);
         injectDeviceRole(undefined);
         injectRakelState(undefined);
+        injectCalls(undefined);
+        injectMuteState(undefined);
     }).not.toThrow();
 });
 
@@ -843,5 +850,38 @@ describe("rakel messages", () => {
         ;
         evamApi.injectRakelMessages(rawRakelMessages);
         expect(lstnr).toHaveBeenLastCalledWith(rawRakelMessages);
+    });
+});
+
+describe("telephony", () => {
+    const evamApi = new EvamApi();
+
+    it("should set calls when injected", () => {
+        const listener = jest.fn();
+        expect(listener).not.toHaveBeenCalled();
+        evamApi.onNewOrUpdatedCalls(listener);
+        expect(listener).toHaveBeenCalledWith(undefined);
+
+        const calls : PhoneCall[] = [
+            {
+                callId: "1",
+                callNumber: "07012345678",
+                callState: PhoneCallState.RINGING,
+                disconnectCause: CallDisconnectCause.UNKNOWN
+            }
+        ];
+        evamApi.injectCalls(calls);
+        expect(listener).toHaveBeenCalledWith(calls);
+    });
+    
+    it("should set the mute state when injected", () => {
+        const listener = jest.fn();
+        expect(listener).not.toHaveBeenCalled();
+        evamApi.onNewOrUpdatedMuteState(listener);
+        expect(listener).toHaveBeenCalledWith(null);
+        evamApi.injectMuteState(true);
+        expect(listener).toHaveBeenCalledWith(true);
+        evamApi.injectMuteState(false);
+        expect(listener).toHaveBeenCalledWith(false);
     });
 });

@@ -29,6 +29,15 @@ enum EvamEvent {
     RawRakelActionSent = "rawRakelActionSent",
     NewOrUpdatedRakelMessages = "newOrUpdatedRakelMessages",
     RemoveNotification = "removeNotification",
+    MakeCall = "makeCall",
+    AnswerCall = "answerCall",
+    HangUpCall = "hangUpCall",
+    HoldCall = "holdCall",
+    UnholdCall = "unholdCall",
+    MuteMicrophone = "muteMicrophone",
+    UnmuteMicrophone = "unmuteMicrophone",
+    NewOrUpdatedCalls = "newOrUpdatedCalls",
+    NewOrUpdatedMuteState = "newOrUpdatedMuteState",
     _testEvent = "_testEvent"
 }
 
