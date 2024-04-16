@@ -19,24 +19,9 @@ class PhoneCall {
     ) {}
 
     static fromJSON(data: any) {
-        let phoneCallState: PhoneCallState;
-        try {
-            phoneCallState = PhoneCallState[data.callState as keyof typeof PhoneCallState];
-        } catch (e) {
-            console.error("Unknown phone call state: " + data.callState);
-            phoneCallState = PhoneCallState.UNKNOWN;
-        }
-
-        let disconnectCause: CallDisconnectCause;
-
-        if (disconnectCause !== undefined) {
-            try {
-                disconnectCause = CallDisconnectCause[data.disconnectCause as keyof typeof CallDisconnectCause];
-            } catch (e) {
-                console.error("Unknown disconnect cause: " + data.disconnectCause);
-                disconnectCause = CallDisconnectCause.UNKNOWN
-            }
-        }
+        const phoneCallState: PhoneCallState = PhoneCallState[data.callState as keyof typeof PhoneCallState] === undefined ? PhoneCallState.UNKNOWN : PhoneCallState[data.callState as keyof typeof PhoneCallState]
+       
+        const disconnectCause: CallDisconnectCause = CallDisconnectCause[data.disconnectCause as keyof typeof CallDisconnectCause] === undefined ? CallDisconnectCause.UNKNOWN : CallDisconnectCause[data.disconnectCause as keyof typeof CallDisconnectCause]
 
         return new PhoneCall(data.callId, data.callNumber, phoneCallState, disconnectCause);
     }}
