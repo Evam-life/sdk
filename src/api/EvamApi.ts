@@ -419,8 +419,9 @@ export class EvamApi {
 
     /**
      * Sets the selected hospital id for the current active operation. The id must be present inside the available hospitals
-     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id the id of the hospital to be set
+     * @requires Permissions ACTIVE_OPERATION_WRITE
+     * @requires Version Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will throw an Error.
      */
     setHospital(id: number) {
         if (EvamApi.evamData.activeCase?.availableHospitalLocations === undefined || EvamApi.evamData.activeCase?.availableHospitalLocations.length === 0) {
@@ -444,8 +445,9 @@ export class EvamApi {
 
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
-     * @requires Permissions ACTIVE_OPERATION_WRITE
      * @param id of the priority to be set
+     * @requires Permissions ACTIVE_OPERATION_WRITE
+     * @requires Version Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will trigger an error.
      */
     setPriority(id: number) {
         if (EvamApi.evamData.activeCase === undefined) {
@@ -472,6 +474,7 @@ export class EvamApi {
     /**
      * Manually inject location to EvamApi (Only available in development.)
      * @param location the location to inject.
+     * @requires Environment Development (in web browser) only.
      */
     injectLocation(location: Location) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -485,6 +488,7 @@ export class EvamApi {
     /**
      * Manually inject the Available Vehicle Status list to EvamApi (Only available in development.)
      * @param vehicleStatusList the list of available Vehicle Statuses
+     * @requires Environment Development (in web browser) only.
      */
     injectAvailableVehicleStatusList(vehicleStatusList: VehicleStatus[]) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -498,6 +502,7 @@ export class EvamApi {
     /**
      * Manually inject the Rakel State to EvamApi (Only available in development.)
      * @param rakelState The Rakel State
+     * @requires Environment Development (in web browser) only.
      */
     injectRakelState(rakelState: RakelState) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -511,6 +516,7 @@ export class EvamApi {
     /**
      * Manually inject vehicleState to EvamApi (Only available in development.)
      * @param vehicleState the vehicleState to inject.
+     * @requires Environment Development (in web browser) only.
      */
     injectVehicleState(vehicleState: VehicleState) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -524,6 +530,7 @@ export class EvamApi {
     /**
      * Manually inject tripLocationHistory to EvamApi (Only available in development.)
      * @param tripLocationHistory the tripLocationHistory to inject.
+     * @requires Environment Development (in web browser) only.
      */
     injectTrip(tripLocationHistory: TripLocationHistory) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -537,6 +544,7 @@ export class EvamApi {
     /**
      * Manually inject deviceRole to EvamApi (Only available in development.)
      * @param deviceRole the deviceRole to inject.
+     * @requires Environment Development (in web browser) only.
      */
     injectDeviceRole(deviceRole: DeviceRole) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -550,6 +558,7 @@ export class EvamApi {
     /**
      * Manually inject internetState to EvamApi (Only available in development.)
      * @param internetState the internetState to inject.
+     * @requires Environment Development (in web browser) only.
      */
     injectInternetState(internetState: InternetState) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -565,6 +574,7 @@ export class EvamApi {
      * Injects the Active Operation manually. This will trigger onNewOrUpdatedActiveOperation(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param activeCase The active case to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
      */
     injectOperation(activeCase: Operation) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -579,6 +589,7 @@ export class EvamApi {
      * Injects the settings manually. This will trigger onNewOrUpdatedSettings(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param settings The settings to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
      */
     injectSettings(settings: any) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -593,6 +604,7 @@ export class EvamApi {
      * Injects the display mode manually. This will trigger onNewOrUpdatedDisplayMode(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
      */
     injectDisplayMode(displayMode: DisplayMode) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -603,6 +615,12 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Injects the app version manually.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param appVersion The app version to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
+     */
     injectAppVersion(appVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.appVersion = appVersion;
@@ -612,6 +630,12 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Injects the OS version manually.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param osVersion The OS version to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
+     */
     injectOSVersion(osVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.osVersion = osVersion;
@@ -621,6 +645,12 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Injects the Vehicle Services platform version manually.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param vsVersion The Vehicle Services version to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
+     */
     injectVSVersion(vsVersion: string) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.vsVersion = vsVersion;
@@ -630,6 +660,12 @@ export class EvamApi {
         }
     }
 
+    /**
+     * Injects the certified app ID manually.
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param appId The app ID to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
+     */
     injectAppId(appId: string) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.appId = appId;
@@ -643,6 +679,7 @@ export class EvamApi {
      * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param operationList The operation list to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
      */
     injectOperationList(operationList: Operation[]) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -657,6 +694,7 @@ export class EvamApi {
      * Injects the battery manually. This will trigger onNewOrUpdatedBattery(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param battery The battery to be injected for development purposes.
+     * @requires Environment Development (in web browser) only.
      */
     injectBattery(battery: Battery) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -671,6 +709,7 @@ export class EvamApi {
      * Inject a list of raw Rakel messages as they would be received from the radio.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param rakelMessages list of raw Rakel messages.
+     * @requires Environment Development (in web browser) only.
      */
     injectRakelMessages(rakelMessages: string[]) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -685,6 +724,7 @@ export class EvamApi {
      * Inject a list of {@link PhoneCall} as they are sent from Vehicle Services.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param calls the calls to be injected.
+     * @requires Environment Development (in web browser) only.
      */
     injectCalls(calls: PhoneCall[]) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -699,6 +739,7 @@ export class EvamApi {
      * Injects the mute state of the microphone.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param isMuted true if the microphone is muted.
+     * @requires Environment Development (in web browser) only.
      */
     injectMuteState(isMuted: boolean) {
         if (!EvamApi.isRunningInVehicleServices) {
@@ -746,6 +787,8 @@ export class EvamApi {
      * Registers a callback to be run upon a new Active Operation is available or the current Active
      * Operation is updated.
      * @requires Permissions ACTIVE_OPERATION_READ
+     * @requires Version Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the active Operation is updated, this can happen due to update by the dispatch (e.g. SOS), Evam Demo Tool or user edit (e.g. change of PRIO)
      * @param callback The callback to be executed
      */
     onNewOrUpdatedActiveOperation(callback: CallbackFunction<Operation | undefined>) {
@@ -764,6 +807,8 @@ export class EvamApi {
 
     /**
      * Registers a callback to be run upon new application settings reception or settings update
+     * @requires Version Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the settings are updated for this certified app, and when the certified app starts. Vehicle Services synchronizes these settings with Evam Central Services once every few hours.
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedSettings(callback: CallbackFunction<any | undefined>) {
@@ -783,6 +828,8 @@ export class EvamApi {
     /**
      * Registers a callback to be run upon new device role or device role update
      * @requires Permissions DEVICE_ROLE_READ
+     * @requires Version Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the device role is changed by the user through the Setup flow, and when the certified app starts.
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedDeviceRole(callback: CallbackFunction<DeviceRole | undefined>) {
@@ -802,6 +849,8 @@ export class EvamApi {
     /**
      * Registers a callback to be run upon new location or location update
      * @requires Permissions LOCATION_READ
+     * @requires Version Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the device location is updated through the GPS or Evam Demo Tool.
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedLocation(callback: CallbackFunction<Location | undefined>) {
@@ -821,6 +870,8 @@ export class EvamApi {
     /**
      * Registers a callback to be run upon new internetState or internetState update
      * @requires Permissions CONNECTIVITY_READ
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the state of the internet connectivity is updated, and when the certified app starts.
      * @param callback The callback to be executed.
      */
     onNewOrUpdatedInternetState(callback: CallbackFunction<InternetState | undefined>) {
@@ -840,6 +891,8 @@ export class EvamApi {
     /**
      * Used to assign a callback when the vehicle state is updated.
      * @requires Permissions VEHICLE_STATE_READ
+     * @requires Version Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time any of the following is updated: device location, Operation ID, Vehicle Status.
      * @param callback The callback with (optional) argument vehicleState. Use this to access the vehicle state.
      */
     onNewOrUpdatedVehicleState(callback: CallbackFunction<VehicleState | undefined>) {
@@ -860,6 +913,8 @@ export class EvamApi {
     /**
      * Used to assign a callback when the trip location history is updated.
      * @requires Permissions TRIP_HISTORY_READ
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time any of the following is updated: device location, ETA to destination, distance to destination, navigation state.
      * @param callback The callback with (optional) argument tripLocationHistory. Use this to access the trip location history.
      */
     onNewOrUpdatedTripLocationHistory(callback: CallbackFunction<TripLocationHistory | undefined>) {
@@ -880,6 +935,8 @@ export class EvamApi {
     /**
      * Used to assign a callback when the operation list is updated.
      * @requires Permissions OPERATION_READ
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time any Operation is updated in the Evam platform, including the Active one.
      * @param callback The callback with (optional) argument operationList. Use this to access the operation list.
      */
     onNewOrUpdatedOperationList(callback: CallbackFunction<Operation[] | undefined>) {
@@ -904,6 +961,8 @@ export class EvamApi {
     /**
      * Used to assign a callback when the battery data is updated.
      * @requires Permissions BATTERY_READ
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the battery state is updated: charge, health, plugged status, or capacity. And when the certified app starts.
      * @param callback The callback with (optional) argument battery. Use this to access the battery.
      */
     onNewOrUpdatedBattery(callback: CallbackFunction<Battery | undefined>) {
@@ -924,6 +983,8 @@ export class EvamApi {
      *
      * Used to assign a callback when the battery created or updated.
      * @requires Permissions DISPLAY_MODE_READ
+     * @requires Version Vehicle Services version 5.2.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time new messages are available from the connected Tetra terminal.
      * @param callback The callback with (optional) argument display mode. Use this to access the display mode.
      */
     onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
@@ -943,8 +1004,9 @@ export class EvamApi {
     /**
      * Used to assign a callback when the rakel state is created or updated
      * @requires Permissions RAKEL_STATE_READ
+     * @requires Version Vehicle Services version 5.2.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time any of the following changes: GSSI, MSISDN, ISSI of the connected radio. Also, when the certified app starts.
      * @param callback The callback with (optional) argument Rakel state. Use this to access the Rakel state.
-     * @preview This function is currently available in the Development Environment only.
      */
     onNewOrUpdatedRakelState(callback: CallbackFunction<RakelState | undefined>) {
         if (callback) {
@@ -963,7 +1025,8 @@ export class EvamApi {
     /**
      * Used to assign a callback when the list of available Vehicle Statuses is created or updated
      * @requires Permissions AVAILABLE_VEHICLE_STATUS_LIST_READ
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the list of available Vehicle Statuses is updated for this vehicle, and also when the certified app starts.
      * @param callback The callback with (optional) argument available Vehicle Status list. Use this to access the available Vehicle Statuses.
      */
     onNewOrUpdatedAvailableVehicleStatusList(callback: CallbackFunction<VehicleStatus[] | undefined>) {
@@ -989,7 +1052,8 @@ export class EvamApi {
      * Used to assign a callback when the incoming Rakel messages are updated.
      * The messages are piped though in the raw form as they are received from the radio.
      * @requires Permissions RAKEL_COMMUNICATION_READ
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.2.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time new messages are available from the connected Tetra terminal.
      * @param callback The callback with (optional) argument Rakel messages. Use this to access the incoming Rakel messages.
      */
     onNewOrUpdatedRakelMessages(callback: CallbackFunction<string[] | undefined>) {
@@ -1015,7 +1079,8 @@ export class EvamApi {
      /**
      * Used to assign a callback when the phone calls are updated.
      * @requires Permissions TELEPHONY
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the state of incoming calls is updated: new incoming call, hangup etc.
      * @param callback The callback with (optional) argument array of {@link PhoneCall}. Use this to access the current phone calls.
      */
     onNewOrUpdatedCalls(callback: CallbackFunction<PhoneCall[] | undefined>) {
@@ -1039,7 +1104,8 @@ export class EvamApi {
      /**
      * Used to assign a callback when the device's microphone mute state is updated.
      * @requires Permissions TELEPHONY
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the device's microphone mute state is updated.
      * @param callback The callback with (optional) argument boolean. Use this to access the current microphone mute state.
      */
     onNewOrUpdatedMuteState(callback: CallbackFunction<boolean | undefined>) {
@@ -1059,6 +1125,7 @@ export class EvamApi {
     /**
      * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
      * @requires Permissions SEND_NOTIFICATION
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: function with throw an Error.
      * @param notification The notification to be sent
      */
     sendNotification(notification: Notification) {
@@ -1144,7 +1211,7 @@ export class EvamApi {
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
      * @param layerData array of points to be shown with text and icon. Note that the icon of the first element will be used for all points.
      * @requires Permissions NAVIGATION_PRIVATE_LAYERS
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will throw an Error.
      */
     setNavLayerPoint = (id: string, layerData: LayerPointData[]) => {
         publish(EvamEvent.NavLayerPointSet, {
@@ -1160,7 +1227,7 @@ export class EvamApi {
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
      * @param layerData array of shapes to be shown with text and shape color (format: "#AARRGGBB", just like the SC buttons)
      * @requires Permissions NAVIGATION_PRIVATE_LAYERS
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will throw an Error.
      */
     setNavLayerShape = (id: string, layerData: LayerShapeData[]) => {
         publish(EvamEvent.NavLayerShapeSet, {
@@ -1174,7 +1241,7 @@ export class EvamApi {
      * Deletes a layer by its ID. A certified app can only delete a layer it has created.
      * @param id the id of the layer (if the layer doesn't exist then one will be created)
      * @requires Permissions NAVIGATION_PRIVATE_LAYERS
-     * @preview This function is currently available in the Development Environment only.
+     * @requires Version Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will throw an Error.
      */
     deleteNavLayer = (id: string) => {
         publish(EvamEvent.NavLayerDeleted, id);
@@ -1186,6 +1253,7 @@ export class EvamApi {
      * Sends a RawRakelAction to the Rakel radio.
      * @param rawRakelAction the RawRakelAction to be sent to the radio.
      * @requires Permissions RAKEL_RAW_COMMAND_SEND
+     * @requires Version Vehicle Services version 5.1.0 and above have full functionality. Other versions: function will throw an Error.
      */
     sendRawRakelAction = (rawRakelAction: RawRakelAction) => {
         publish(EvamEvent.RawRakelActionSent, rawRakelAction);
@@ -1194,6 +1262,7 @@ export class EvamApi {
 
     /**
      * Opens the app in foreground in Vehicle Services.
+     * @requires Version Vehicle Services version 5.2.2 and above have full functionality. Other versions: function will throw an Error.
      */
     putAppInForeground = () => {
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).putAppInForeground();
@@ -1201,7 +1270,8 @@ export class EvamApi {
 
     /**
      * Removes the notification by given id.
-     * @param notificationId The notification id 
+     * @param notificationId The notification id
+     * @requires Version Vehicle Services version 5.2.2 and above have full functionality. Other versions: function will throw an Error.
      */
     removeNotification = (notificationId: string) => {
         publish(EvamEvent.RemoveNotification, notificationId);
@@ -1210,8 +1280,9 @@ export class EvamApi {
 
 
     /**
-     * Initiates a new call to the given {@argument number}.
+     * Initiates a new call to the given number.
      * @param number the phone number to call
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     makeCall = (number: string) => {
         publish(EvamEvent.MakeCall, number);
@@ -1221,6 +1292,7 @@ export class EvamApi {
     /**
      * Answers a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
      * @param callId the id of the call to answer.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     answerCall = (callId: string) => {
         publish(EvamEvent.AnswerCall, callId);
@@ -1228,8 +1300,9 @@ export class EvamApi {
     }
 
     /**
-     * Hangs up or canceles a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * Hangs up or cancels a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
      * @param callId the id of the call to be canceled.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     hangUpCall = (callId: string) => {
         publish(EvamEvent.HangUpCall, callId);
@@ -1239,6 +1312,7 @@ export class EvamApi {
     /**
      * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
      * @param callId the id of the call to hold.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     holdCall = (callId: string) => {
         publish(EvamEvent.HoldCall, callId);
@@ -1248,6 +1322,7 @@ export class EvamApi {
     /**
      * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
      * @param callId the id of the call to be resumed.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     unholdCall = (callId: string) => {
         publish(EvamEvent.UnholdCall, callId);
@@ -1256,6 +1331,7 @@ export class EvamApi {
 
     /**
      * Mutes the microphone of the device.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     muteMicrophone = () => {
         publish(EvamEvent.MuteMicrophone, undefined);
@@ -1264,6 +1340,7 @@ export class EvamApi {
     
     /**
      * Unmutes the microphone of the device.
+     * @requires Version Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      */
     unmuteMicrophone = () => {
         publish(EvamEvent.UnmuteMicrophone, undefined);
