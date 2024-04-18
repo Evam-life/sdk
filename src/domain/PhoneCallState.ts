@@ -15,7 +15,7 @@ enum PhoneCallState {
   DIALING = "DIALING",
   /**
    * The state of a Call when no further voice or other communication is being
-   * transmitted, the remote side has been or will inevitably be informed that the {@code Call}
+   * transmitted, the remote side has been or will inevitably be informed that the Call
    * is no longer active, and the local data transport has or inevitably will release resources
    * associated with this Call.
    */
