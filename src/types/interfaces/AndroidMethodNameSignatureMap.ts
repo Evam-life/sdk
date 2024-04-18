@@ -1,39 +1,39 @@
 interface AndroidMiscMethodNameSignatureMap {
-    apiReady: () => void;
+  apiReady: () => void;
 }
 
 interface AndroidRakelMethodNameSignatureMap {
-    sendRawRakelAction: (action: string) => void;
+  sendRawRakelAction: (action: string) => void;
 }
 
 interface AndroidOperationMethodNameSignatureMap {
-    setPriority: (id: number) => void;
-    setHospital: (id: number) => void;
+  setPriority: (id: number) => void;
+  setHospital: (id: number) => void;
 }
 
 interface AndroidMapsMethodNameSignatureMap {
-    setNavLayerPoint: (id: string, layerPointData: string) => void;
-    setNavLayerShape: (id: string, layerShapeData: string) => void;
-    deleteNavLayer: (id: string) => void;
+  setNavLayerPoint: (id: string, layerPointData: string) => void;
+  setNavLayerShape: (id: string, layerShapeData: string) => void;
+  deleteNavLayer: (id: string) => void;
 }
 
 interface AndroidNotificationMethodNameSignatureMap {
-    sendNotification: (notification: string) => void;
-    removeNotification: (notificationId: string) => void;
+  sendNotification: (notification: string) => void;
+  removeNotification: (notificationId: string) => void;
 }
 
 interface AndroidAppMethodNameSignatureMap {
-    putAppInForeground: () => void;
+  putAppInForeground: () => void;
 }
 
 interface AndroidTelephonyMethodNameSignatureMap {
-    makeCall: (phoneNumber: string) => void;
-    answerCall: (callId: string) => void;
-    hangUpCall: (callId: string) => void;
-    holdCall: (callId: string) => void,
-    unholdCall: (callId: string) => void;
-    muteMicrophone: () => void;
-    unmunuteMicrophone: () => void;
+  makeCall: (phoneNumber: string) => void;
+  answerCall: (callId: string) => void;
+  hangUpCall: (callId: string) => void;
+  holdCall: (callId: string) => void;
+  unholdCall: (callId: string) => void;
+  muteMicrophone: () => void;
+  unmunuteMicrophone: () => void;
 }
 
 /**
@@ -46,11 +46,10 @@ interface AndroidTelephonyMethodNameSignatureMap {
  * @see AndroidMethod
  */
 export interface AndroidMethodNameSignatureMap
-    extends AndroidMiscMethodNameSignatureMap,
-        AndroidRakelMethodNameSignatureMap,
-        AndroidOperationMethodNameSignatureMap,
-        AndroidMapsMethodNameSignatureMap,
-        AndroidAppMethodNameSignatureMap,
-        AndroidNotificationMethodNameSignatureMap,
-        AndroidTelephonyMethodNameSignatureMap {
-}
+  extends AndroidMiscMethodNameSignatureMap,
+    AndroidRakelMethodNameSignatureMap,
+    AndroidOperationMethodNameSignatureMap,
+    AndroidMapsMethodNameSignatureMap,
+    AndroidAppMethodNameSignatureMap,
+    AndroidNotificationMethodNameSignatureMap,
+    AndroidTelephonyMethodNameSignatureMap {}
