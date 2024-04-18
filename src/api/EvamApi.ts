@@ -161,7 +161,7 @@ class EvamApi {
         },
       }),
     /**
-     * Hangs up or cancels a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * Hangs up or cancels a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link onNewOrUpdatedCalls}.
      * @param callId the id of the call to be canceled.
      */
     answerCall: (callId: string) =>
@@ -172,7 +172,7 @@ class EvamApi {
         },
       }),
     /**
-     * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link onNewOrUpdatedCalls}.
      * @param callId the id of the call to hold.
      */
     hangUpCall: (callId: string) =>
@@ -183,7 +183,7 @@ class EvamApi {
         },
       }),
     /**
-     * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link onNewOrUpdatedCalls}.
      * @param callId the id of the call to be resumed.
      */
     unholdCall: (callId: string) =>
