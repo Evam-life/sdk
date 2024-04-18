@@ -68,6 +68,10 @@ type CallbackFunctionArray = Array<CallbackFunction<Event>>;
 /**
  * Evam API singleton that exposes methods to interact with the Evam platform.
  *
+ * When using any method, pay attention to the permission they require, you will need to add them to your Evam manifest.
+ * In general, try to limit how many permissions your certified app requires as more permissions may cause a longer review
+ * process when deploying your certified app.
+ *
  * @example
  * ```ts
  * // Get instance (don't be afraid to copy them around or create more, as they're simply a lightweight reference to shared static data)
@@ -446,6 +450,7 @@ export class EvamApi {
     /**
      * Sets the selected priority id for the current active operation. The id must be present inside the available priorities.
      * @param id of the priority to be set
+     * @category Development
      * @requires **Permissions** ACTIVE_OPERATION_WRITE
      * @requires **Version** Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will trigger an error.
      */
@@ -474,6 +479,7 @@ export class EvamApi {
     /**
      * Manually inject location to EvamApi (Only available in development.)
      * @param location the location to inject.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectLocation(location: Location) {
@@ -488,6 +494,7 @@ export class EvamApi {
     /**
      * Manually inject the Available Vehicle Status list to EvamApi (Only available in development.)
      * @param vehicleStatusList the list of available Vehicle Statuses
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectAvailableVehicleStatusList(vehicleStatusList: VehicleStatus[]) {
@@ -502,6 +509,7 @@ export class EvamApi {
     /**
      * Manually inject the Rakel State to EvamApi (Only available in development.)
      * @param rakelState The Rakel State
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectRakelState(rakelState: RakelState) {
@@ -516,6 +524,7 @@ export class EvamApi {
     /**
      * Manually inject vehicleState to EvamApi (Only available in development.)
      * @param vehicleState the vehicleState to inject.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectVehicleState(vehicleState: VehicleState) {
@@ -530,6 +539,7 @@ export class EvamApi {
     /**
      * Manually inject tripLocationHistory to EvamApi (Only available in development.)
      * @param tripLocationHistory the tripLocationHistory to inject.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectTrip(tripLocationHistory: TripLocationHistory) {
@@ -544,6 +554,7 @@ export class EvamApi {
     /**
      * Manually inject deviceRole to EvamApi (Only available in development.)
      * @param deviceRole the deviceRole to inject.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectDeviceRole(deviceRole: DeviceRole) {
@@ -558,6 +569,7 @@ export class EvamApi {
     /**
      * Manually inject internetState to EvamApi (Only available in development.)
      * @param internetState the internetState to inject.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectInternetState(internetState: InternetState) {
@@ -574,6 +586,7 @@ export class EvamApi {
      * Injects the Active Operation manually. This will trigger onNewOrUpdatedActiveOperation(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param activeCase The active case to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectOperation(activeCase: Operation) {
@@ -589,6 +602,7 @@ export class EvamApi {
      * Injects the settings manually. This will trigger onNewOrUpdatedSettings(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param settings The settings to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectSettings(settings: any) {
@@ -604,6 +618,7 @@ export class EvamApi {
      * Injects the display mode manually. This will trigger onNewOrUpdatedDisplayMode(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param displayMode The display mode (light or dark) to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectDisplayMode(displayMode: DisplayMode) {
@@ -619,6 +634,7 @@ export class EvamApi {
      * Injects the app version manually.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param appVersion The app version to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectAppVersion(appVersion: string) {
@@ -634,6 +650,7 @@ export class EvamApi {
      * Injects the OS version manually.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param osVersion The OS version to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectOSVersion(osVersion: string) {
@@ -649,6 +666,7 @@ export class EvamApi {
      * Injects the Vehicle Services platform version manually.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param vsVersion The Vehicle Services version to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectVSVersion(vsVersion: string) {
@@ -664,6 +682,7 @@ export class EvamApi {
      * Injects the certified app ID manually.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param appId The app ID to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectAppId(appId: string) {
@@ -679,6 +698,7 @@ export class EvamApi {
      * Injects the operation list manually. This will trigger onNewOrUpdatedOperationList(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param operationList The operation list to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectOperationList(operationList: Operation[]) {
@@ -694,6 +714,7 @@ export class EvamApi {
      * Injects the battery manually. This will trigger onNewOrUpdatedBattery(...)'s callback.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param battery The battery to be injected for development purposes.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectBattery(battery: Battery) {
@@ -709,6 +730,7 @@ export class EvamApi {
      * Inject a list of raw Rakel messages as they would be received from the radio.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param rakelMessages list of raw Rakel messages.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectRakelMessages(rakelMessages: string[]) {
@@ -724,6 +746,7 @@ export class EvamApi {
      * Inject a list of {@link PhoneCall} as they are sent from Vehicle Services.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param calls the calls to be injected.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectCalls(calls: PhoneCall[]) {
@@ -739,6 +762,7 @@ export class EvamApi {
      * Injects the mute state of the microphone.
      * This function is to be used for development only and will throw an error when used in Vehicle Services.
      * @param isMuted true if the microphone is muted.
+     * @category Development
      * @requires **Environment** Development (in web browser) only.
      */
     injectMuteState(isMuted: boolean) {
@@ -981,10 +1005,10 @@ export class EvamApi {
 
     /**
      *
-     * Used to assign a callback when the battery created or updated.
+     * Used to assign a callback when the display mode is updated.
      * @requires **Permissions** DISPLAY_MODE_READ
      * @requires **Version** Vehicle Services version 5.2.0 and above have full functionality. Other versions: callback will never trigger.
-     * @trigger The callback triggers every time new messages are available from the connected Tetra terminal.
+     * @trigger The callback triggers every time the display mode is updated, either by the user or automatically based on the time of the day if the user chose to have to automatically updated.
      * @param callback The callback with (optional) argument display mode. Use this to access the display mode.
      */
     onNewOrUpdatedDisplayMode(callback: CallbackFunction<DisplayMode | undefined>) {
@@ -1123,7 +1147,7 @@ export class EvamApi {
     }
 
     /**
-     * send a notification to vehicle services (or evam-dev-environment if using the dev environment)
+     * Send a notification to Vehicle Services.
      * @requires **Permissions** SEND_NOTIFICATION
      * @requires **Version** Vehicle Services version 5.1.0 and above have full functionality. Other versions: function with throw an Error.
      * @param notification The notification to be sent
@@ -1242,7 +1266,7 @@ export class EvamApi {
 
     /**
      * Deletes a layer by its ID. A certified app can only delete a layer it has created.
-     * @param id the id of the layer (if the layer doesn't exist then one will be created)
+     * @param id the id of the layer
      * @requires **Permissions** NAVIGATION_PRIVATE_LAYERS
      * @requires **Version** Vehicle Services version 5.0.2 and above have full functionality. Other versions: function will throw an Error.
      * @requires **Environment** Evam device only
