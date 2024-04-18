@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 
-const muteStateParser = z.boolean()
-export default muteStateParser
+const muteStateParser = z.boolean();
+export default muteStateParser;

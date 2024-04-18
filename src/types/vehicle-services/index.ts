@@ -39,7 +39,7 @@ import { VehicleServicesCallbackIdSuffix } from "@/types/vehicle-services/Vehicl
 import { OperationUnit } from "@/types/vehicle-services/OperationUnit";
 import { OperationUnitSource } from "@/types/vehicle-services/OperationUnitSource";
 import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
-import {MuteState} from "@/types/vehicle-services/MuteState";
+import { MuteState } from "@/types/vehicle-services/MuteState";
 
 export type {
   AppSettings,
@@ -83,5 +83,5 @@ export type {
   OperationUnit,
   OperationUnitSource,
   PhoneCall,
-  MuteState
+  MuteState,
 };
