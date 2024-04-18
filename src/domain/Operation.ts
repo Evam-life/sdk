@@ -14,7 +14,7 @@ class Operation {
      * @param name The operation name
      * @param sendTime The time at which the operation was sent
      * @param createdTime The time at which the operation was created
-     * @param acceptedTime The time at which the operation was accepted (PREVIEW)
+     * @param acceptedTime The time at which the operation was accepted (minimum Vehicle Services version: 5.0.2, otherwise always undefined)
      * @param endTime The time at which the operation ended, `undefined` still ongoing
      * @param callCenterId The Call Center ID
      * @param caseFolderId The Case folder ID
@@ -46,8 +46,8 @@ class Operation {
      * @param selectedPriority The id of the selected priority [inside available priority]
      * @param operationState the current state of the operation (ACTIVE, AVAILABLE, COMPLETE)
      * @param leavePatientLocation The location of the leave-patient ('toCity', etc)
-     * @param assignedResourceMissionNo The Assigned Resource Mission No value from SOS
-     * @param operationUnits A list of the units that include the Assigned Resource values from SOS and the Units from the cloud
+     * @param assignedResourceMissionNo The Assigned Resource Mission No value from SOS (minimum Vehicle Services version: 5.2.2, otherwise always undefined)
+     * @param operationUnits A list of the units that include the Assigned Resource values from SOS and the Units from the cloud (minimum Vehicle Services version: 5.2.2, otherwise always undefined)
      */
     constructor(
         // Metadata
