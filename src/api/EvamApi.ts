@@ -183,6 +183,16 @@ class EvamApi {
         },
       }),
     /**
+     * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @param callId the id of the call to hold.
+     */
+    holdCall: (callId:string) => AndroidHandler.call("holdCall", [callId], {
+      nonVsEnvironmentCallback: () => {
+        const e: _InternalVehicleServicesEvent = "holdCall";
+        EvamApi._internalEventMapHandler.publish(e, callId)
+      }
+    }),
+    /**
      * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link onNewOrUpdatedCalls}.
      * @param callId the id of the call to be resumed.
      */

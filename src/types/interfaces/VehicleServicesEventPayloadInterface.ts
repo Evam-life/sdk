@@ -119,11 +119,17 @@ export interface VehicleServicesEventPayloadInterface {
    */
   gRPCEstablished: GrpcAddress | undefined;
   /**
-   *
+   * Used to assign a callback when the phone calls are updated.
+   * @requires Permissions TELEPHONY
+   * @preview This function is currently available in the Development Environment only.
+   * @param callback The callback with (optional) argument array of {@link PhoneCall}. Use this to access the current phone calls.
    */
-  onNewOrUpdatedCalls: Array<PhoneCall> | undefined;
+  newOrUpdatedCalls: Array<PhoneCall> | undefined;
   /**
-   *
+   * Used to assign a callback when the device's microphone mute state is updated.
+   * @requires Permissions TELEPHONY
+   * @preview This function is currently available in the Development Environment only.
+   * @param callback The callback with (optional) argument boolean. Use this to access the current microphone mute state.
    */
-  onNewOrUpdatedMuteState: MuteState | undefined;
+  newOrUpdatedMuteState: MuteState | undefined;
 }

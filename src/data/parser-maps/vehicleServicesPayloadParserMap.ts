@@ -55,8 +55,8 @@ const vehicleServicesPayloadParserMap = new Map<
   ["deviceIdSet", deviceIdParser.optional()],
   ["appIdSet", appIdParser.optional()],
   ["gRPCEstablished", grpcAddressParser.optional()],
-  ["onNewOrUpdatedCalls", phoneCallListParser.optional()],
-  ["onNewOrUpdatedMuteState", muteStateParser.optional()],
+  ["newOrUpdatedCalls", phoneCallListParser.optional()],
+  ["newOrUpdatedMuteState", muteStateParser.optional()],
 ]);
 
 export default vehicleServicesPayloadParserMap;
