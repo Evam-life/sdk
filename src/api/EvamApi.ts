@@ -194,7 +194,7 @@ class EvamApi {
         },
       }),
     /**
-     * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link onNewOrUpdatedCalls}.
+     * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
      * @param callId the id of the call to be resumed.
      */
     unholdCall: (callId: string) =>
