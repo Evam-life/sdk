@@ -31,7 +31,9 @@ const mockVehicleServicesEventPayloadMap: VehicleServicesEventPayloadInterface =
         timestamp: 0
     },
     osVersionSet: "",
-    vehicleServicesVersionSet: ""
+    vehicleServicesVersionSet: "",
+    onNewOrUpdatedCalls: [],
+    onNewOrUpdatedMuteState: false
 };
 
 export default mockVehicleServicesEventPayloadMap;

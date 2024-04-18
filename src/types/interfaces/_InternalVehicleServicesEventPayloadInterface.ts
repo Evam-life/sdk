@@ -13,6 +13,12 @@ interface _InternalVehicleServicesEventPayloadInterface {
   vehicleServicesNotificationCallbackTriggered:
     | VehicleServicesNotificationCallbackId
     | undefined;
+  makeCall: string;
+  answerCall: string;
+  hangUpCall: string;
+  unholdCall: string;
+  muteMicrophone: undefined;
+  unmunuteMicrophone: undefined;
 }
 
 export type { _InternalVehicleServicesEventPayloadInterface };

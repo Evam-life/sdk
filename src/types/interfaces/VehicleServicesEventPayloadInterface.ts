@@ -17,6 +17,8 @@ import { VehicleState } from "@/types/vehicle-services/VehicleState";
 import { VehicleStatusList } from "@/types/vehicle-services/VehicleStatusList";
 import { Location } from "@/types/vehicle-services/Location";
 import { RakelMessages } from "@/types/vehicle-services/RakelMessages";
+import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
+import { MuteState } from "@/types/vehicle-services/MuteState";
 
 /**
  * An interface which maps a VehicleServicesEvent to its payload parser.
@@ -116,4 +118,12 @@ export interface VehicleServicesEventPayloadInterface {
    * Event which wil trigger with the gRPC address when the gRPC server has been established.
    */
   gRPCEstablished: GrpcAddress | undefined;
+  /**
+   *
+   */
+  onNewOrUpdatedCalls: Array<PhoneCall> | undefined;
+  /**
+   *
+   */
+  onNewOrUpdatedMuteState: MuteState | undefined;
 }
