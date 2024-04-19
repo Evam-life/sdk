@@ -33,7 +33,7 @@ interface AndroidTelephonyMethodNameSignatureMap {
   holdCall: (callId: string) => void;
   unholdCall: (callId: string) => void;
   muteMicrophone: () => void;
-  unmunuteMicrophone: () => void;
+  unmuteMicrophone: () => void;
 }
 
 /**

@@ -218,7 +218,7 @@ class EvamApi {
      * Unmutes the microphone of the device.
      */
     unmunuteMicrophone: () =>
-      AndroidHandler.call("unmunuteMicrophone", [], {
+      AndroidHandler.call("unmuteMicrophone", [], {
         nonVsEnvironmentCallback: () => {
           const e: _InternalVehicleServicesEvent = "unmunuteMicrophone";
           EvamApi._internalEventMapHandler.publish(e, undefined);
