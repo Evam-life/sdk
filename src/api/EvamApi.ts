@@ -271,7 +271,7 @@ class EvamApi {
           const currentOperation =
             EvamApi.vehicleServicesDataMapHandler.getDatum(
               "newOrUpdatedOperation",
-            )
+            );
 
           if (isUndefined(currentOperation))
             throw new Error(
