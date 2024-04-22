@@ -1,6 +1,7 @@
 {
   "plugin": [
-    "typedoc-plugin-zod"
+    "typedoc-plugin-zod",
+    "typedoc-plugin-markdown"
   ],
   "out": "docs",
   "cleanOutputDir": true,

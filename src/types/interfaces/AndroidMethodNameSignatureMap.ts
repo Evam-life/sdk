@@ -26,6 +26,16 @@ interface AndroidAppMethodNameSignatureMap {
   putAppInForeground: () => void;
 }
 
+interface AndroidTelephonyMethodNameSignatureMap {
+  makeCall: (phoneNumber: string) => void;
+  answerCall: (callId: string) => void;
+  hangUpCall: (callId: string) => void;
+  holdCall: (callId: string) => void;
+  unholdCall: (callId: string) => void;
+  muteMicrophone: () => void;
+  unmuteMicrophone: () => void;
+}
+
 /**
  * An interface which maps an AndroidEvent to its function signature.
  * This is for compile-time typechecking and must be synchronised with Vehicle Services.
@@ -41,4 +51,5 @@ export interface AndroidMethodNameSignatureMap
     AndroidOperationMethodNameSignatureMap,
     AndroidMapsMethodNameSignatureMap,
     AndroidAppMethodNameSignatureMap,
-    AndroidNotificationMethodNameSignatureMap {}
+    AndroidNotificationMethodNameSignatureMap,
+    AndroidTelephonyMethodNameSignatureMap {}

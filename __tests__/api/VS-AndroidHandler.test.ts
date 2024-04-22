@@ -28,6 +28,13 @@ describe("AndroidHandler inside Vehicle Services", () => {
       sendNotification: () => {},
       removeNotification: () => {},
       putAppInForeground: () => {},
+      makeCall: () => {},
+      answerCall: () => {},
+      muteMicrophone: () => {},
+      hangUpCall: () => {},
+      unholdCall: () => {},
+      unmuteMicrophone: () => {},
+      holdCall: () => {}
     };
     const methods = Object.keys(androidObject) as Array<AndroidMethod>;
 

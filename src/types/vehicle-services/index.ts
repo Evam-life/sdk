@@ -38,6 +38,10 @@ import { VehicleServicesEventPayload } from "@/types/vehicle-services/VehicleSer
 import { VehicleServicesCallbackIdSuffix } from "@/types/vehicle-services/VehicleServicesCallbackIdSuffix";
 import { OperationUnit } from "@/types/vehicle-services/OperationUnit";
 import { OperationUnitSource } from "@/types/vehicle-services/OperationUnitSource";
+import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
+import { MuteState } from "@/types/vehicle-services/MuteState";
+import { PhoneCallState } from "@/types/vehicle-services/PhoneCallState";
+import { PhoneDisconnectCause } from "@/types/vehicle-services/PhoneDisconnectCause";
 
 export type {
   AppSettings,
@@ -80,4 +84,8 @@ export type {
   VehicleServicesCallbackIdSuffix,
   OperationUnit,
   OperationUnitSource,
+  PhoneCall,
+  MuteState,
+  PhoneCallState,
+  PhoneDisconnectCause,
 };

@@ -33,6 +33,9 @@ import vehicleServicesCallbackIdSuffixParser from "@/data/parsers/vehicle-servic
 import rakelMessagesParser from "@/data/parsers/vehicle-services/rakelMessagesParser";
 import operationUnitSourceParser from "@/data/parsers/vehicle-services/operationUnitSourceParser";
 import operationUnitParser from "@/data/parsers/vehicle-services/operationUnitParser";
+import phoneCallParser from "@/data/parsers/vehicle-services/phoneCallParser";
+import phoneCallListParser from "@/data/parsers/vehicle-services/phoneCallListParser";
+import muteStateParser from "@/data/parsers/vehicle-services/muteStateParser";
 
 export {
   appSettingsParser,
@@ -70,4 +73,7 @@ export {
   rakelMessagesParser,
   operationUnitSourceParser,
   operationUnitParser,
+  phoneCallParser,
+  phoneCallListParser,
+  muteStateParser,
 };

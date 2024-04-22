@@ -12,9 +12,11 @@ import {
   grpcAddressParser,
   internetStateParser,
   locationParser,
+  muteStateParser,
   operationListParser,
   operationParser,
   osVersionParser,
+  phoneCallListParser,
   rakelMessagesParser,
   rakelStateParser,
   tripLocationHistoryParser,
@@ -53,6 +55,8 @@ const vehicleServicesPayloadParserMap = new Map<
   ["deviceIdSet", deviceIdParser.optional()],
   ["appIdSet", appIdParser.optional()],
   ["gRPCEstablished", grpcAddressParser.optional()],
+  ["newOrUpdatedCalls", phoneCallListParser.optional()],
+  ["newOrUpdatedMuteState", muteStateParser.optional()],
 ]);
 
 export default vehicleServicesPayloadParserMap;

@@ -26,6 +26,8 @@ const obj: VehicleServicesEventPayloadInterface = {
   deviceIdSet: undefined,
   appIdSet: undefined,
   gRPCEstablished: undefined,
+  newOrUpdatedMuteState: undefined,
+  newOrUpdatedCalls: undefined,
 };
 
 /**

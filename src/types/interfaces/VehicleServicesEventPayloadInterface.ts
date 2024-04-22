@@ -17,6 +17,8 @@ import { VehicleState } from "@/types/vehicle-services/VehicleState";
 import { VehicleStatusList } from "@/types/vehicle-services/VehicleStatusList";
 import { Location } from "@/types/vehicle-services/Location";
 import { RakelMessages } from "@/types/vehicle-services/RakelMessages";
+import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
+import { MuteState } from "@/types/vehicle-services/MuteState";
 
 /**
  * An interface which maps a VehicleServicesEvent to its payload parser.
@@ -116,4 +118,18 @@ export interface VehicleServicesEventPayloadInterface {
    * Event which wil trigger with the gRPC address when the gRPC server has been established.
    */
   gRPCEstablished: GrpcAddress | undefined;
+  /**
+   * Used to assign a callback when the phone calls are updated.
+   * @requires Permissions TELEPHONY
+   * @preview This function is currently available in the Development Environment only.
+   * @param callback The callback with (optional) argument array of {@link PhoneCall}. Use this to access the current phone calls.
+   */
+  newOrUpdatedCalls: Array<PhoneCall> | undefined;
+  /**
+   * Used to assign a callback when the device's microphone mute state is updated.
+   * @requires Permissions TELEPHONY
+   * @preview This function is currently available in the Development Environment only.
+   * @param callback The callback with (optional) argument boolean. Use this to access the current microphone mute state.
+   */
+  newOrUpdatedMuteState: MuteState | undefined;
 }
