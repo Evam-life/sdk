@@ -19,7 +19,7 @@ interface _InternalVehicleServicesEventPayloadInterface {
   holdCall: string;
   unholdCall: string;
   muteMicrophone: undefined;
-  unmunuteMicrophone: undefined;
+  unmuteMicrophone: undefined;
 }
 
 export type { _InternalVehicleServicesEventPayloadInterface };

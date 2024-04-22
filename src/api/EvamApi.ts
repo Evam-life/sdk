@@ -150,10 +150,14 @@ class EvamApi {
    */
   public static telephony = {
     /**
-     * Initiates a new call to the given {@argument number}.
+     * Initiates a new call to the given number.
+     * @category Telephony
      * @param phoneNumber the phone number to call
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
-    makCall: (phoneNumber: string) =>
+    makeCall: (phoneNumber: string) =>
       AndroidHandler.call("makeCall", [phoneNumber], {
         nonVsEnvironmentCallback: () => {
           const e: _InternalVehicleServicesEvent = "makeCall";
@@ -161,8 +165,12 @@ class EvamApi {
         },
       }),
     /**
-     * Hangs up or cancels a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
-     * @param callId the id of the call to be canceled.
+     * Answers a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @category Telephony
+     * @param callId the id of the call to answer.
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
     answerCall: (callId: string) =>
       AndroidHandler.call("answerCall", [callId], {
@@ -172,8 +180,12 @@ class EvamApi {
         },
       }),
     /**
-     * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
-     * @param callId the id of the call to hold.
+     * Hangs up or cancels a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @category Telephony
+     * @param callId the id of the call to be canceled.
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
     hangUpCall: (callId: string) =>
       AndroidHandler.call("hangUpCall", [callId], {
@@ -184,7 +196,11 @@ class EvamApi {
       }),
     /**
      * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @category Telephony
      * @param callId the id of the call to hold.
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
     holdCall: (callId: string) =>
       AndroidHandler.call("holdCall", [callId], {
@@ -195,7 +211,11 @@ class EvamApi {
       }),
     /**
      * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
+     * @category Telephony
      * @param callId the id of the call to be resumed.
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
     unholdCall: (callId: string) =>
       AndroidHandler.call("unholdCall", [callId], {
@@ -206,6 +226,10 @@ class EvamApi {
       }),
     /**
      * Mutes the microphone of the device.
+     * @category Telephony
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
     muteMicrophone: () =>
       AndroidHandler.call("muteMicrophone", [], {
@@ -216,11 +240,15 @@ class EvamApi {
       }),
     /**
      * Unmutes the microphone of the device.
+     * @category Telephony
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
      */
     unmunuteMicrophone: () =>
       AndroidHandler.call("unmuteMicrophone", [], {
         nonVsEnvironmentCallback: () => {
-          const e: _InternalVehicleServicesEvent = "unmunuteMicrophone";
+          const e: _InternalVehicleServicesEvent = "unmuteMicrophone";
           EvamApi._internalEventMapHandler.publish(e, undefined);
         },
       }),

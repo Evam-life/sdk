@@ -6,7 +6,7 @@ import batteryHealths from "@/data/enum/batteryHealths";
 import batteryPluggedStates from "@/data/enum/batteryPluggedStates";
 import batteryStatuses from "@/data/enum/batteryStatuses";
 import operationUnitSources from "@/data/enum/operationUnitSources";
-import callStates from "@/data/enum/callStates";
+import phoneCallStates from "@/data/enum/callStates";
 import disconnectCauses from "@/data/enum/disconnectCauses";
 
 export {
@@ -18,6 +18,6 @@ export {
   internetStates,
   operationStates,
   operationUnitSources,
-  callStates,
+  phoneCallStates,
   disconnectCauses,
 };
