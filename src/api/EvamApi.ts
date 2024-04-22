@@ -245,7 +245,7 @@ class EvamApi {
      * @requires **Version** Vehicle Services version 5.2.4 and above have full functionality. Other versions: function will throw an Error.
      * @requires **Environment** Evam device only
      */
-    unmunuteMicrophone: () =>
+    unmuteMicrophone: () =>
       AndroidHandler.call("unmuteMicrophone", [], {
         nonVsEnvironmentCallback: () => {
           const e: _InternalVehicleServicesEvent = "unmuteMicrophone";
