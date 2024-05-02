@@ -51,10 +51,10 @@ export interface VehicleServicesEventPayloadInterface {
   newOrUpdatedInternetState: InternetState | undefined;
   /**
    * Event which will trigger with the device's role as the payload.
-   * @example SINGLE_DEVICE
+   * @example SINGLE_DEVICE, RECEIVING_DEVICE
    * @see DeviceRole
    */
-  newOrUpdatedDeviceRole: DeviceRole | undefined;
+  newOrUpdatedDeviceRoles: DeviceRole | undefined;
   /**
    * The "VehicleState" will update with new information regarding the status of the vehicle as well as the current location and the current active case Id.
    * @see VehicleStatus

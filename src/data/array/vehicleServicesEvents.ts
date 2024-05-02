@@ -11,7 +11,7 @@ const obj: VehicleServicesEventPayloadInterface = {
   newOrUpdatedOperation: undefined,
   newOrUpdatedSettings: undefined,
   newOrUpdatedInternetState: undefined,
-  newOrUpdatedDeviceRole: undefined,
+  newOrUpdatedDeviceRoles: undefined,
   newOrUpdatedVehicleState: undefined,
   newOrUpdatedTripLocationHistory: undefined,
   newOrUpdateRakelState: undefined,
