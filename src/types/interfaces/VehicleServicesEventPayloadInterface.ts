@@ -51,7 +51,7 @@ export interface VehicleServicesEventPayloadInterface {
   newOrUpdatedInternetState: InternetState | undefined;
   /**
    * Event which will trigger with the device's role as the payload.
-   * @example SINGLE_DEVICE
+   * @example SINGLE_DEVICE, RECEIVING_DEVICE
    * @see DeviceRole
    */
   newOrUpdatedDeviceRoles: DeviceRole | undefined;
