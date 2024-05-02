@@ -38,7 +38,7 @@ const vehicleServicesPayloadParserMap = new Map<
   ["newOrUpdatedOperation", operationParser.optional()],
   ["newOrUpdatedSettings", appSettingsParser.optional()],
   ["newOrUpdatedInternetState", internetStateParser.optional()],
-  ["newOrUpdatedDeviceRole", deviceRoleParser.optional()],
+  ["newOrUpdatedDeviceRoles", deviceRoleParser.optional()],
   ["newOrUpdatedVehicleState", vehicleStateParser.optional()],
   ["newOrUpdatedTripLocationHistory", tripLocationHistoryParser.optional()],
   ["newOrUpdateRakelState", rakelStateParser.optional()],

@@ -54,7 +54,7 @@ export interface VehicleServicesEventPayloadInterface {
    * @example SINGLE_DEVICE
    * @see DeviceRole
    */
-  newOrUpdatedDeviceRole: DeviceRole | undefined;
+  newOrUpdatedDeviceRoles: DeviceRole | undefined;
   /**
    * The "VehicleState" will update with new information regarding the status of the vehicle as well as the current location and the current active case Id.
    * @see VehicleStatus

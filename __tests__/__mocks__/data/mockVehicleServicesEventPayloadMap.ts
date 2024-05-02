@@ -15,7 +15,7 @@ const mockVehicleServicesEventPayloadMap: VehicleServicesEventPayloadInterface =
         capacity: 0,
         health: "GOOD"
     },
-    newOrUpdatedDeviceRole: "MAIN_DEVICE",
+    newOrUpdatedDeviceRoles: "MAIN_DEVICE",
     newOrUpdatedInternetState: "NO_INTERNET",
     newOrUpdatedOperationList: [mockOperationPayload],
     newOrUpdateRakelState: {
