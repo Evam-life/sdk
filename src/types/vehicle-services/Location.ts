@@ -6,6 +6,8 @@ import { locationParser } from "@/data/parsers";
  * @typedef {Object} Location
  * @property {number} latitude - The latitude coordinate.
  * @property {number} longitude - The longitude coordinate.
+ * @property {number} bearing - The bearing at the time of this location in degrees.
+ * @property {number} speed - The speed at the time of this location in meters per second
  * @property {Date | undefined} timestamp - The timestamp the given location was received.
  */
 
