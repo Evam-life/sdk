@@ -646,7 +646,7 @@ it("should call callbacks with type DeviceRole for newOrUpdatedDeviceRole event"
     const detail: DeviceRole = DeviceRole.MAIN_DEVICE;
     const callbackFn = jest.fn();
     evamApi.onNewOrUpdatedDeviceRole(callbackFn);
-    publish(EvamEvent.NewOrUpdatedDeviceRole, detail);
+    publish(EvamEvent.NewOrUpdatedDeviceRoles, detail);
     expect(Object.values(DeviceRole)).toContain(callbackFn.mock.lastCall[0]);
 });
 
