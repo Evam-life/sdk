@@ -6,7 +6,7 @@ enum EvamEvent {
     NewOrUpdatedOperation = "newOrUpdatedOperation",
     NewOrUpdatedSettings = "newOrUpdatedSettings",
     NewOrUpdatedInternetState = "newOrUpdatedInternetState",
-    NewOrUpdatedDeviceRole = "newOrUpdatedDeviceRole",
+    NewOrUpdatedDeviceRoles = "newOrUpdatedDeviceRoles",
     NewOrUpdatedLocation = "newOrUpdatedLocation",
     NewOrUpdatedVehicleState = "newOrUpdatedVehicleState",
     NewOrUpdatedTripLocationHistory = "newOrUpdatedTripLocationHistory",

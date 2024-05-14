@@ -201,7 +201,7 @@ export class EvamApi {
                 vsLog("NewOrUpdatedInternetState", internetState);
                 EvamApi.evamData.internetState = internetState ? internetState as InternetState : undefined;
             });
-            subscribe(EvamEvent.NewOrUpdatedDeviceRole, (e) => {
+            subscribe(EvamEvent.NewOrUpdatedDeviceRoles, (e) => {
                 const {detail: deviceRole} = (e as CustomEvent);
                 vsLog("NewOrUpdatedDeviceRole", deviceRole);
                 EvamApi.evamData.deviceRole = deviceRole ? deviceRole as DeviceRole : undefined;
@@ -326,7 +326,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedOperationCallbacks, EvamEvent.NewOrUpdatedOperation);
         clearCallbacksAndArray(EvamApi.newOrUpdatedSettingsCallbacks, EvamEvent.NewOrUpdatedSettings);
         clearCallbacksAndArray(EvamApi.newOrUpdatedLocationCallbacks, EvamEvent.NewOrUpdatedLocation);
-        clearCallbacksAndArray(EvamApi.newOrUpdatedDeviceRoleCallbacks, EvamEvent.NewOrUpdatedDeviceRole);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedDeviceRoleCallbacks, EvamEvent.NewOrUpdatedDeviceRoles);
         clearCallbacksAndArray(EvamApi.newOrUpdatedInternetStateCallbacks, EvamEvent.NewOrUpdatedInternetState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedVehicleStateCallbacks, EvamEvent.NewOrUpdatedVehicleState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedTripLocationHistoryCallbacks, EvamEvent.NewOrUpdatedTripLocationHistory);
@@ -561,7 +561,7 @@ export class EvamApi {
     injectDeviceRole(deviceRole: DeviceRole) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.deviceRole = deviceRole;
-            publish(EvamEvent.NewOrUpdatedDeviceRole, deviceRole);
+            publish(EvamEvent.NewOrUpdatedDeviceRoles, deviceRole);
         } else {
             throw Error("Injecting an DeviceRole is not allowed in the Vehicle Services environment.");
         }
@@ -867,10 +867,10 @@ export class EvamApi {
                 callback(deviceRole ? deviceRole as DeviceRole : undefined);
             };
             EvamApi.newOrUpdatedDeviceRoleCallbacks.push(c);
-            c(new CustomEvent(EvamEvent.NewOrUpdatedDeviceRole, {
+            c(new CustomEvent(EvamEvent.NewOrUpdatedDeviceRoles, {
                 detail: EvamApi.evamData.deviceRole
             }));
-            subscribe(EvamEvent.NewOrUpdatedDeviceRole, c);
+            subscribe(EvamEvent.NewOrUpdatedDeviceRoles, c);
         }
     }
 
