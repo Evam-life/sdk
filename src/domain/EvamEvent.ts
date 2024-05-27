@@ -42,6 +42,7 @@ enum EvamEvent {
     SelectAudioDeviceType = "selectAudioDeviceType",
     PlayRingtone = "playRingtone",
     StopRingtone = "stopRingtone",
+    NewOrUpdatedIntercomEnabledState = "newOrUpdatedIntercomEnabledState",
     _testEvent = "_testEvent"
 }
 

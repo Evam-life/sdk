@@ -57,6 +57,7 @@ class EvamData {
         public phoneCalls?: PhoneCall[] | undefined,
         public isMuted?: boolean | undefined,
         public audioDevice?: AudioDevices | undefined
+        public intercomEnabledState?: boolean | undefined
     ) {
 
     }
@@ -283,6 +284,17 @@ export class EvamApi {
             })
 
 
+            subscribe(EvamEvent.NewOrUpdatedMuteState, (e) => {
+                const {detail: muteState} = (e as CustomEvent);
+                vsLog("MuteState", muteState);
+                EvamApi.evamData.phoneCalls = muteState;
+            });
+            subscribe(EvamEvent.NewOrUpdatedIntercomEnabledState, (e) => {
+                const {detail: intercomEnabledState} = (e as CustomEvent);
+                vsLog("intercomEnabledState", intercomEnabledState);
+                EvamApi.evamData.phoneCalls = intercomEnabledState;
+            });
+
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
             EvamApi.singletonExists = true;
@@ -317,6 +329,7 @@ export class EvamApi {
     private static newOrUpdatedCalls: CallbackFunctionArray = [];
     private static newOrUpdatedMuteState: CallbackFunctionArray = [];
     private static newOrUpdatedAudioDeviceTypes: CallbackFunctionArray = [];
+    private static newOrUpdatedIntercomEnabledStateCallbacks: CallbackFunctionArray = [];
 
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
@@ -356,6 +369,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedCalls, EvamEvent.NewOrUpdatedCalls);
         clearCallbacksAndArray(EvamApi.newOrUpdatedMuteState, EvamEvent.NewOrUpdatedMuteState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAudioDeviceTypes, EvamEvent.NewOrUpdatedAudioDeviceTypes);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedIntercomEnabledStateCallbacks, EvamEvent.NewOrUpdatedIntercomEnabledState);
 
 
         EvamApi.notificationCallbacks.clear();
@@ -868,6 +882,48 @@ export class EvamApi {
     }
 
     /**
+     * TODO this was a COPY PASTE
+     * Registers a callback to be run upon a new Active Operation is available or the current Active
+     * Operation is updated.
+     * @category Operations
+     * @requires **Permissions** ACTIVE_OPERATION_READ
+     * @requires **Version** Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the active Operation is updated, this can happen due to update by the dispatch (e.g. SOS), Evam Demo Tool or user edit (e.g. change of PRIO)
+     * @param callback The callback to be executed
+     */
+    onNewOrUpdatedIntercomEnabledState(callback: CallbackFunction<boolean | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const enabledState = (e as CustomEvent).detail;
+                const isValid = enabledState === null || typeof enabledState === "boolean";
+                if (isValid) callback(enabledState === null ? undefined : enabledState);
+            };
+            EvamApi.newOrUpdatedIntercomEnabledStateCallbacks.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedIntercomEnabledState, {
+                detail: EvamApi.evamData.intercomEnabledState
+            }));
+            subscribe(EvamEvent.NewOrUpdatedIntercomEnabledState, c);
+        }
+    }
+
+    /**
+     * TODO this was a COPY PASTE
+     * Manually inject internetState to EvamApi (Only available in development.)
+     * @param internetState the internetState to inject.
+     * @category Testing and Development
+     * @requires **Environment** Development (in web browser) only.
+     */
+    injectIntercomEnabledState(intercomEnabledState: boolean | undefined) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.intercomEnabledState = intercomEnabledState;
+            publish(EvamEvent.NewOrUpdatedIntercomEnabledState, intercomEnabledState);
+        } else {
+            throw Error("Injecting an intercomEnabledState is not allowed in the Vehicle Services environment.");
+        }
+    }
+
+
+    /**
      * Registers a callback to be run upon new application settings reception or settings update
      * @category Settings
      * @requires **Version** Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
@@ -1150,7 +1206,7 @@ export class EvamApi {
         }
     }
 
-     /**
+    /**
      * Used to assign a callback when the phone calls are updated.
      * @category Telephony
      * @requires **Permissions** TELEPHONY
@@ -1176,7 +1232,7 @@ export class EvamApi {
         }
     }
 
-     /**
+    /**
      * Used to assign a callback when the device's microphone mute state is updated.
      * @category Telephony
      * @requires **Permissions** TELEPHONY
@@ -1188,7 +1244,8 @@ export class EvamApi {
         if (callback) {
             const c = (e: Event) => {
                 const isMuted = (e as CustomEvent).detail;
-                callback(isMuted);
+                const isValid = isMuted === null || typeof isMuted === "boolean";
+                if (isValid) callback(isMuted === null ? undefined : isMuted);
             };
             EvamApi.newOrUpdatedMuteState.push(c);
             c(new CustomEvent(EvamEvent.NewOrUpdatedMuteState, {
