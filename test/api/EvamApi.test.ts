@@ -923,3 +923,21 @@ describe("intercom enabled state", () => {
     });
 
 });
+
+describe("intercom enabled state", () => {
+    const evamApi = new EvamApi();
+
+    it("should set intercom enabled state when injected", () => {
+        const listener = jest.fn();
+        expect(listener).not.toHaveBeenCalled();
+        evamApi.onNewOrUpdatedIntercomEnabledState(listener);
+        expect(listener).toHaveBeenLastCalledWith(undefined);
+
+        const states = [false, true, undefined]
+        states.forEach(state => {
+            new EvamApi().injectIntercomEnabledState(state)
+            expect(listener).toHaveBeenLastCalledWith(state)
+        })
+    });
+
+});
