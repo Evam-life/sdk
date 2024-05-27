@@ -882,14 +882,11 @@ export class EvamApi {
     }
 
     /**
-     * TODO this was a COPY PASTE
-     * Registers a callback to be run upon a new Active Operation is available or the current Active
-     * Operation is updated.
-     * @category Operations
-     * @requires **Permissions** ACTIVE_OPERATION_READ
-     * @requires **Version** Vehicle Services version 5.0.0 and above have full functionality. Other versions: callback will never trigger.
-     * @trigger The callback triggers every time the active Operation is updated, this can happen due to update by the dispatch (e.g. SOS), Evam Demo Tool or user edit (e.g. change of PRIO)
-     * @param callback The callback to be executed
+     * Used to assign a callback when the intercom's state
+     * @category P2P
+     * @requires Permissions //TODO
+     * @param callback The callback with (optional) argument boolean. Use this to access the current intercom enabled state  (enabled = true, disabled = false),
+     * @trigger The callback triggers every time the active Intercom enabled state is updated, this can happen due to //TODO
      */
     onNewOrUpdatedIntercomEnabledState(callback: CallbackFunction<boolean | undefined>) {
         if (callback) {
@@ -907,9 +904,8 @@ export class EvamApi {
     }
 
     /**
-     * TODO this was a COPY PASTE
-     * Manually inject internetState to EvamApi (Only available in development.)
-     * @param internetState the internetState to inject.
+     * Manually inject intercomEnabledState to EvamApi (Only available in development.)
+     * @param intercomEnabledState the intercomEnabledState to inject.
      * @category Testing and Development
      * @requires **Environment** Development (in web browser) only.
      */
