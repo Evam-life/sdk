@@ -274,7 +274,7 @@ export class EvamApi {
             subscribe(EvamEvent.NewOrUpdatedMuteState, (e) => {
                 const {detail: mute} = (e as CustomEvent);
                 vsLog("Mute state", mute);
-                EvamApi.evamData.isMuted = mute || undefined
+                EvamApi.evamData.isMuted = typeof mute === "boolean" ? mute : undefined;
             });
             subscribe(EvamEvent.NewOrUpdatedAudioDeviceTypes, (e) => {
                 const {detail: audioDevices} = (e as CustomEvent);
@@ -795,6 +795,13 @@ export class EvamApi {
     }
 
 
+    /**
+     * Injects the audio devices available (and selected).
+     * This function is to be used for development only and will throw an error when used in Vehicle Services.
+     * @param audioDevices the audio devices to inject
+     * @category Testing and Development
+     * @requires **Environment** Development (in web browser) only.
+     */
     injectAudioDevices(audioDevices: AudioDevices) {
         if (!EvamApi.isRunningInVehicleServices) {
             EvamApi.evamData.audioDevice = audioDevices;
@@ -1370,7 +1377,7 @@ export class EvamApi {
      */
     putAppInForeground = () => {
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).putAppInForeground();
-    }
+    };
 
     /**
      * Removes the notification by given id.
@@ -1383,7 +1390,7 @@ export class EvamApi {
     removeNotification = (notificationId: string) => {
         publish(EvamEvent.RemoveNotification, notificationId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).removeNotification(notificationId);
-    }
+    };
 
 
     /**
@@ -1397,7 +1404,7 @@ export class EvamApi {
     makeCall = (number: string) => {
         publish(EvamEvent.MakeCall, number);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).makeCall(number);
-    }
+    };
 
     /**
      * Answers a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
@@ -1410,7 +1417,7 @@ export class EvamApi {
     answerCall = (callId: string) => {
         publish(EvamEvent.AnswerCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).answerCall(callId);
-    }
+    };
 
     /**
      * Hangs up or cancels a call that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
@@ -1423,7 +1430,7 @@ export class EvamApi {
     hangUpCall = (callId: string) => {
         publish(EvamEvent.HangUpCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).hangUpCall(callId);
-    }
+    };
 
     /**
      * Puts a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
@@ -1436,7 +1443,7 @@ export class EvamApi {
     holdCall = (callId: string) => {
         publish(EvamEvent.HoldCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).holdCall(callId);
-    }
+    };
 
     /**
      * Resumes a call on hold that matches the given {@link PhoneCall.callId} provided as part of the calls from {@link newOrUpdatedCalls}.
@@ -1449,7 +1456,7 @@ export class EvamApi {
     unholdCall = (callId: string) => {
         publish(EvamEvent.UnholdCall, callId);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unholdCall(callId);
-    }
+    };
 
     /**
      * Mutes the microphone of the device.
@@ -1461,8 +1468,8 @@ export class EvamApi {
     muteMicrophone = () => {
         publish(EvamEvent.MuteMicrophone, undefined);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).muteMicrophone();
-    }
-    
+    };
+
     /**
      * Unmutes the microphone of the device.
      * @category Telephony
@@ -1473,7 +1480,7 @@ export class EvamApi {
     unmuteMicrophone = () => {
         publish(EvamEvent.UnmuteMicrophone, undefined);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
-    }
+    };
 
 
     /**
@@ -1486,6 +1493,6 @@ export class EvamApi {
      */
     selectAudioDeviceType = (audioDeviceType: AudioDevicesType) => {
         publish(EvamEvent.SelectAudioDeviceType, audioDeviceType);
-        androidNativeHelpers(EvamApi.isRunningInVehicleServices).selectAudioDeviceType(audioDeviceType)
-    }
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).selectAudioDeviceType(audioDeviceType);
+    };
 }
