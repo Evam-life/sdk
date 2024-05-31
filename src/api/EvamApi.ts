@@ -13,8 +13,12 @@ import {
     Location,
     Notification,
     Operation,
+    RakelState,
     TripLocationHistory,
-    VehicleState, VehicleStatus, RakelState
+    VehicleState,
+    VehicleStatus,
+    AudioDevices,
+    AudioDevicesType
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -23,7 +27,8 @@ import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 import {RawRakelAction} from "../domain/RawRakelAction";
-import { PhoneCall } from "../domain/PhoneCall";
+import {PhoneCall} from "../domain/PhoneCall";
+
 
 /**
  * @hidden
@@ -51,6 +56,7 @@ class EvamData {
         public rakelMessages?: string[] | undefined,
         public phoneCalls?: PhoneCall[] | undefined,
         public isMuted?: boolean | undefined,
+        public audioDevice?: AudioDevices | undefined
     ) {
 
     }
@@ -265,6 +271,17 @@ export class EvamApi {
                 vsLog("PhoneCalls", phoneCalls);
                 EvamApi.evamData.phoneCalls = phoneCalls || undefined;
             });
+            subscribe(EvamEvent.NewOrUpdatedMuteState, (e) => {
+                const {detail: mute} = (e as CustomEvent);
+                vsLog("Mute state", mute);
+                EvamApi.evamData.isMuted = mute || undefined
+            });
+            subscribe(EvamEvent.NewOrUpdatedAudioDeviceTypes, (e) => {
+                const {detail: audioDevices} = (e as CustomEvent);
+                vsLog("Audio devices", audioDevices);
+                EvamApi.evamData.audioDevice = audioDevices || undefined
+            })
+
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
 
@@ -299,6 +316,7 @@ export class EvamApi {
     private static newOrUpdatedRakelMessages: CallbackFunctionArray = [];
     private static newOrUpdatedCalls: CallbackFunctionArray = [];
     private static newOrUpdatedMuteState: CallbackFunctionArray = [];
+    private static newOrUpdatedAudioDeviceTypes: CallbackFunctionArray = [];
 
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
@@ -337,6 +355,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedRakelMessages, EvamEvent.NewOrUpdatedRakelMessages);
         clearCallbacksAndArray(EvamApi.newOrUpdatedCalls, EvamEvent.NewOrUpdatedCalls);
         clearCallbacksAndArray(EvamApi.newOrUpdatedMuteState, EvamEvent.NewOrUpdatedMuteState);
+        clearCallbacksAndArray(EvamApi.newOrUpdatedAudioDeviceTypes, EvamEvent.NewOrUpdatedAudioDeviceTypes);
 
 
         EvamApi.notificationCallbacks.clear();
@@ -775,6 +794,16 @@ export class EvamApi {
         }
     }
 
+
+    injectAudioDevices(audioDevices: AudioDevices) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            EvamApi.evamData.audioDevice = audioDevices;
+            publish(EvamEvent.NewOrUpdatedAudioDeviceTypes, audioDevices);
+        } else {
+            throw Error("Injecting audio devices is not allowed in the VS environment, use a web browser instead");
+        }
+    }
+
     /**
      * Gets the address for the GRPC proxy
      */
@@ -1163,6 +1192,29 @@ export class EvamApi {
     }
 
     /**
+     * Used to assign a callback when the available and selected audio device types for phone calls are updated.
+     * @category Telephony
+     * @requires **Permissions** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.3.1 and above have full functionality. Other versions: callback will never trigger.
+     * @trigger The callback triggers every time the available audio devices change or the selected audio device changes.
+     * @param callback The callback with (optional) argument AudioDevices. Use this to access the current audio devices state.
+     */
+    onNewOrUpdatedAudioDeviceTypes(callback: CallbackFunction<AudioDevices | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const audioDevices = (e as CustomEvent).detail;
+                callback(audioDevices);
+            };
+            EvamApi.newOrUpdatedAudioDeviceTypes.push(c);
+            c(new CustomEvent(EvamEvent.NewOrUpdatedAudioDeviceTypes, {
+                detail: EvamApi.evamData.audioDevice
+            }));
+            subscribe(EvamEvent.NewOrUpdatedAudioDeviceTypes, c);
+        }
+    }
+
+
+    /**
      * Send a notification to Vehicle Services.
      * @category Notifications
      * @requires **Permissions** SEND_NOTIFICATION
@@ -1421,5 +1473,19 @@ export class EvamApi {
     unmuteMicrophone = () => {
         publish(EvamEvent.UnmuteMicrophone, undefined);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
+    }
+
+
+    /**
+     * Selects the audio device type for phone calls.
+     * @param audioDeviceType the audio device type.
+     * @category Telephony
+     * @requires **Permission** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.3.1 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
+     */
+    selectAudioDeviceType = (audioDeviceType: AudioDevicesType) => {
+        publish(EvamEvent.SelectAudioDeviceType, audioDeviceType);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).selectAudioDeviceType(audioDeviceType)
     }
 }

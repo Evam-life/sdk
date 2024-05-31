@@ -7,29 +7,34 @@ import {
     convertedOperationWithAvailablePriorities,
     convertedTripLocationHistory,
     convertedVehicleState,
-    displayMode, operation,
+    displayMode,
+    operation,
     settings,
     tripLocationHistory
 } from "../testdata";
 import {
+    AudioDevices,
+    AudioDevicesType,
+    Battery,
     DeviceRole,
     EvamApi,
     EvamEvent,
+    HospitalLocation,
     InternetState,
     Location as EvamLocation,
     Operation,
+    RakelState,
     TripLocationHistory,
     VehicleState,
-    VehicleStatus,
-    Battery, HospitalLocation, RakelState
+    VehicleStatus
 } from "../../src";
 import {waitFor} from "@testing-library/react";
 import {publish} from "../../src/util/EventHelpers";
 import crypto from "crypto";
 import {BatteryHealth, BatteryPlugged, BatteryStatus, DisplayMode} from "../../src/domain";
-import { PhoneCall } from "../../src/domain/PhoneCall";
-import { PhoneCallState } from "../../src/domain/PhoneCallState";
-import { CallDisconnectCause } from "../../src/domain/CallDisconnectCause"
+import {PhoneCall} from "../../src/domain/PhoneCall";
+import {PhoneCallState} from "../../src/domain/PhoneCallState";
+import {CallDisconnectCause} from "../../src/domain/CallDisconnectCause"
 
 class TestEvamApi extends EvamApi {
     public constructor() {
@@ -64,7 +69,8 @@ it("all inject methods allow undefined", () => {
         injectDeviceRole,
         injectRakelState,
         injectCalls,
-        injectMuteState
+        injectMuteState,
+        injectAudioDevices
     } = evamApi;
 
     expect(() => {
@@ -81,6 +87,7 @@ it("all inject methods allow undefined", () => {
         injectRakelState(undefined);
         injectCalls(undefined);
         injectMuteState(undefined);
+        injectAudioDevices(undefined);
     }).not.toThrow();
 });
 
@@ -883,5 +890,18 @@ describe("telephony", () => {
         expect(listener).toHaveBeenCalledWith(true);
         evamApi.injectMuteState(false);
         expect(listener).toHaveBeenCalledWith(false);
+    });
+
+    it("should et the phone audio devices when injected", () => {
+       const listener = jest.fn();
+       expect(listener).not.toHaveBeenCalled();
+       evamApi.onNewOrUpdatedAudioDeviceTypes(listener);
+       expect(listener).toHaveBeenCalledWith(null);
+       const audioDevices: AudioDevices = {
+           availableTypes: [AudioDevicesType.SPEAKER, AudioDevicesType.BLUETOOTH],
+           selectedType: AudioDevicesType.SPEAKER
+       }
+       evamApi.injectAudioDevices(audioDevices);
+       expect(listener).toHaveBeenCalledWith(audioDevices);
     });
 });

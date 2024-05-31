@@ -1,8 +1,9 @@
 dist
 sdk
-node_modules
+node_modules/
 coverage
 build
 docs
 evam-life-sdk-*.tgz
 .idea/*
+bin

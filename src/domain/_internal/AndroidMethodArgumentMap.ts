@@ -19,7 +19,8 @@ interface AndroidMethodArgumentMap {
     holdCall: readonly [string],
     unholdCall: readonly [string],
     muteMicrophone: readonly [],
-    unmuteMicrophone: readonly []
+    unmuteMicrophone: readonly [],
+    selectAudioDeviceType: readonly [string]
 }
 
 export {

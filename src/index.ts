@@ -19,7 +19,9 @@ import {
     OperationState,
     LeavePatientLocation,
     RakelState,
-    RawRakelAction
+    RawRakelAction,
+    AudioDevices,
+    AudioDevicesType
 } from "./domain";
 
 import {EvamApi} from "./api/EvamApi";
@@ -47,7 +49,9 @@ export {
     OperationState,
     LeavePatientLocation,
     RakelState,
-    RawRakelAction
+    RawRakelAction,
+    AudioDevices,
+    AudioDevicesType
 };
 
 export {EvamApi};
