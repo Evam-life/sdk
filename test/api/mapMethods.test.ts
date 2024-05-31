@@ -1,6 +1,7 @@
 import {EvamApi} from "../../src";
 import {LayerPointData, LayerShapeData} from "../../src/domain/LayerData";
 import { RawRakelAction } from "../../src/domain/RawRakelAction";
+import {AudioDevicesType} from "../../sdk/domain";
 
 const androidSetNavLayerPoint = jest.fn();
 const androidSetNavLayerShape = jest.fn();
@@ -14,6 +15,7 @@ const holdCall = jest.fn();
 const unholdCall = jest.fn();
 const muteMicrophone = jest.fn();
 const unmuteMicrophone = jest.fn();
+const selectAudioDeviceType = jest.fn();
 
 jest.mock("../../src/api/AndroidNativeHelpers", () => ({
     ...jest.requireActual("../../src/api/AndroidNativeHelpers"),
@@ -37,7 +39,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         holdCall: holdCall,
         unholdCall: unholdCall,
         muteMicrophone: muteMicrophone,
-        unmuteMicrophone: unmuteMicrophone
+        unmuteMicrophone: unmuteMicrophone,
+        selectAudioDeviceType: selectAudioDeviceType
     }))
 }));
 describe("evam api map methods", () => {
@@ -85,5 +88,8 @@ describe("evam api map methods", () => {
 
         evamApi.unmuteMicrophone();
         expect(unmuteMicrophone).toHaveBeenCalledWith();
+
+        evamApi.selectAudioDeviceType(AudioDevicesType.SPEAKER);
+        expect(selectAudioDeviceType).toHaveBeenCalledWith("SPEAKER");
     });
 });

@@ -21,3 +21,5 @@ export {VehicleState} from "./VehicleState";
 export {VehicleStatus} from "./VehicleStatus";
 export {RakelState} from "./RakelState"
 export {RawRakelAction} from "./RawRakelAction"
+export {AudioDevices} from "./AudioDevices"
+export {AudioDevicesType} from "./AudioDevicesType"

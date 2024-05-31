@@ -2,6 +2,7 @@ import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleSe
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 import { RawRakelAction } from "../domain/RawRakelAction";
 import {triggerAndroid} from "../util/triggerAndroid";
+import {AudioDevicesType} from "../domain/AudioDevicesType";
 
 const isRunningInVehicleServices = (() => {
     try {
@@ -207,6 +208,16 @@ const androidNativeHelpers = (insideVs: boolean) => ({
         if (insideVs) {
             try {
                 triggerAndroid("unmuteMicrophone");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    selectAudioDeviceType: (audioDeviceType: AudioDevicesType) => {
+        if (insideVs) {
+            try {
+                const data = JSON.stringify(audioDeviceType);
+                triggerAndroid("selectAudioDeviceType", data);
             } catch (e) {
                 console.error(e);
             }

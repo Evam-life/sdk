@@ -1,9 +1,9 @@
 import {androidNativeHelpers} from "../../src/api/AndroidNativeHelpers";
 import {triggerAndroid} from "../../src/util/triggerAndroid";
 import {_InternalVehicleServicesNotification} from "../../src/domain/_InternalVehicleServicesNotification";
-import {NotificationType} from "../../src";
+import {AudioDevicesType, NotificationType} from "../../src";
 import {LayerPointData, LayerShapeData} from "../../sdk/domain/LayerData";
-import { RawRakelAction } from "../../src/domain/RawRakelAction";
+import {RawRakelAction} from "../../src/domain/RawRakelAction";
 
 jest.mock("../../src/util/triggerAndroid", () => ({
     triggerAndroid: jest.fn()
@@ -155,4 +155,8 @@ describe("triggerAndroid method calls triggerAndroid with primitive types", () =
         expect(triggerAndroid).toHaveBeenCalledWith("unmuteMicrophone");
     })
 
+    it("selectAudioDeviceType", () => {
+        androidNativeHelpers(true).selectAudioDeviceType(AudioDevicesType.WIRED);
+        expect(triggerAndroid).toHaveBeenCalledWith("selectAudioDeviceType", "\"WIRED\"");
+    })
 });

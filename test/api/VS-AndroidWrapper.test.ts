@@ -1,8 +1,7 @@
-import {EvamApi, Operation} from "../../src";
+import {AudioDevicesType, EvamApi, EvamEvent} from "../../src";
 import {notification, operationWithAvailableHospitals, operationWithAvailablePriorities} from "../testdata";
 import {publish} from "../../src/util/EventHelpers";
-import {EvamEvent} from "../../src";
-import { RawRakelAction } from "../../src/domain/RawRakelAction";
+import {RawRakelAction} from "../../src/domain/RawRakelAction";
 
 const sendNotificationMock = jest.fn().mockImplementation(() => {
 });
@@ -33,6 +32,7 @@ const holdCall = jest.fn().mockImplementation((id: string) => {});
 const unholdCall = jest.fn().mockImplementation((id: string) => {});
 const muteMicrophone = jest.fn().mockImplementation(() => {});
 const unmuteMicrophone = jest.fn().mockImplementation(() => {});
+const selectAudioDeviceType = jest.fn().mockImplementation((type: string) => {});
 
 jest.mock("uuid", () => ({
     ...jest.requireActual("uuid"),
@@ -59,7 +59,8 @@ jest.mock("../../src/api/AndroidNativeHelpers", () => ({
         holdCall: holdCall,
         unholdCall: unholdCall,
         muteMicrophone: muteMicrophone,
-        unmuteMicrophone: unmuteMicrophone
+        unmuteMicrophone: unmuteMicrophone,
+        selectAudioDeviceType: selectAudioDeviceType
     })),
     isRunningInVehicleServices: true,
 }));
@@ -205,6 +206,13 @@ describe("AndroidWrapper in Vehicle Services", () => {
         const evamApi = new EvamApi();
         evamApi.unmuteMicrophone();
         expect(unmuteMicrophone).toHaveBeenCalled();
+    });
+
+
+    it ("should use evamApi.selectAudioDeviceType as a lightweight wrapper around Android.selectAudioDeviceType when in VS", () => {
+        const evamApi = new EvamApi();
+        evamApi.selectAudioDeviceType(AudioDevicesType.BLUETOOTH);
+        expect(selectAudioDeviceType).toHaveBeenCalledWith("BLUETOOTH");
     });
 
 });
