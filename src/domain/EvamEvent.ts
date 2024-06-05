@@ -40,6 +40,8 @@ enum EvamEvent {
     NewOrUpdatedMuteState = "newOrUpdatedMuteState",
     NewOrUpdatedAudioDeviceTypes = "newOrUpdatedAudioDeviceTypes",
     SelectAudioDeviceType = "selectAudioDeviceType",
+    PlayRingtone = "playRingtone",
+    StopRingtone = "stopRingtone",
     _testEvent = "_testEvent"
 }
 

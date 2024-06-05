@@ -222,6 +222,24 @@ const androidNativeHelpers = (insideVs: boolean) => ({
                 console.error(e);
             }
         }
+    },
+    playRingtone: (filePath: string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("playRingtone", filePath);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    stopRingtone: (filePath:string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("stopRingtone", filePath);
+            } catch (e) {
+                console.error(e);
+            }
+        }
     }
 });
 

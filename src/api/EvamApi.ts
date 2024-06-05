@@ -1493,6 +1493,18 @@ export class EvamApi {
      */
     selectAudioDeviceType = (audioDeviceType: AudioDevicesType) => {
         publish(EvamEvent.SelectAudioDeviceType, audioDeviceType);
+
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).selectAudioDeviceType(audioDeviceType);
     };
+
+    playRingtone = (filePath: string) => {
+        publish(EvamEvent.PlayRingtone, filePath);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).playRingtone(filePath);
+    }
+
+    stopRingtone = (filePath: string) => {
+        publish(EvamEvent.StopRingtone, filePath);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).stopRingtone(filePath);
+    }
+
 }
