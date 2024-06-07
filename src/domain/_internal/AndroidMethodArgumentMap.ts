@@ -22,7 +22,8 @@ interface AndroidMethodArgumentMap {
     unmuteMicrophone: readonly [],
     selectAudioDeviceType: readonly [string],
     playRingtone: readonly [string],
-    stopRingtone: readonly [string]
+    stopRingtone: readonly [string],
+    enableIntercom: readonly [boolean],
 }
 
 export {

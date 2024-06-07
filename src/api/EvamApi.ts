@@ -56,7 +56,7 @@ class EvamData {
         public rakelMessages?: string[] | undefined,
         public phoneCalls?: PhoneCall[] | undefined,
         public isMuted?: boolean | undefined,
-        public audioDevice?: AudioDevices | undefined
+        public audioDevice?: AudioDevices | undefined,
         public intercomEnabledState?: boolean | undefined
     ) {
 
@@ -1533,6 +1533,11 @@ export class EvamApi {
     unmuteMicrophone = () => {
         publish(EvamEvent.UnmuteMicrophone, undefined);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
+    };
+
+    enableIntercom = (enable: boolean) => {
+        publish(EvamEvent.EnableIntercom, enable);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).enableIntercom(enable);
     };
 
 
