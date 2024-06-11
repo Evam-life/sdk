@@ -892,7 +892,7 @@ describe("telephony", () => {
         expect(listener).toHaveBeenCalledWith(false);
     });
 
-    it("should et the phone audio devices when injected", () => {
+    it("should set the phone audio devices when injected", () => {
        const listener = jest.fn();
        expect(listener).not.toHaveBeenCalled();
        evamApi.onNewOrUpdatedAudioDeviceTypes(listener);

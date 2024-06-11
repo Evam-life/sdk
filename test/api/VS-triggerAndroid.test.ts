@@ -159,4 +159,15 @@ describe("triggerAndroid method calls triggerAndroid with primitive types", () =
         androidNativeHelpers(true).selectAudioDeviceType(AudioDevicesType.WIRED);
         expect(triggerAndroid).toHaveBeenCalledWith("selectAudioDeviceType", "\"WIRED\"");
     })
+
+    it("playRingtone", () => {
+        androidNativeHelpers(true).playRingtone("ringtone.ogg");
+        expect(triggerAndroid).toHaveBeenCalledWith("playRingtone", "ringtone.ogg");
+    })
+
+
+    it("stopRingtone", () => {
+        androidNativeHelpers(true).stopRingtone("ringtone.ogg");
+        expect(triggerAndroid).toHaveBeenCalledWith("stopRingtone", "ringtone.ogg");
+    })
 });
