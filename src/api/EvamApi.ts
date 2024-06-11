@@ -1493,6 +1493,34 @@ export class EvamApi {
      */
     selectAudioDeviceType = (audioDeviceType: AudioDevicesType) => {
         publish(EvamEvent.SelectAudioDeviceType, audioDeviceType);
+
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).selectAudioDeviceType(audioDeviceType);
     };
+
+    /**
+     * Plays an audio file as a ringtone.
+     * @param filePath the relative file path of the ringtone audio file. The file should be placed in the /public folder.
+     * @category Telephony
+     * @requires **Permission** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.3.2 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
+     */
+    playRingtone = (filePath: string) => {
+        publish(EvamEvent.PlayRingtone, filePath);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).playRingtone(filePath);
+    }
+
+    /**
+     * Stops playing the ringtone for a given audio file.
+     * @param filePath the relative file path of the ringtone audio file. The file should be placed in the /public folder. This should match the path sent in {@link EvamApi#playRingtone} for a particular ringtone.
+     * @category Telephony
+     * @requires **Permission** TELEPHONY
+     * @requires **Version** Vehicle Services version 5.3.2 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
+     */
+    stopRingtone = (filePath: string) => {
+        publish(EvamEvent.StopRingtone, filePath);
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).stopRingtone(filePath);
+    }
+
 }
