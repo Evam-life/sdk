@@ -1498,7 +1498,7 @@ export class EvamApi {
     };
 
     /**
-     * Selects the audio device type for phone calls.
+     * Plays an audio file as a ringtone.
      * @param filePath the relative file path of the ringtone audio file. The file should be placed in the /public folder.
      * @category Telephony
      * @requires **Permission** TELEPHONY
@@ -1511,7 +1511,7 @@ export class EvamApi {
     }
 
     /**
-     * Selects the audio device type for phone calls.
+     * Stops playing the ringtone for a given audio file.
      * @param filePath the relative file path of the ringtone audio file. The file should be placed in the /public folder. This should match the path sent in {@link EvamApi#playRingtone} for a particular ringtone.
      * @category Telephony
      * @requires **Permission** TELEPHONY
