@@ -884,9 +884,9 @@ export class EvamApi {
     /**
      * Used to assign a callback when the intercom's state
      * @category P2P
-     * @requires Permissions //TODO
+     * @requires Permissions INTERCOM
      * @param callback The callback with (optional) argument boolean. Use this to access the current intercom enabled state  (enabled = true, disabled = false),
-     * @trigger The callback triggers every time the active Intercom enabled state is updated, this can happen due to //TODO
+     * @trigger The callback triggers every time the active Intercom enabled state is updated, this can happen if the intercom state was changed using {@link EvamApi#enableIntercom}
      */
     onNewOrUpdatedIntercomEnabledState(callback: CallbackFunction<boolean | undefined>) {
         if (callback) {
@@ -1535,6 +1535,15 @@ export class EvamApi {
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).unmuteMicrophone();
     };
 
+
+    /**
+     * Enables/disables the intercom.
+     * @category Intercom
+     * @requires **Permissions** INTERCOM
+     * @requires **Version** Vehicle Services version 5.3.2 and above have full functionality. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
+     * @param enable true to enable the intercom, otherwise false
+     */
     enableIntercom = (enable: boolean) => {
         publish(EvamEvent.EnableIntercom, enable);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).enableIntercom(enable);
