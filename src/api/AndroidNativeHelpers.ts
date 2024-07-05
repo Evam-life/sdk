@@ -240,6 +240,15 @@ const androidNativeHelpers = (insideVs: boolean) => ({
                 console.error(e);
             }
         }
+    },
+    enableIntercom: (enable: boolean) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("enableIntercom", enable);
+            } catch (e) {
+                console.error(e);
+            }
+        }
     }
 });
 
