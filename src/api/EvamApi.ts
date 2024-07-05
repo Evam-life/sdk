@@ -26,7 +26,7 @@ import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
-import {RawRakelAction} from "../domain/RawRakelAction";
+import {RawRakelAction} from "../domain";
 import {PhoneCall} from "../domain/PhoneCall";
 
 
