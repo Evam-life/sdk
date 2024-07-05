@@ -885,7 +885,8 @@ describe("telephony", () => {
         const listener = jest.fn();
         expect(listener).not.toHaveBeenCalled();
         evamApi.onNewOrUpdatedMuteState(listener);
-        expect(listener).toHaveBeenCalledWith(null);
+        expect(listener).toHaveBeenCalledTimes(1)
+        expect(listener).toHaveBeenCalledWith(undefined);
         evamApi.injectMuteState(true);
         expect(listener).toHaveBeenCalledWith(true);
         evamApi.injectMuteState(false);
@@ -904,24 +905,6 @@ describe("telephony", () => {
        evamApi.injectAudioDevices(audioDevices);
        expect(listener).toHaveBeenCalledWith(audioDevices);
     });
-});
-
-describe("intercom enabled state", () => {
-    const evamApi = new EvamApi();
-
-    it("should set intercom enabled state when injected", () => {
-        const listener = jest.fn();
-        expect(listener).not.toHaveBeenCalled();
-        evamApi.onNewOrUpdatedIntercomEnabledState(listener);
-        expect(listener).toHaveBeenLastCalledWith(undefined);
-
-        const states = [false, true, undefined]
-        states.forEach(state => {
-            new EvamApi().injectIntercomEnabledState(state)
-            expect(listener).toHaveBeenLastCalledWith(state)
-        })
-    });
-
 });
 
 describe("intercom enabled state", () => {
