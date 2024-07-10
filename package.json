@@ -1,6 +1,6 @@
 {
   "name": "@evam-life/sdk",
-  "version": "2.0.3-rc5",
+  "version": "2.13.1-beta",
   "description": "SDK for the Evam platform",
   "main": "sdk/index.js",
   "homepage": "https://evam.life",
@@ -52,7 +52,7 @@
     "react-map-gl": "^7.1.6",
     "react-redux": "^8.0.1",
     "react-router-dom": "^6.3.0",
-    "tar": "^6.2.0",
+    "tar": "6.2.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
