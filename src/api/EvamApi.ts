@@ -283,16 +283,10 @@ export class EvamApi {
                 EvamApi.evamData.audioDevice = audioDevices || undefined
             })
 
-
-            subscribe(EvamEvent.NewOrUpdatedMuteState, (e) => {
-                const {detail: muteState} = (e as CustomEvent);
-                vsLog("MuteState", muteState);
-                EvamApi.evamData.phoneCalls = muteState;
-            });
             subscribe(EvamEvent.NewOrUpdatedIntercomEnabledState, (e) => {
                 const {detail: intercomEnabledState} = (e as CustomEvent);
                 vsLog("intercomEnabledState", intercomEnabledState);
-                EvamApi.evamData.phoneCalls = intercomEnabledState;
+                EvamApi.evamData.intercomEnabledState = intercomEnabledState;
             });
 
             if (!EvamApi.isRunningInVehicleServices) EvamApi.persistentStorageMap = new Map([]);
