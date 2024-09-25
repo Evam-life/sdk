@@ -3,6 +3,7 @@ import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 import { RawRakelAction } from "../domain/RawRakelAction";
 import {triggerAndroid} from "../util/triggerAndroid";
 import {AudioDevicesType} from "../domain/AudioDevicesType";
+import {CanbusFrame} from "../domain/CanbusFrame";
 
 const isRunningInVehicleServices = (() => {
     try {
@@ -245,6 +246,15 @@ const androidNativeHelpers = (insideVs: boolean) => ({
         if (insideVs) {
             try {
                 triggerAndroid("enableIntercom", enable);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    sendCANbusFrames: (frames: CanbusFrame[]) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("canbusSendFrames", JSON.stringify(frames))
             } catch (e) {
                 console.error(e);
             }

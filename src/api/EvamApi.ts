@@ -4,6 +4,8 @@
  */
 
 import {
+    AudioDevices,
+    AudioDevicesType,
     Battery,
     DeviceRole,
     DisplayMode,
@@ -14,11 +16,10 @@ import {
     Notification,
     Operation,
     RakelState,
+    RawRakelAction,
     TripLocationHistory,
     VehicleState,
-    VehicleStatus,
-    AudioDevices,
-    AudioDevicesType
+    VehicleStatus
 } from "../domain";
 import {publish, subscribe, unsubscribe} from "../util/EventHelpers";
 import {_InternalVehicleServicesNotification} from "../domain/_InternalVehicleServicesNotification";
@@ -26,8 +27,8 @@ import {v4 as uuidV4} from "uuid";
 import _ from "lodash";
 import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeHelpers";
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
-import {RawRakelAction} from "../domain";
 import {PhoneCall} from "../domain/PhoneCall";
+import {CanbusFrame} from "../domain/CanbusFrame";
 
 
 /**
@@ -57,7 +58,8 @@ class EvamData {
         public phoneCalls?: PhoneCall[] | undefined,
         public isMuted?: boolean | undefined,
         public audioDevice?: AudioDevices | undefined,
-        public intercomEnabledState?: boolean | undefined
+        public intercomEnabledState?: boolean | undefined,
+        public canbusRecvFrames?: CanbusFrame[] | undefined
     ) {
 
     }
@@ -125,6 +127,9 @@ type CallbackFunctionArray = Array<CallbackFunction<Event>>;
  * evamApi.injectSettings(new Settings(...))
  * evamApi.injectOperationList([new Operation(...), new Operation(...), ...])
  * evamApi.injectBattery(new Battery(...)))
+ *
+ * evamApi.onReceivedCANbusFrames((msg: CanFrame[]) => ...)
+ * evamApi.sendCANbusFrames(msg: CanFrame[])
  *```
  *
  */
@@ -235,6 +240,14 @@ export class EvamApi {
                     EvamApi.evamData.operationList = list.map(Operation.fromJSON);
                 }
             });
+
+            subscribe(EvamEvent.NewRecvCanbusFrames, (e) => {
+                const list = (e as CustomEvent).detail;
+                vsLog("RecvCanbusFrame", JSON.stringify(list));
+                if (Array.isArray(list)) {
+                    EvamApi.evamData.canbusRecvFrames = list.map(CanbusFrame.fromJson);
+                }
+            })
             subscribe(EvamEvent.NewOrUpdatedAvailableVehicleStatusList, (e) => {
                 const list = (e as CustomEvent).detail;
                 vsLog("NewOrUpdatedAvailableVehicleStatusList", list);
@@ -324,7 +337,7 @@ export class EvamApi {
     private static newOrUpdatedMuteState: CallbackFunctionArray = [];
     private static newOrUpdatedAudioDeviceTypes: CallbackFunctionArray = [];
     private static newOrUpdatedIntercomEnabledStateCallbacks: CallbackFunctionArray = [];
-
+    private static newRecvCanbusFramesCallbacks: CallbackFunctionArray = [];
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
 
@@ -364,7 +377,6 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedMuteState, EvamEvent.NewOrUpdatedMuteState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAudioDeviceTypes, EvamEvent.NewOrUpdatedAudioDeviceTypes);
         clearCallbacksAndArray(EvamApi.newOrUpdatedIntercomEnabledStateCallbacks, EvamEvent.NewOrUpdatedIntercomEnabledState);
-
 
         EvamApi.notificationCallbacks.clear();
 
@@ -894,6 +906,28 @@ export class EvamApi {
                 detail: EvamApi.evamData.intercomEnabledState
             }));
             subscribe(EvamEvent.NewOrUpdatedIntercomEnabledState, c);
+        }
+    }
+
+    /**
+     * Registers a callback to be run upon new frames being received on the CANbus
+     * @requires **Permissions** HARDWARE_CANBUS
+     * @requires **Version** Vehicle Services version 6.1.0 and above have full functionality. Feature flag is required, reach out to Evam for access. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
+     * @category Canbus
+     * @param callback The callback function to be run
+     */
+    onReceivedCANbusFrames(callback: CallbackFunction<CanbusFrame[] | undefined>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const frames = (e as CustomEvent).detail;
+                callback(frames ? frames.map((f: any) => CanbusFrame.fromJson(f)) : undefined);
+            }
+            EvamApi.newRecvCanbusFramesCallbacks.push(c)
+            c(new CustomEvent(EvamEvent.NewRecvCanbusFrames, {
+                detail: EvamApi.evamData.canbusRecvFrames
+            }))
+            subscribe(EvamEvent.NewRecvCanbusFrames, c)
         }
     }
 
@@ -1542,6 +1576,18 @@ export class EvamApi {
         publish(EvamEvent.EnableIntercom, enable);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).enableIntercom(enable);
     };
+
+    /**
+     * Sends CANbus frames immediately
+     * @requires **Permissions** HARDWARE_CANBUS
+     * @requires **Version** Vehicle Services version 6.1.0 and above have full functionality. Feature flag is required, reach out to Evam for access. Other versions: function will throw an Error.
+     * @requires **Environment** Evam device only
+     * @category Canbus
+     * @param frames The frames to be sent
+     */
+    sendCANbusFrames = (frames: CanbusFrame[]) => {
+        androidNativeHelpers(EvamApi.isRunningInVehicleServices).sendCANbusFrames(frames);
+    }
 
 
     /**

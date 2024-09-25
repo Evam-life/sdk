@@ -44,7 +44,8 @@ enum EvamEvent {
     StopRingtone = "stopRingtone",
     NewOrUpdatedIntercomEnabledState = "newOrUpdatedIntercomEnabledState",
     EnableIntercom = "enableIntercom",
-    _testEvent = "_testEvent"
+    _testEvent = "_testEvent",
+    NewRecvCanbusFrames = "NewRecvCanbusFrames"
 }
 
 

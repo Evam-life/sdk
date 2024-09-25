@@ -24,6 +24,7 @@ interface AndroidMethodArgumentMap {
     playRingtone: readonly [string],
     stopRingtone: readonly [string],
     enableIntercom: readonly [boolean],
+    canbusSendFrames: readonly [string],
 }
 
 export {
