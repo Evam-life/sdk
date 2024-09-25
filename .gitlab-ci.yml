@@ -25,6 +25,7 @@ deploy-npm:
   stage: deploy
   only:
     - tags
+    - manual
   script:
     - git config --global user.email "info@evam.life"
     - git config --global user.name "Evam Bot"
