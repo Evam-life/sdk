@@ -48,7 +48,9 @@ class Operation {
      * @param leavePatientLocation The location of the leave-patient ('toCity', etc)
      * @param assignedResourceMissionNo The Assigned Resource Mission No value from SOS (minimum Vehicle Services version: 5.2.2, otherwise always undefined)
      * @param operationUnits A list of the units that include the Assigned Resource values from SOS and the Units from the cloud (minimum Vehicle Services version: 5.2.2, otherwise always undefined)
-     * @param prioName The operation priority name as it is sent from dispatch or as it is defined in the Application settings when selected by the user. Possible values are: 1, 1a, 2B, PRIO 1, PRIO 1b, PRIO 2A.
+     * @param prioName The operation priority name as it is sent from dispatch, or as it is defined in the Application settings when selected by the user.
+     *                 This field is free text and does not adhere to any pattern. Example values include: 1, 1a, 2B, PRIO 1, PRIO 1b, PRIO 2A.
+     *                 (minimum Vehicle Services version: 6.1.0, otherwise always undefined)
      */
     constructor(
         // Metadata
