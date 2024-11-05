@@ -1,4 +1,3 @@
-import {isRunningInVehicleServices} from "../api/AndroidNativeHelpers";
 import {AndroidMethod, AndroidMethodArgumentMap} from "../domain/_internal";
 
 

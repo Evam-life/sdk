@@ -21,13 +21,13 @@
     "evam-sign": "sdk/sign.js"
   },
   "scripts": {
-    "test": "npm run build & jest --no-cache --collect-coverage && npx rimraf sdk",
+    "test": "npx dpdm --exit-code circular:1 ./src/index.ts --no-warning && npm run build & jest --no-cache --collect-coverage",
     "test-without-coverage": "npm run build && jest --silent=false",
     "clear-jest": "jest --clearCache",
     "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.0",
+    "@chakra-ui/react": "2.8.0",
     "@devicefarmer/adbkit": "^3.2.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
