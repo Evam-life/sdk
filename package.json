@@ -27,7 +27,7 @@
     "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.0",
+    "@chakra-ui/react": "2.8.0",
     "@devicefarmer/adbkit": "^3.2.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
