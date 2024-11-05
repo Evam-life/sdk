@@ -21,7 +21,7 @@
     "evam-sign": "sdk/sign.js"
   },
   "scripts": {
-    "test": "npx dpdm --exit-code circular:1 ./src/index.ts && npm run build & jest --no-cache --collect-coverage && npx rimraf sdk",
+    "test": "npx dpdm --exit-code circular:1 ./src/index.ts --no-warning && npm run build & jest --no-cache --collect-coverage && npx rimraf sdk",
     "test-without-coverage": "npm run build && jest --silent=false",
     "clear-jest": "jest --clearCache",
     "build": "tsc --project tsconfig.json"
