@@ -64,9 +64,11 @@ const MapDrawer: FC = () => {
           };
           const source = map.current.getSource(sourceId);
           if (!source) map.current.addSource(sourceId, geojson);
-          map.current.addLayer(generateFillLayer(layerId, sourceId));
+          const existingLayer = map.current.getLayer(layerId);
+          if (!existingLayer) map.current.addLayer(generateFillLayer(layerId, sourceId));
+          const existingLabel = map.current.getLayer(labelId);
           // Add text label
-          map.current.addLayer(generateTextLayer(labelId, sourceId));
+          if (!existingLabel) map.current.addLayer(generateTextLayer(labelId, sourceId));
 
         });
 
@@ -91,10 +93,12 @@ const MapDrawer: FC = () => {
         map.current.loadImage(layerDataArray.at(0).icon, (error, image) => {
           if (error) throw error;
           const { imageId, sourceId, layerId } = generateIds(id);
-          map.current.addImage(imageId, image);
+          const hasImage = map.current.hasImage(imageId);
+          if (!hasImage) map.current.addImage(imageId, image);
           const source = map.current.getSource(sourceId);
           if (!source) map.current.addSource(sourceId, geojson);
-          map.current.addLayer(generateImageLayer(layerId, sourceId, imageId));
+          const existingLayer = map.current.getLayer(layerId);
+          if (!existingLayer) map.current.addLayer(generateImageLayer(layerId, sourceId, imageId));
         });
 
       }
