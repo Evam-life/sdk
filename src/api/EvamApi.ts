@@ -26,6 +26,7 @@ import { find, forEach, isUndefined } from "lodash";
 import { EvamApiErrorRepository } from "@/utils/error";
 import { createNotificationCallbackId } from "@/utils";
 import EventMapHandler from "@/api/EventMapHandler";
+import axios from "axios";
 
 /**
  * A class which caches the most recently dispatched payload for
@@ -363,6 +364,17 @@ class EvamApi {
     remove: (notificationId: string) =>
       EvamApi.notificationHandler.remove(notificationId),
   };
+
+  public static cs = {
+    axios: () => {
+      return axios.create({
+        transformRequest: (data, headers) => {
+          headers.set("X-EVAM-BODY", JSON.stringify(data));
+          return data
+        }
+      })
+    }
+  }
 
   /**
    * Provides methods to interface with the connected rakel device
