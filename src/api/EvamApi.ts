@@ -28,6 +28,14 @@ import { createNotificationCallbackId } from "@/utils";
 import EventMapHandler from "@/api/EventMapHandler";
 import axios from "axios";
 
+const axiosInstance = axios.create({
+  baseURL: "https://evam-cs",
+  transformRequest: (data, headers) => {
+    headers.set("x-evam-body", JSON.stringify(data));
+    return data;
+  }
+});
+
 /**
  * A class which caches the most recently dispatched payload for
  * a VehicleServicesEvent. This is used inside the EvamApi.prototype.on method to trigger
@@ -365,16 +373,21 @@ class EvamApi {
       EvamApi.notificationHandler.remove(notificationId),
   };
 
+
   public static cs = {
-    axios: () => {
-      return axios.create({
-        transformRequest: (data, headers) => {
-          headers.set("X-EVAM-BODY", JSON.stringify(data));
-          return data
-        }
-      })
-    }
-  }
+    /**
+     * The Central Services client instance.
+     *
+     * @example
+     * const client = EvamApi.cs.instance();
+     * client.get("/v2/...").then(...);
+     *
+     * @see https://axios-http.com/docs/intro
+     *
+     * @return The client
+     */
+    instance: axiosInstance,
+  };
 
   /**
    * Provides methods to interface with the connected rakel device
