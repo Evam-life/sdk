@@ -30,11 +30,18 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "https://evam-cs",
-  transformRequest: (data, headers) => {
-    headers.set("x-evam-body", JSON.stringify(data));
-    return data;
-  }
 });
+
+axiosInstance.interceptors.request.use(
+  function (config) {
+    if (config.data)
+      config.headers.set("x-evam-body", JSON.stringify(config.data));
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  },
+);
 
 /**
  * A class which caches the most recently dispatched payload for
@@ -372,7 +379,6 @@ class EvamApi {
     remove: (notificationId: string) =>
       EvamApi.notificationHandler.remove(notificationId),
   };
-
 
   public static cs = {
     /**
