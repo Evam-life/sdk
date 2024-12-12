@@ -19,6 +19,7 @@ import { EvamApiErrorRepository } from "@/utils/error";
 import { _InternalVehicleServicesEvent } from "@/types/_internal";
 import { displayModeParser } from "@/data/parsers";
 import { mockVehicleServicesEventPayloadMap } from "@/tests/__mocks__/data";
+import _ from "lodash";
 
 beforeEach(() => {
   EvamApi["test-utils"].reset();
@@ -223,6 +224,52 @@ describe("EvamApi", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
+  it("should convert sendTime field to a date", () => {
+    const op /*: Operation*/ = {
+      operationID: "1",
+      name: "Trafikolycka",
+      sendTime: 1734004660000,
+      createdTime: 1734004680000,
+      acceptedTime: 1734004689000,
+      callCenterId: "18",
+      caseFolderId: "1358263",
+      radioGroupMain: "Sthm RAPS-01, 240-1-9030011",
+      radioGroupSecondary: "230 RtjIns-1, 240-1-9230022",
+      availablePriorities: [],
+      vehicleStatus: {
+        name: "Kvittera",
+        isStartStatus: true,
+        isEndStatus: false,
+        categoryType: "STATUS_MISSION",
+        categoryName: "mission",
+        successorName: "Framme",
+        event: "EVENT_OPERATION_CONFIRMED",
+      },
+      destinationSiteLocation: {
+        latitude: 59.368248333333334,
+        longitude: 18.020505,
+        street: "E4 Norrgående",
+        locality: "Stockholm",
+        municipality: "Stockholm",
+      },
+      availableHospitalLocations: [],
+      header1: "Personbil",
+      header2: "Övrigt",
+      selectedPriority: 1,
+      operationState: "ACTIVE",
+      operationUnits: [],
+      prioName: "1",
+    };
+
+    const listener = jest.fn();
+    EvamApi.event.on("newOrUpdatedOperation", listener, {
+      immediatelyInvoke: false,
+    });
+    EvamApi["test-utils"].uncheckedInject("newOrUpdatedOperation", op);
+    const lastCall = _.last(listener.mock.calls).at(0);
+    expect(lastCall.sendTime).toBeInstanceOf(Date);
+  });
+
   it('should trigger events with "inject"', () => {
     const listener = jest.fn();
     expect(vehicleServicesEvents.length).toBeGreaterThan(0);
@@ -279,14 +326,18 @@ describe("EvamApi", () => {
       immediatelyInvoke: false,
     };
     const listener = jest.fn();
-    const off_0 = EvamApi.event.on("newOrUpdatedDisplayMode", listener, options);
+    const off_0 = EvamApi.event.on(
+      "newOrUpdatedDisplayMode",
+      listener,
+      options,
+    );
 
     EvamApi["test-utils"].uncheckedInject("newOrUpdatedDisplayMode", null);
 
     expect(listener).toHaveBeenLastCalledWith(undefined);
 
     off_0();
-    listener.mockClear()
+    listener.mockClear();
 
     const off_1 = EvamApi.event.on("newOrUpdatedBattery", listener, options);
 
@@ -305,65 +356,71 @@ describe("EvamApi", () => {
     });
 
     off_1();
-    listener.mockClear()
+    listener.mockClear();
 
-    EvamApi.event.on("newOrUpdatedOperation", listener, options)
+    EvamApi.event.on("newOrUpdatedOperation", listener, options);
 
-    const op/*: Operation*/ = {
+    const op /*: Operation*/ = {
       operationID: "",
       name: "",
       operationState: "ACTIVE",
       operationFullId: "",
-      operationUnits: [{
-        unitId: "hello",
-        eta: null,
-      }]
-    }
+      operationUnits: [
+        {
+          unitId: "hello",
+          eta: null,
+        },
+      ],
+    };
 
-    EvamApi["test-utils"].uncheckedInject("newOrUpdatedOperation", op)
+    EvamApi["test-utils"].uncheckedInject("newOrUpdatedOperation", op);
 
     expect(listener).toHaveBeenLastCalledWith({
       operationID: "",
       name: "",
       operationState: "ACTIVE",
       operationFullId: "::",
-      operationUnits: [{
-        unitId: "hello",
-        eta: undefined
-      }]
-    })
-
+      operationUnits: [
+        {
+          unitId: "hello",
+          eta: undefined,
+        },
+      ],
+    });
   });
 
   it("should still parse for keys which don't exist yet, but will scrap those keys", () => {
     const opWithExtraKey: Omit<Operation, "operationFullId"> & {
       extraKey: {
-        extraField1: undefined,
-        extraField2: string
-      }
+        extraField1: undefined;
+        extraField2: string;
+      };
     } = {
       name: "operation",
       operationState: "ACTIVE",
       operationID: "",
       extraKey: {
         extraField1: undefined,
-        extraField2: "example"
-      }
-    }
+        extraField2: "example",
+      },
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {extraKey, ...opWithoutExtraKey} = opWithExtraKey
+    const { extraKey, ...opWithoutExtraKey } = opWithExtraKey;
 
-    const listener = jest.fn()
+    const listener = jest.fn();
     EvamApi.event.on("newOrUpdatedOperation", listener, {
-      immediatelyInvoke: false
+      immediatelyInvoke: false,
     });
-    EvamApi["test-utils"].uncheckedInject("newOrUpdatedOperation", opWithExtraKey);
+    EvamApi["test-utils"].uncheckedInject(
+      "newOrUpdatedOperation",
+      opWithExtraKey,
+    );
     expect(listener).toHaveBeenCalledWith({
       operationFullId: "::",
-      ...opWithoutExtraKey
-    })
-  })
+      ...opWithoutExtraKey,
+    });
+  });
 });
 
 describe("setPriority", () => {
@@ -429,7 +486,9 @@ describe("setPriority", () => {
 
   it("should throw an error when there is no available priorities", () => {
     const listener = jest.fn();
-    EvamApi.event.on("newOrUpdatedOperation", listener, { immediatelyInvoke: false });
+    EvamApi.event.on("newOrUpdatedOperation", listener, {
+      immediatelyInvoke: false,
+    });
     const operation: Operation = {
       name: "",
       operationID: "",
@@ -455,7 +514,9 @@ describe("setPriority", () => {
       },
     ];
 
-    EvamApi.event.on("newOrUpdatedOperation", listener, { immediatelyInvoke: false });
+    EvamApi.event.on("newOrUpdatedOperation", listener, {
+      immediatelyInvoke: false,
+    });
     const operation: Operation = {
       name: "",
       operationID: "",
@@ -540,7 +601,9 @@ describe("setHospital", () => {
 
   it("should throw an error when there is no available hospitals", () => {
     const listener = jest.fn();
-    EvamApi.event.on("newOrUpdatedOperation", listener, { immediatelyInvoke: false });
+    EvamApi.event.on("newOrUpdatedOperation", listener, {
+      immediatelyInvoke: false,
+    });
     const operation: Operation = {
       name: "",
       operationID: "",
@@ -571,7 +634,9 @@ describe("setHospital", () => {
       },
     ];
 
-    EvamApi.event.on("newOrUpdatedOperation", listener, { immediatelyInvoke: false });
+    EvamApi.event.on("newOrUpdatedOperation", listener, {
+      immediatelyInvoke: false,
+    });
 
     const operation: Operation = {
       name: "",

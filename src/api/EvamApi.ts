@@ -26,6 +26,22 @@ import { find, forEach, isUndefined } from "lodash";
 import { EvamApiErrorRepository } from "@/utils/error";
 import { createNotificationCallbackId } from "@/utils";
 import EventMapHandler from "@/api/EventMapHandler";
+import axios from "axios";
+
+const axiosInstance = axios.create({
+  baseURL: "https://evam-cs",
+});
+
+axiosInstance.interceptors.request.use(
+  function (config) {
+    if (config.data)
+      config.headers.set("x-evam-body", JSON.stringify(config.data));
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  },
+);
 
 /**
  * A class which caches the most recently dispatched payload for
@@ -362,6 +378,21 @@ class EvamApi {
      */
     remove: (notificationId: string) =>
       EvamApi.notificationHandler.remove(notificationId),
+  };
+
+  public static cs = {
+    /**
+     * The Central Services client instance.
+     *
+     * @example
+     * const client = EvamApi.cs.instance();
+     * client.get("/v2/...").then(...);
+     *
+     * @see https://axios-http.com/docs/intro
+     *
+     * @return The client
+     */
+    instance: axiosInstance,
   };
 
   /**
