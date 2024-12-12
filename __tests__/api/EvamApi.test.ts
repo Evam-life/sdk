@@ -230,7 +230,7 @@ describe("EvamApi", () => {
       name: "",
       operationState: "ACTIVE",
       operationFullId: "",
-      sendTime: 0,
+      sendTime: 1734004660000,
     };
     const listener = jest.fn();
     EvamApi.event.on("newOrUpdatedOperation", listener, {
