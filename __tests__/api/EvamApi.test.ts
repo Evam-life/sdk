@@ -226,18 +226,47 @@ describe("EvamApi", () => {
 
   it("should convert sendTime field to a date", () => {
     const op /*: Operation*/ = {
-      operationID: "",
-      name: "",
-      operationState: "ACTIVE",
-      operationFullId: "",
+      operationID: "1",
+      name: "Trafikolycka",
       sendTime: 1734004660000,
+      createdTime: 1734004680000,
+      acceptedTime: 1734004689000,
+      callCenterId: "18",
+      caseFolderId: "1358263",
+      radioGroupMain: "Sthm RAPS-01, 240-1-9030011",
+      radioGroupSecondary: "230 RtjIns-1, 240-1-9230022",
+      availablePriorities: [],
+      vehicleStatus: {
+        name: "Kvittera",
+        isStartStatus: true,
+        isEndStatus: false,
+        categoryType: "STATUS_MISSION",
+        categoryName: "mission",
+        successorName: "Framme",
+        event: "EVENT_OPERATION_CONFIRMED",
+      },
+      destinationSiteLocation: {
+        latitude: 59.368248333333334,
+        longitude: 18.020505,
+        street: "E4 Norrgående",
+        locality: "Stockholm",
+        municipality: "Stockholm",
+      },
+      availableHospitalLocations: [],
+      header1: "Personbil",
+      header2: "Övrigt",
+      selectedPriority: 1,
+      operationState: "ACTIVE",
+      operationUnits: [],
+      prioName: "1",
     };
+
     const listener = jest.fn();
     EvamApi.event.on("newOrUpdatedOperation", listener, {
       immediatelyInvoke: false,
     });
     EvamApi["test-utils"].uncheckedInject("newOrUpdatedOperation", op);
-    const lastCall = _.last(listener.mock.calls).at(0)
+    const lastCall = _.last(listener.mock.calls).at(0);
     expect(lastCall.sendTime).toBeInstanceOf(Date);
   });
 
