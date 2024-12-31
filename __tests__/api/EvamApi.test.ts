@@ -20,6 +20,7 @@ import { _InternalVehicleServicesEvent } from "@/types/_internal";
 import { displayModeParser } from "@/data/parsers";
 import { mockVehicleServicesEventPayloadMap } from "@/tests/__mocks__/data";
 import _ from "lodash";
+import exp from "node:constants";
 
 beforeEach(() => {
   EvamApi["test-utils"].reset();
@@ -597,6 +598,22 @@ describe("setHospital", () => {
     expect(() => {
       EvamApi.operation.setHospital(0);
     }).toThrowError(EvamApiErrorRepository.setHospital.operationNotDefined());
+  });
+
+  it("should parse data during the caching stage", () => {
+    const listener = jest.fn();
+    const op: Omit<Operation, "operationFullId"> = {
+      name: "name",
+      operationState: "ACTIVE",
+      operationID: "123",
+      // @ts-expect-error this gets converted to a date
+      sendTime: 0,
+    };
+    EvamApi["test-utils"].uncheckedInject("newOrUpdatedOperation", op);
+    EvamApi.event.on("newOrUpdatedOperation", listener);
+    const lastCall = _.last(listener.mock.calls).at(0);
+    expect(lastCall.sendTime).toBeInstanceOf(Date);
+    expect(lastCall.operationFullId).not.toBeUndefined();
   });
 
   it("should throw an error when there is no available hospitals", () => {

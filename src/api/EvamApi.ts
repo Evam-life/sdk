@@ -58,7 +58,13 @@ class VehicleServicesDataMapHandler {
     forEach(vehicleServicesEvents, event =>
       eventMapHandler.on(event, args => {
         if (args === undefined) this.dataMap.delete(event);
-        else this.dataMap.set(event, args);
+        else {
+          const parser = vehicleServicesParserMap.get(event);
+          if (parser !== undefined) {
+            const safeParse = parser.safeParse(args);
+            if (safeParse.success) this.dataMap.set(event, safeParse.data);
+          }
+        }
       }),
     );
     AndroidHandler.call("apiReady", [], {
