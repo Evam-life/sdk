@@ -34,8 +34,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   function (config) {
-    if (config.data)
-      config.headers.set("x-evam-body", JSON.stringify(config.data));
+    if (config.data) {
+      const bodyEncoded = btoa(JSON.stringify(config.data));
+      config.headers.set("x-evam-body", bodyEncoded);
+    }
     return config;
   },
   function (error) {
