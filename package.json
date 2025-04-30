@@ -2,41 +2,6 @@
   "name": "@evam-life/sdk",
   "version": "3.0.0",
   "description": "Evam is an open platform. Deploy your app for the eco-system or utilize Evam as a foundation for your own solution.",
-  "homepage": "https://evam.life",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Evam-life/sdk"
-  },
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "bin"
-  ],
-  "bin": {
-    "evam-sideload": "bin/sideload.js",
-    "evam-sign": "bin/sign.js",
-    "create-certified-app": "bin/create-certified-app.js"
-  },
-  "scripts": {
-    "build": "npm-run-all --parallel build:*",
-    "build:core": "tsup",
-    "build:scripts": "tsc --project scripts/bin/tsconfig.scripts.json",
-    "docs:generate": "typedoc",
-    "docs:watch": "typedoc --watch",
-    "docs:open": "cd docs && open-cli index.html",
-    "lint": "eslint --max-warnings 0",
-    "lint:errors-only": "eslint --quiet",
-    "test:all": "jest",
-    "test:with-log": "npm run test:all -- --silent=false",
-    "test:collect-coverage": "npm run test:all -- --collectCoverage",
-    "detect-circular-deps": "dpdm --no-warning --no-tree --exit-code circular:1 src/index.ts",
-    "dependency-graph:generate": "ts_dependency_graph --start src/index.ts --h --graph_folder | dot -T png > dependency_graph.png",
-    "format": "prettier --ignore-path .gitignore --write src",
-    "format:README.md": "prettier --write README.md",
-    "prepack": "npm run lint && npm run detect-circular-deps && npm run format && npm run build"
-  },
   "keywords": [
     "Evam",
     "First Responders",
@@ -45,8 +10,89 @@
     "SDK",
     "API"
   ],
-  "author": "Kain Bryan-Jones <kain@evam.life>",
+  "homepage": "https://evam.life",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Evam-life/sdk"
+  },
   "license": "ISC",
+  "author": "Kain Bryan-Jones <kain@evam.life>",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "create-certified-app": "bin/create-certified-app.js",
+    "evam-sideload": "bin/sideload.js",
+    "evam-sign": "bin/sign.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "npm-run-all --parallel build:*",
+    "build:core": "tsup",
+    "build:scripts": "tsc --project scripts/bin/tsconfig.scripts.json",
+    "dependency-graph:generate": "ts_dependency_graph --start src/index.ts --h --graph_folder | dot -T png > dependency_graph.png",
+    "detect-circular-deps": "dpdm --no-warning --no-tree --exit-code circular:1 src/index.ts",
+    "docs:generate": "typedoc",
+    "docs:open": "cd docs && open-cli index.html",
+    "docs:watch": "typedoc --watch",
+    "format": "prettier --ignore-path .gitignore --write src",
+    "format:README.md": "prettier --write README.md",
+    "lint": "eslint --max-warnings 0",
+    "lint:errors-only": "eslint --quiet",
+    "prepack": "npm run lint && npm run detect-circular-deps && npm run format && npm run build",
+    "test:all": "jest",
+    "test:collect-coverage": "npm run test:all -- --collectCoverage",
+    "test:with-log": "npm run test:all -- --silent=false"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "<rootDir>/src/**/*.{ts,tsx}"
+    ],
+    "coverageDirectory": "coverage",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "moduleNameMapper": {
+      "^@/tests(.*)$": "<rootDir>/__tests__/$1",
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/__tests__"
+    ],
+    "setupFiles": [
+      "<rootDir>/scripts/test-setup.js",
+      "jest-localstorage-mock"
+    ],
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "<rootDir>/__tests__/**/*.test.(ts|tsx|js)"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
+  },
+  "dependencies": {
+    "@devicefarmer/adbkit": "^3.2.3",
+    "axios": "^1.7.9",
+    "cac": "^6.7.14",
+    "chalk": "^4.1.2",
+    "degit": "^2.8.4",
+    "glob": "^8.0.3",
+    "lodash": "^4.17.21",
+    "replace-in-file": "^7.1.0",
+    "tar": "^6.2.1",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
+  },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
     "@faker-js/faker": "^8.3.1",
@@ -77,60 +123,14 @@
     "prettier": "^3.1.1",
     "rimraf": "^5.0.5",
     "terser": "^5.26.0",
-    "ts_dependency_graph": "^2.0.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
+    "ts_dependency_graph": "^2.0.0",
     "tsup": "^8.0.1",
     "typedoc": "^0.25.12",
     "typedoc-plugin-coverage": "^2.2.0",
     "typedoc-plugin-markdown": "^3.17.1",
     "typedoc-plugin-zod": "^1.1.0",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "axios": "^1.7.9",
-    "@devicefarmer/adbkit": "^3.2.3",
-    "cac": "^6.7.14",
-    "chalk": "^4.1.2",
-    "degit": "^2.8.4",
-    "glob": "^8.0.3",
-    "lodash": "^4.17.21",
-    "replace-in-file": "^7.1.0",
-    "tar": "^6.2.1",
-    "uuid": "^9.0.1",
-    "zod": "^3.22.4"
-  },
-  "jest": {
-    "roots": [
-      "<rootDir>/src",
-      "<rootDir>/__tests__"
-    ],
-    "testMatch": [
-      "<rootDir>/__tests__/**/*.test.(ts|tsx|js)"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    },
-    "moduleNameMapper": {
-      "^@/tests(.*)$": "<rootDir>/__tests__/$1",
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "testEnvironment": "jsdom",
-    "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "<rootDir>/src/**/*.{ts,tsx}"
-    ],
-    "setupFiles": [
-      "<rootDir>/scripts/test-setup.js",
-      "jest-localstorage-mock"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }

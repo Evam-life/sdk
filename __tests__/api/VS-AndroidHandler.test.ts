@@ -18,6 +18,10 @@ describe("AndroidHandler inside Vehicle Services", () => {
 
   it("should act as a light wrapper around androidWrapper", () => {
     const androidObject: AndroidMethodNameSignatureMap = {
+      addLayerFeatureCollection: () => {},
+      addLayerStyleJson: () => {},
+      removeFeatureCollection: () => {},
+      removeStyleJsonLayers: () => {},
       apiReady: () => {},
       sendRawRakelAction: () => {},
       setPriority: () => {},

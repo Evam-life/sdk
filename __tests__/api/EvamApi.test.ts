@@ -303,23 +303,27 @@ describe("EvamApi", () => {
 
     expect(errorTarget).not.toHaveBeenCalled();
 
-    vehicleServicesEvents
-      .filter(evt => evt !== "newOrUpdatedSettings")
-      .forEach(evt => {
-        const invalidPayload = {
-          thisShouldNeverBeValid: true,
-        } as const;
+    vehicleServicesEvents.forEach(evt => {
+      const eventsWherePayloadIsGenericObject: Array<typeof evt> = [
+        "newOrUpdatedSettings",
+        "newOrUpdatedCSMessage",
+      ];
+      const isEventWherePayloadIsGenericObject =
+        eventsWherePayloadIsGenericObject.includes(evt);
+      const invalidPayload = isEventWherePayloadIsGenericObject
+        ? ""
+        : ({
+            thisShouldNeverBeValid: true,
+          } as const);
 
-        expect(() =>
-          parseVehicleServicesPayload(evt, invalidPayload),
-        ).toThrow();
-        EvamApi["test-utils"].uncheckedInject(evt, invalidPayload);
-        expect(errorTarget).toHaveBeenLastCalledWith(
-          evt,
-          invalidPayload,
-          expect.any(ZodError),
-        );
-      });
+      expect(() => parseVehicleServicesPayload(evt, invalidPayload)).toThrow();
+      EvamApi["test-utils"].uncheckedInject(evt, invalidPayload);
+      expect(errorTarget).toHaveBeenLastCalledWith(
+        evt,
+        invalidPayload,
+        expect.any(ZodError),
+      );
+    });
   });
 
   it("should convert null values to undefined when dispatching null", () => {
