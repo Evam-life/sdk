@@ -20,7 +20,6 @@ import { _InternalVehicleServicesEvent } from "@/types/_internal";
 import { displayModeParser } from "@/data/parsers";
 import { mockVehicleServicesEventPayloadMap } from "@/tests/__mocks__/data";
 import _ from "lodash";
-import exp from "node:constants";
 
 beforeEach(() => {
   EvamApi["test-utils"].reset();
@@ -761,10 +760,16 @@ describe("maps", () => {
       "navLayerShapeSet";
     const navLayerDeletedEvent: _InternalVehicleServicesEvent =
       "navLayerDeleted";
+    const styleLayerListRemovedEvent: _InternalVehicleServicesEvent =
+      "styleLayerListRemoved";
+    const styleSourceRemovedEvent: _InternalVehicleServicesEvent =
+      "styleSourceRemoved";
 
     const navLayerPointSetEventListener = jest.fn();
     const navLayerShapeSetEventListener = jest.fn();
     const navLayerDeletedEventListener = jest.fn();
+    const styleLayerListRemovedEventListener = jest.fn();
+    const styleSourceRemovedEventListener = jest.fn();
 
     eventHandlerWrapper().subscribe(
       navLayerPointSetEvent,
@@ -777,6 +782,14 @@ describe("maps", () => {
     eventHandlerWrapper().subscribe(
       navLayerDeletedEvent,
       navLayerDeletedEventListener,
+    );
+    eventHandlerWrapper().subscribe(
+      styleLayerListRemovedEvent,
+      styleLayerListRemovedEventListener,
+    );
+    eventHandlerWrapper().subscribe(
+      styleSourceRemovedEvent,
+      styleSourceRemovedEventListener,
     );
 
     expect(navLayerPointSetEventListener).not.toHaveBeenCalled();
@@ -791,6 +804,12 @@ describe("maps", () => {
 
     EvamApi.map.deleteNavLayer("");
     expect(navLayerDeletedEventListener).toHaveBeenCalled();
+
+    EvamApi.map.removeStyleJsonLayerList([]);
+    expect(styleLayerListRemovedEventListener).toHaveBeenCalled();
+
+    EvamApi.map.removeFeatureCollection("");
+    expect(styleSourceRemovedEventListener).toHaveBeenCalled();
   });
 });
 
