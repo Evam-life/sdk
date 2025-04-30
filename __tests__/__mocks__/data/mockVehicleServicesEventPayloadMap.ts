@@ -33,7 +33,14 @@ const mockVehicleServicesEventPayloadMap: VehicleServicesEventPayloadInterface =
     osVersionSet: "",
     vehicleServicesVersionSet: "",
     newOrUpdatedCalls: [],
-    newOrUpdatedMuteState: false
+    newOrUpdatedMuteState: false,
+    newOrUpdatedCallSign: {
+        name: "EVAM001",
+        isMultiUse: false,
+        isOwn: true,
+        isUsed: false
+    },
+    newOrUpdatedCSMessage: {}
 };
 
 export default mockVehicleServicesEventPayloadMap;

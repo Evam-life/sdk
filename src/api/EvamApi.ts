@@ -491,6 +491,65 @@ class EvamApi {
           EvamApi._internalEventMapHandler.publish(e, args);
         },
       }),
+
+    /**
+     * Sets the style JSON for the data set with {@link EvamApi#addLayerFeatureCollection}.
+     * Make sure the source Id set by {@link EvamApi#addLayerFeatureCollection} matches the `sourceId` in the Style JSON.
+     * @param styleJson raw style JSON.
+     */
+    addLayerStyleJson: (styleJson: object) =>
+      AndroidHandler.call("addLayerStyleJson", [JSON.stringify(styleJson)], {
+        nonVsEnvironmentCallback: args => {
+          const e: _InternalVehicleServicesEvent = "layerStyleJsonAdded";
+          EvamApi._internalEventMapHandler.publish(e, args);
+        },
+      }),
+
+    /**
+     * Sets a GeoJSON FeatureCollection in the map with `sourceId`={@link sourceId}.
+     * @param sourceId the source id of the feature collection. Make sure this matches the sourceId in the Style JSON set with {@link EvamApi#addLayerStyleJson}.
+     * @param featureCollection the GeoJSON `FeatureCollection` data.
+     */
+    addLayerFeatureCollection: (sourceId: string, featureCollection: object) =>
+      AndroidHandler.call(
+        "addLayerFeatureCollection",
+        [sourceId, JSON.stringify(featureCollection)],
+        {
+          nonVsEnvironmentCallback: args => {
+            const e: _InternalVehicleServicesEvent =
+              "layerFeatureCollectionAdded";
+            EvamApi._internalEventMapHandler.publish(e, args);
+          },
+        },
+      ),
+
+    /**
+     * Remove the style json layers with the ids in {@link layerIdList}
+     * @param layerIdList the ids of the style json layers to be removed
+     */
+    removeStyleJsonLayerList: (layerIdList: string[]) =>
+      AndroidHandler.call(
+        "removeStyleJsonLayers",
+        [JSON.stringify(layerIdList)],
+        {
+          nonVsEnvironmentCallback: args => {
+            const e: _InternalVehicleServicesEvent = "styleLayerListRemoved";
+            EvamApi._internalEventMapHandler.publish(e, args);
+          },
+        },
+      ),
+
+    /**
+     * Remove the feature collection with source id = {@link sourceId}
+     * @param sourceId the source id of the feature collection added with {@link EvamApi#addLayerFeatureCollection}
+     */
+    removeFeatureCollection: (sourceId: string) =>
+      AndroidHandler.call("removeFeatureCollection", [sourceId], {
+        nonVsEnvironmentCallback: args => {
+          const e: _InternalVehicleServicesEvent = "styleSourceRemoved";
+          EvamApi._internalEventMapHandler.publish(e, args);
+        },
+      }),
   };
 
   /**

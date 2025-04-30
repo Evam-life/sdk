@@ -20,6 +20,10 @@ interface _InternalVehicleServicesEventPayloadInterface {
   unholdCall: string;
   muteMicrophone: undefined;
   unmuteMicrophone: undefined;
+  layerStyleJsonAdded: string | undefined;
+  layerFeatureCollectionAdded: string | undefined;
+  styleLayerListRemoved: string | undefined;
+  styleSourceRemoved: string | undefined;
 }
 
 export type { _InternalVehicleServicesEventPayloadInterface };

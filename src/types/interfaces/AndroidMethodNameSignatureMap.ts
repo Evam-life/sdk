@@ -15,6 +15,13 @@ interface AndroidMapsMethodNameSignatureMap {
   setNavLayerPoint: (id: string, layerPointData: string) => void;
   setNavLayerShape: (id: string, layerShapeData: string) => void;
   deleteNavLayer: (id: string) => void;
+  addLayerStyleJson: (styleJson: string) => void;
+  addLayerFeatureCollection: (
+    sourceId: string,
+    featureCollectionJson: string,
+  ) => void;
+  removeStyleJsonLayers: (layerIdList: string) => void;
+  removeFeatureCollection: (sourceId: string) => void;
 }
 
 interface AndroidNotificationMethodNameSignatureMap {
