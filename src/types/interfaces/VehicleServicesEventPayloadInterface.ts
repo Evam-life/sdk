@@ -19,6 +19,7 @@ import { Location } from "@/types/vehicle-services/Location";
 import { RakelMessages } from "@/types/vehicle-services/RakelMessages";
 import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
 import { MuteState } from "@/types/vehicle-services/MuteState";
+import { CallSign } from "@/types/vehicle-services/CallSign";
 
 /**
  * An interface which maps a VehicleServicesEvent to its payload parser.
@@ -132,4 +133,18 @@ export interface VehicleServicesEventPayloadInterface {
    * @param callback The callback with (optional) argument boolean. Use this to access the current microphone mute state.
    */
   newOrUpdatedMuteState: MuteState | undefined;
+
+  /**
+   * Used to assign a callback when the logged in call sign changes.
+   * @requires Permission CALL_SIGN_READ
+   * @param callback The callback with (optional) argument {@link CallSign}. Use this to access the current logged in call sign.
+   */
+  newOrUpdatedCallSign: CallSign | undefined;
+
+  /**
+   * Used to assign a callback when a new message from CS is received with a kind=`certified-app`.
+   * @requires Permission CENTRAL_SERVICES_ACCESS
+   * @param callback The callback with (optional) argument {@link Object}.
+   */
+  newOrUpdatedCSMessage: object | undefined;
 }

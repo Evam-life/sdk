@@ -28,6 +28,8 @@ const obj: VehicleServicesEventPayloadInterface = {
   gRPCEstablished: undefined,
   newOrUpdatedMuteState: undefined,
   newOrUpdatedCalls: undefined,
+  newOrUpdatedCallSign: undefined,
+  newOrUpdatedCSMessage: undefined,
 };
 
 /**

@@ -42,6 +42,7 @@ import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
 import { MuteState } from "@/types/vehicle-services/MuteState";
 import { PhoneCallState } from "@/types/vehicle-services/PhoneCallState";
 import { PhoneDisconnectCause } from "@/types/vehicle-services/PhoneDisconnectCause";
+import { CallSign } from "@/types/vehicle-services/CallSign";
 
 export type {
   AppSettings,
@@ -88,4 +89,5 @@ export type {
   MuteState,
   PhoneCallState,
   PhoneDisconnectCause,
+  CallSign,
 };
