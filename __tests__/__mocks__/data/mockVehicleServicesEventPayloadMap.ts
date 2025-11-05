@@ -40,7 +40,10 @@ const mockVehicleServicesEventPayloadMap: VehicleServicesEventPayloadInterface =
         isOwn: true,
         isUsed: false
     },
-    newOrUpdatedCSMessage: {}
+    newOrUpdatedCSMessage: {
+      event: "testEvent",
+      details: "some details"
+    }
 };
 
 export default mockVehicleServicesEventPayloadMap;
