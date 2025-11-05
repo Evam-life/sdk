@@ -1,4 +1,4 @@
-import { z, ZodSchema } from "zod";
+import { ZodSchema } from "zod";
 import { VehicleServicesEvent } from "@/types";
 
 import {
@@ -25,6 +25,7 @@ import {
   vehicleStatusListParser,
 } from "@/data/parsers";
 import callSignParser from "@/data/parsers/vehicle-services/callSignParser";
+import csCertifiedAppEventParser from "@/data/parsers/vehicle-services/csCertifiedAppEventParser";
 
 /**
  * An object which maps a VehicleServicesEvent to its payload parser.
@@ -59,7 +60,7 @@ const vehicleServicesPayloadParserMap = new Map<
   ["newOrUpdatedCalls", phoneCallListParser.optional()],
   ["newOrUpdatedMuteState", muteStateParser.optional()],
   ["newOrUpdatedCallSign", callSignParser.optional()],
-  ["newOrUpdatedCSMessage", z.record(z.string(), z.unknown()).optional()],
+  ["newOrUpdatedCSMessage", csCertifiedAppEventParser.optional()],
 ]);
 
 export default vehicleServicesPayloadParserMap;

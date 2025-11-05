@@ -20,6 +20,7 @@ import { RakelMessages } from "@/types/vehicle-services/RakelMessages";
 import { PhoneCall } from "@/types/vehicle-services/PhoneCall";
 import { MuteState } from "@/types/vehicle-services/MuteState";
 import { CallSign } from "@/types/vehicle-services/CallSign";
+import { CsCertifiedAppEvent } from "@/types/vehicle-services/CsCertifiedAppEvent";
 
 /**
  * An interface which maps a VehicleServicesEvent to its payload parser.
@@ -142,9 +143,9 @@ export interface VehicleServicesEventPayloadInterface {
   newOrUpdatedCallSign: CallSign | undefined;
 
   /**
-   * Used to assign a callback when a new message from CS is received with a kind=`certified-app`.
+   * Used to assign a callback when a new message from Central Services is received with a kind=`certifiedApp`.
    * @requires Permission CENTRAL_SERVICES_ACCESS
    * @param callback The callback with (optional) argument {@link Object}.
    */
-  newOrUpdatedCSMessage: object | undefined;
+  newOrUpdatedCSMessage: CsCertifiedAppEvent | undefined;
 }
