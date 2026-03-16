@@ -115,7 +115,7 @@ class EvamApi {
      */
     on: <E extends VehicleServicesEvent>(
       event: E,
-      callback: (payload: VehicleServicesEventPayload<E>) => void,
+      callback: (payload: VehicleServicesEventPayload<E>, off: () => void) => void,
       {
         immediatelyInvoke = true,
       }: {
@@ -124,13 +124,19 @@ class EvamApi {
         immediatelyInvoke: true,
       },
     ) => {
+      const off = () => {
+        EvamApi.off(event, handleEvent);
+      };
+      const handleEvent = (p: VehicleServicesEventPayload<E>) => {
+        callback(p, off);
+      };
+      EvamApi.eventMapHandler.on(event, handleEvent);
       if (immediatelyInvoke) {
         const mostRecentlyDispatchedPayload =
           EvamApi.vehicleServicesDataMapHandler.getDatum(event);
-        callback(mostRecentlyDispatchedPayload);
+        callback(mostRecentlyDispatchedPayload, off);
       }
-      EvamApi.eventMapHandler.on(event, callback);
-      return () => EvamApi.off(event, callback);
+      return off;
     },
   };
 
