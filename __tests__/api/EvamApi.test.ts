@@ -44,11 +44,11 @@ describe("EvamApi", () => {
     const fn = jest.fn();
 
     EvamApi.event.on("newOrUpdatedInternetState", fn);
-    expect(fn).toHaveBeenLastCalledWith("NO_INTERNET");
+    expect(fn).toHaveBeenLastCalledWith("NO_INTERNET", expect.any(Function));
     EvamApi.event.on("osVersionSet", fn);
-    expect(fn).toHaveBeenLastCalledWith("0");
+    expect(fn).toHaveBeenLastCalledWith("0", expect.any(Function));
     EvamApi.event.on("newOrUpdatedDisplayMode", fn);
-    expect(fn).toHaveBeenLastCalledWith("DARK");
+    expect(fn).toHaveBeenLastCalledWith("DARK", expect.any(Function));
   });
 
   it("should subscribe using on", () => {
@@ -58,7 +58,7 @@ describe("EvamApi", () => {
     });
     expect(listener).not.toHaveBeenCalled();
     EvamApi["test-utils"].inject(testEvent, __mock__operationPayload);
-    expect(listener).toHaveBeenCalledWith(__mock__operationPayload);
+    expect(listener).toHaveBeenCalledWith(__mock__operationPayload, expect.any(Function));
   });
 
   it("should subscribe to multiple listeners using on", () => {
@@ -72,8 +72,49 @@ describe("EvamApi", () => {
     expect(listener2).not.toHaveBeenCalled();
 
     EvamApi["test-utils"].inject(testEvent, __mock__operationPayload);
-    expect(listener1).toHaveBeenCalledWith(__mock__operationPayload);
-    expect(listener2).toHaveBeenCalledWith(__mock__operationPayload);
+    expect(listener1).toHaveBeenCalledWith(__mock__operationPayload, expect.any(Function));
+    expect(listener2).toHaveBeenCalledWith(__mock__operationPayload, expect.any(Function));
+  });
+
+  it("should unsubscribe via the off function passed to the immediate callback", () => {
+    const listener = jest.fn();
+    EvamApi.event.on(testEvent, (_payload, off) => {
+      listener();
+      off();
+    });
+    expect(listener).toHaveBeenCalledTimes(1);
+    EvamApi["test-utils"].inject(testEvent, __mock__operationPayload);
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("should support promise-based syntax to get the current state of a payload", async () => {
+    const phoneCalls = [{ callId: "1", callNumber: "112", callState: "ACTIVE" as const, disconnectCause: "UNKNOWN" as const }];
+    EvamApi["test-utils"].inject("newOrUpdatedCalls", phoneCalls);
+
+    const getCurrentPhoneCalls = () =>
+      new Promise((resolve) => {
+        EvamApi.event.on("newOrUpdatedCalls", (payload, off) => {
+          off();
+          resolve(payload);
+        });
+      });
+
+    const result = await getCurrentPhoneCalls();
+    expect(result).toEqual(phoneCalls);
+
+    const deviceId = "device-abc-123";
+    EvamApi["test-utils"].inject("deviceIdSet", deviceId);
+
+    const getCurrentDeviceId = () =>
+      new Promise((resolve) => {
+        EvamApi.event.on("deviceIdSet", (payload, off) => {
+          off();
+          resolve(payload);
+        });
+      });
+
+    const deviceIdResult = await getCurrentDeviceId();
+    expect(deviceIdResult).toEqual(deviceId);
   });
 
   it("should unsubscribe to a specific event callback using off", () => {
@@ -91,7 +132,7 @@ describe("EvamApi", () => {
     expect(newTestEvent).not.toEqual(testEvent);
     expect(listener1).not.toHaveBeenCalled();
     EvamApi.event.on(newTestEvent, listener1); //initialTrigger is true by default
-    expect(listener1).toHaveBeenCalledWith(undefined);
+    expect(listener1).toHaveBeenCalledWith(undefined, expect.any(Function));
   });
 
   it('should trigger a callback with a vale when "initialTrigger" is set to "true" (default) and the event has previously been dispatched', () => {
@@ -100,7 +141,7 @@ describe("EvamApi", () => {
     expect(listener1).not.toHaveBeenCalled();
     EvamApi["test-utils"].inject(newTestEvent, __mock__locationPayload);
     EvamApi.event.on(newTestEvent, listener1); //initialTrigger is true by default
-    expect(listener1).toHaveBeenCalledWith(__mock__locationPayload);
+    expect(listener1).toHaveBeenCalledWith(__mock__locationPayload, expect.any(Function));
   });
 
   const notificationBase: Omit<
@@ -338,7 +379,7 @@ describe("EvamApi", () => {
 
     EvamApi["test-utils"].uncheckedInject("newOrUpdatedDisplayMode", null);
 
-    expect(listener).toHaveBeenLastCalledWith(undefined);
+    expect(listener).toHaveBeenLastCalledWith(undefined, expect.any(Function));
 
     off_0();
     listener.mockClear();
@@ -357,7 +398,7 @@ describe("EvamApi", () => {
       plugged: "AC",
       status: "CHARGING",
       capacity: undefined,
-    });
+    }, expect.any(Function));
 
     off_1();
     listener.mockClear();
@@ -390,7 +431,7 @@ describe("EvamApi", () => {
           eta: undefined,
         },
       ],
-    });
+    }, expect.any(Function));
   });
 
   it("should still parse for keys which don't exist yet, but will scrap those keys", () => {
@@ -423,7 +464,7 @@ describe("EvamApi", () => {
     expect(listener).toHaveBeenCalledWith({
       operationFullId: "::",
       ...opWithoutExtraKey,
-    });
+    }, expect.any(Function));
   });
 });
 
@@ -482,7 +523,7 @@ describe("setPriority", () => {
   it("should throw an error when there is no current operation", () => {
     const listener = jest.fn();
     EvamApi.event.on("newOrUpdatedOperation", listener);
-    expect(listener).toHaveBeenCalledWith(undefined);
+    expect(listener).toHaveBeenCalledWith(undefined, expect.any(Function));
     expect(() => {
       EvamApi.operation.setPriority(0);
     }).toThrowError(EvamApiErrorRepository.setPriority.operationNotDefined());
@@ -501,7 +542,7 @@ describe("setPriority", () => {
       availablePriorities: undefined,
     };
     EvamApi["test-utils"].inject("newOrUpdatedOperation", operation);
-    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation));
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation), expect.any(Function));
     expect(() => {
       EvamApi.operation.setPriority(0);
     }).toThrowError(EvamApiErrorRepository.setPriority.noAvailablePriorities());
@@ -529,7 +570,7 @@ describe("setPriority", () => {
       availablePriorities,
     };
     EvamApi["test-utils"].inject("newOrUpdatedOperation", operation);
-    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation));
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation), expect.any(Function));
     expect(() => {
       EvamApi.operation.setPriority(unavailablePriorityId);
     }).toThrowError(
@@ -597,7 +638,7 @@ describe("setHospital", () => {
   it("should throw an error when there is no current operation", () => {
     const listener = jest.fn();
     EvamApi.event.on("newOrUpdatedOperation", listener);
-    expect(listener).toHaveBeenCalledWith(undefined);
+    expect(listener).toHaveBeenCalledWith(undefined, expect.any(Function));
     expect(() => {
       EvamApi.operation.setHospital(0);
     }).toThrowError(EvamApiErrorRepository.setHospital.operationNotDefined());
@@ -632,7 +673,7 @@ describe("setHospital", () => {
       availableHospitalLocations: undefined,
     };
     EvamApi["test-utils"].inject("newOrUpdatedOperation", operation);
-    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation));
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation), expect.any(Function));
     expect(() => {
       EvamApi.operation.setHospital(0);
     }).toThrowError(
@@ -666,7 +707,7 @@ describe("setHospital", () => {
       availableHospitalLocations,
     };
     EvamApi["test-utils"].inject("newOrUpdatedOperation", operation);
-    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation));
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining(operation), expect.any(Function));
 
     expect(() => {
       EvamApi.operation.setHospital(unavailableHospitalLocationId);
@@ -707,7 +748,7 @@ describe("test-utils.setDocument", () => {
       immediatelyInvoke: false,
     });
     eventHandlerWrapper(doc).publish(event, payload);
-    expect(listener).toHaveBeenCalledWith(payload);
+    expect(listener).toHaveBeenCalledWith(payload, expect.any(Function));
   });
 
   it("should still handle notifications", () => {
@@ -743,7 +784,7 @@ describe("test-utils.setDocument", () => {
       immediatelyInvoke: false,
     });
     EvamApi["test-utils"].inject(evt, payload);
-    expect(listener).toHaveBeenCalledWith(payload);
+    expect(listener).toHaveBeenCalledWith(payload, expect.any(Function));
     EvamApi["test-utils"].setDocument(new Document());
     EvamApi["test-utils"].inject(evt, payload);
     expect(listener).toHaveBeenCalledTimes(1);
@@ -821,7 +862,7 @@ test("JavaScript converts CustomDetail 'detail' property to 'null' when it is di
     });
     EvamApi["test-utils"].uncheckedInject(evt, null);
     expect(listener1).toHaveBeenCalledTimes(index + 1);
-    expect(listener1).toHaveBeenLastCalledWith(undefined);
+    expect(listener1).toHaveBeenLastCalledWith(undefined, expect.any(Function));
     off();
   });
 });
@@ -838,11 +879,11 @@ describe("reset", () => {
     const displayMode: DisplayMode = "DARK";
     expect(listener).not.toHaveBeenCalled();
     EvamApi["test-utils"].inject("newOrUpdatedDisplayMode", displayMode);
-    expect(listener).toHaveBeenCalledWith(displayMode);
+    expect(listener).toHaveBeenCalledWith(displayMode, expect.any(Function));
     EvamApi["test-utils"].reset();
     EvamApi.event.on("newOrUpdatedDisplayMode", listener, {
       immediatelyInvoke: true,
     });
-    expect(listener).toHaveBeenLastCalledWith(undefined);
+    expect(listener).toHaveBeenLastCalledWith(undefined, expect.any(Function));
   });
 });

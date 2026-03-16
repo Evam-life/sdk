@@ -1,6 +1,7 @@
-image: node:16-buster
+image: node:20
 
 stages:
+  - build
   - test
   - deploy
 
@@ -14,9 +15,20 @@ test:
   script:
     - npm i
     - npm run lint
-    - npm run
     - npm run detect-circular-deps
     - npm run test:all
+  needs: ["build"]
+
+build:
+  stage: build
+  tags:
+    - docker
+  only:
+    - tags
+    - merge_requests
+  script:
+    - npm i
+    - npm run build
 
 deploy-npm:
   stage: deploy
