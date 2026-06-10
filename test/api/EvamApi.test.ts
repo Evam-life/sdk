@@ -967,7 +967,19 @@ describe("broadcast", () => {
         evamApi.broadcast.post("a message");
 
         expect(listener).toHaveBeenCalledTimes(1);
+        expect((listener.mock.calls[0][0] as CustomEvent).detail).toBe("a message");
         document.removeEventListener(EvamEvent.BroadcastPost, listener);
+    });
+
+    it("should not deliver a broadcast message after unsubscribeFromAllCallbacks", () => {
+        const evamApi = new EvamApi();
+        const listener = jest.fn();
+        evamApi.onBroadcastMessage(listener);
+
+        evamApi.unsubscribeFromAllCallbacks();
+        new EvamApi().injectBroadcastMessage("after unsubscribe");
+
+        expect(listener).not.toHaveBeenCalled();
     });
 
 });
