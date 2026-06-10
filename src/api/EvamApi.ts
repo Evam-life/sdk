@@ -324,6 +324,7 @@ export class EvamApi {
     private static newOrUpdatedMuteState: CallbackFunctionArray = [];
     private static newOrUpdatedAudioDeviceTypes: CallbackFunctionArray = [];
     private static newOrUpdatedIntercomEnabledStateCallbacks: CallbackFunctionArray = [];
+    private static broadcastMessageReceivedCallbacks: CallbackFunctionArray = [];
 
 
     private static notificationCallbacks: Map<string, CallbackFunction<void>> = new Map([]);
@@ -364,6 +365,7 @@ export class EvamApi {
         clearCallbacksAndArray(EvamApi.newOrUpdatedMuteState, EvamEvent.NewOrUpdatedMuteState);
         clearCallbacksAndArray(EvamApi.newOrUpdatedAudioDeviceTypes, EvamEvent.NewOrUpdatedAudioDeviceTypes);
         clearCallbacksAndArray(EvamApi.newOrUpdatedIntercomEnabledStateCallbacks, EvamEvent.NewOrUpdatedIntercomEnabledState);
+        clearCallbacksAndArray(EvamApi.broadcastMessageReceivedCallbacks, EvamEvent.BroadcastMessageReceived);
 
 
         EvamApi.notificationCallbacks.clear();
@@ -909,6 +911,43 @@ export class EvamApi {
             publish(EvamEvent.NewOrUpdatedIntercomEnabledState, intercomEnabledState);
         } else {
             throw Error("Injecting an intercomEnabledState is not allowed in the Vehicle Services environment.");
+        }
+    }
+
+    /**
+     * Used to assign a callback for incoming peer-to-peer broadcast messages from
+     * other apps on the same channel (see {@link EvamApi#broadcast}). Unlike the
+     * state callbacks, a broadcast is a transient stream: the message is delivered
+     * once and is not cached, so a late subscriber is not replayed the last message.
+     * @category P2P
+     * @requires Permissions INTERCOM
+     * @param callback The callback invoked with the raw message payload string.
+     * @trigger The callback triggers every time a broadcast message is received from a peer.
+     */
+    onBroadcastMessage(callback: CallbackFunction<string>) {
+        if (callback) {
+            const c = (e: Event) => {
+                const message = (e as CustomEvent).detail;
+                if (typeof message === "string") {
+                    callback(message);
+                }
+            };
+            EvamApi.broadcastMessageReceivedCallbacks.push(c);
+            subscribe(EvamEvent.BroadcastMessageReceived, c);
+        }
+    }
+
+    /**
+     * Manually inject an incoming broadcast message to EvamApi (Only available in development.)
+     * @param message the raw message payload string to inject.
+     * @category Testing and Development
+     * @requires **Environment** Development (in web browser) only.
+     */
+    injectBroadcastMessage(message: string) {
+        if (!EvamApi.isRunningInVehicleServices) {
+            publish(EvamEvent.BroadcastMessageReceived, message);
+        } else {
+            throw Error("Injecting a broadcast message is not allowed in the Vehicle Services environment.");
         }
     }
 
@@ -1541,6 +1580,25 @@ export class EvamApi {
     enableIntercom = (enable: boolean) => {
         publish(EvamEvent.EnableIntercom, enable);
         androidNativeHelpers(EvamApi.isRunningInVehicleServices).enableIntercom(enable);
+    };
+
+    /**
+     * Peer-to-peer broadcast messaging over the Vehicle Services app bus. Messages
+     * are scoped and stamped natively (by app id and channel) and echoed back to the
+     * sender. Subscribe to incoming messages with {@link EvamApi#onBroadcastMessage}.
+     * @category P2P
+     * @requires **Permissions** INTERCOM
+     * @requires **Environment** Evam device only
+     */
+    broadcast = {
+        /**
+         * Posts a raw message payload to peers on the same channel.
+         * @param payload the raw message payload string to broadcast.
+         */
+        post: (payload: string) => {
+            publish(EvamEvent.BroadcastPost, payload);
+            androidNativeHelpers(EvamApi.isRunningInVehicleServices).broadcastPost(payload);
+        }
     };
 
 

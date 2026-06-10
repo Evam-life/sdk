@@ -924,3 +924,50 @@ describe("intercom enabled state", () => {
     });
 
 });
+
+describe("broadcast", () => {
+
+    it("should deliver an injected broadcast message to subscribers", () => {
+        const evamApi = new EvamApi();
+        const listener = jest.fn();
+        evamApi.onBroadcastMessage(listener);
+        expect(listener).not.toHaveBeenCalled();
+
+        const message = JSON.stringify({event: "intercomPeerToPeerIntent", state: true, key: "abc"});
+        new EvamApi().injectBroadcastMessage(message);
+
+        expect(listener).toHaveBeenCalledWith(message);
+    });
+
+    it("should not replay the last message to a late subscriber", () => {
+        const evamApi = new EvamApi();
+        new EvamApi().injectBroadcastMessage("earlier message");
+
+        const listener = jest.fn();
+        evamApi.onBroadcastMessage(listener);
+
+        expect(listener).not.toHaveBeenCalled();
+    });
+
+    it("should ignore a broadcast detail that is not a string", () => {
+        const evamApi = new EvamApi();
+        const listener = jest.fn();
+        evamApi.onBroadcastMessage(listener);
+
+        publish(EvamEvent.BroadcastMessageReceived, {not: "a string"});
+
+        expect(listener).not.toHaveBeenCalled();
+    });
+
+    it("should publish a broadcast post event when posting", () => {
+        const evamApi = new EvamApi();
+        const listener = jest.fn();
+        document.addEventListener(EvamEvent.BroadcastPost, listener);
+
+        evamApi.broadcast.post("a message");
+
+        expect(listener).toHaveBeenCalledTimes(1);
+        document.removeEventListener(EvamEvent.BroadcastPost, listener);
+    });
+
+});
