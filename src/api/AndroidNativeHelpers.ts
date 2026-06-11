@@ -249,6 +249,15 @@ const androidNativeHelpers = (insideVs: boolean) => ({
                 console.error(e);
             }
         }
+    },
+    broadcastPost: (payload: string) => {
+        if (insideVs) {
+            try {
+                triggerAndroid("broadcastPost", payload);
+            } catch (e) {
+                console.error(e);
+            }
+        }
     }
 });
 

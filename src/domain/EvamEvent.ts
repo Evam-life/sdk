@@ -44,6 +44,8 @@ enum EvamEvent {
     StopRingtone = "stopRingtone",
     NewOrUpdatedIntercomEnabledState = "newOrUpdatedIntercomEnabledState",
     EnableIntercom = "enableIntercom",
+    BroadcastPost = "broadcastPost",
+    BroadcastMessageReceived = "broadcastMessageReceived",
     _testEvent = "_testEvent"
 }
 
