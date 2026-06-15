@@ -927,6 +927,21 @@ describe("intercom enabled state", () => {
 
 describe("broadcast", () => {
 
+    // The broadcast namespace is gated on the native broadcastPost bridge, which
+    // jsdom lacks; polyfill window.Android per test and clear it afterwards.
+    const androidWindow = window as Window & typeof globalThis & { Android?: unknown };
+
+    afterEach(() => {
+        delete androidWindow.Android;
+    });
+
+    it("should expose broadcast only when the Android bridge supports broadcastPost", () => {
+        expect(new EvamApi().broadcast).toBeUndefined();
+
+        androidWindow.Android = {broadcastPost: jest.fn()};
+        expect(new EvamApi().broadcast).toBeDefined();
+    });
+
     it("should deliver an injected broadcast message to subscribers", () => {
         const evamApi = new EvamApi();
         const listener = jest.fn();
@@ -960,11 +975,12 @@ describe("broadcast", () => {
     });
 
     it("should publish a broadcast post event when posting", () => {
+        androidWindow.Android = {broadcastPost: jest.fn()};
         const evamApi = new EvamApi();
         const listener = jest.fn();
         document.addEventListener(EvamEvent.BroadcastPost, listener);
 
-        evamApi.broadcast.post("a message");
+        evamApi.broadcast?.post("a message");
 
         expect(listener).toHaveBeenCalledTimes(1);
         expect((listener.mock.calls[0][0] as CustomEvent).detail).toBe("a message");
