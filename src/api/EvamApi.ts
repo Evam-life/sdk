@@ -28,6 +28,7 @@ import {androidNativeHelpers, isRunningInVehicleServices} from "./AndroidNativeH
 import {LayerPointData, LayerShapeData} from "../domain/LayerData";
 import {RawRakelAction} from "../domain";
 import {PhoneCall} from "../domain/PhoneCall";
+import checkAndroidSupport from "../util/checkAndroidSupport";
 
 
 /**
@@ -1587,10 +1588,10 @@ export class EvamApi {
      * are scoped and stamped natively (by app id and channel) and echoed back to the
      * sender. Subscribe to incoming messages with {@link EvamApi#onBroadcastMessage}.
      * @category P2P
-     * @requires **Permissions** INTERCOM
+     * @requires **Version** Vehicle Services version 7.2.0 and above have full functionality.
      * @requires **Environment** Evam device only
      */
-    broadcast = {
+    broadcast = checkAndroidSupport("broadcastPost") ? {
         /**
          * Posts a raw message payload to peers on the same channel.
          * @param payload the raw message payload string to broadcast.
@@ -1599,7 +1600,7 @@ export class EvamApi {
             publish(EvamEvent.BroadcastPost, payload);
             androidNativeHelpers(EvamApi.isRunningInVehicleServices).broadcastPost(payload);
         }
-    };
+    } : undefined;
 
 
     /**
