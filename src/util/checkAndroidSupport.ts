@@ -9,7 +9,7 @@ const checkAndroidSupport = (m: AndroidMethod): boolean => {
     // @ts-expect-error window.Android is not typed
     return m in window.Android;
   } catch (e) {
-    console.log("Error checking Android", e instanceof Error ? e.message : e)
+    console.error("Error checking Android", e instanceof Error ? e.message : e)
     return false;
   }
 };
