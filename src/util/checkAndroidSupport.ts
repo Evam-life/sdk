@@ -5,9 +5,13 @@ import { AndroidMethod } from "../domain/_internal";
  * @param m the method to check
  */
 const checkAndroidSupport = (m: AndroidMethod): boolean => {
-  return "Android" in window &&
-    // @ts-expect-error we typecheck "Android" in window above
-    typeof window.Android === "object" && window.Android !== null && m in window.Android;
+  try {
+    // @ts-expect-error window.Android is not typed
+    return m in window.Android;
+  } catch (e) {
+    console.log("Error checking Android", e instanceof Error ? e.message : e)
+    return false;
+  }
 };
 
-export default checkAndroidSupport
+export default checkAndroidSupport;

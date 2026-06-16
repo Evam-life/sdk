@@ -27,6 +27,11 @@ describe("checkAndroidSupport", () => {
         expect(checkAndroidSupport("broadcastPost")).toBe(false);
     });
 
+    it("should return false when the Android bridge is undefined", () => {
+        androidWindow.Android = undefined;
+        expect(checkAndroidSupport("broadcastPost")).toBe(false);
+    });
+
     it("should return false when the Android bridge is null", () => {
         androidWindow.Android = null;
         expect(checkAndroidSupport("broadcastPost")).toBe(false);
@@ -34,6 +39,22 @@ describe("checkAndroidSupport", () => {
 
     it("should return false when the Android bridge is not an object", () => {
         androidWindow.Android = "not-an-object";
+        expect(checkAndroidSupport("broadcastPost")).toBe(false);
+    });
+
+    it("should support any method the bridge exposes, not only broadcastPost", () => {
+        androidWindow.Android = {makeCall: jest.fn()};
+        expect(checkAndroidSupport("makeCall")).toBe(true);
+    });
+
+    it("should treat a declared method as supported even when its value is undefined", () => {
+        androidWindow.Android = {broadcastPost: undefined};
+        expect(checkAndroidSupport("broadcastPost")).toBe(true);
+    });
+
+    it("should resolve each method independently on a multi-method bridge", () => {
+        androidWindow.Android = {setItem: jest.fn(), getItem: jest.fn(), makeCall: jest.fn()};
+        expect(checkAndroidSupport("makeCall")).toBe(true);
         expect(checkAndroidSupport("broadcastPost")).toBe(false);
     });
 });
