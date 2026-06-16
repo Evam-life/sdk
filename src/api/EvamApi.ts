@@ -1591,7 +1591,7 @@ export class EvamApi {
      * @requires **Version** Vehicle Services version 7.2.0 and above have full functionality.
      * @requires **Environment** Evam device only
      */
-    broadcast = checkAndroidSupport("broadcastPost") ? {
+    broadcast: { post: (payload: string) => void } | undefined = checkAndroidSupport("broadcastPost") ? {
         /**
          * Posts a raw message payload to peers on the same channel.
          * @param payload the raw message payload string to broadcast.
